@@ -1,0 +1,1726 @@
+* {
+  box-sizing: border-box;
+}
+
+html {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background:
+    radial-gradient(circle at top right, #312e81 0%, transparent 25%),
+    radial-gradient(circle at bottom left, #6d28d9 0%, transparent 30%),
+    #05070d !important;
+  color: #f8fafc;
+  font-family: Arial, Helvetica, sans-serif;
+  min-height: 100vh;
+}
+
+
+/* ======================================================
+   NAVBAR
+====================================================== */
+
+.navbar {
+  background: #111827 !important;
+  border-bottom: 1px solid rgba(139, 92, 246, .25);
+  padding: 10px 22px;
+}
+
+.navbar-brand {
+  color: #f8fafc !important;
+  font-size: 19px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.navbar-brand:hover {
+  color: #c084fc !important;
+}
+
+.auth-nav {
+  display: flex;
+  align-items: center;
+  gap: 50px;
+}
+
+.auth-nav .nav-link {
+  color: #cbd5e1 !important;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 4px 0;
+}
+
+.auth-nav .nav-link:hover {
+  color: #fff !important;
+}
+
+.auth-nav .username-link {
+  color: #f8fafc !important;
+}
+
+.auth-nav .wallet-balance {
+  color: #86efac !important;
+  font-weight: 700;
+}
+
+
+/* ======================================================
+   MAIN WORKSPACE
+====================================================== */
+
+.shipping-workspace {
+  width: 96%;
+  max-width: 1450px;
+  margin: auto;
+  padding: 22px 0;
+  min-width: 0;
+  min-height: 100vh;
+}
+
+
+/* ======================================================
+   PAGE HEADER
+====================================================== */
+
+.workspace-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 16px;
+  min-width: 0;
+}
+
+.shipping-label {
+  display: inline-block;
+  color: #c084fc;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.workspace-header h1 {
+  margin: 3px 0;
+  color: #f8fafc;
+  font-size: 27px;
+  font-weight: 800;
+}
+
+.workspace-header p {
+  margin: 0;
+  color: #cbd5e1;
+  font-size: 13px;
+}
+
+.back-btn {
+  flex-shrink: 0;
+  padding: 8px 14px;
+  border: 1px solid #29344d;
+  border-radius: 8px;
+  color: #e2e8f0;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.back-btn:hover {
+  color: #fff;
+  border-color: #8b5cf6;
+  text-decoration: none;
+}
+
+
+/* ======================================================
+   PANELS
+====================================================== */
+
+.shipping-workspace {
+  display: grid;
+  grid-template-columns: 320px minmax(0, 1fr);
+  grid-template-rows: auto auto;
+  column-gap: 16px;
+  align-items: start;
+}
+
+
+/* PAGE HEADER */
+
+.workspace-header {
+  grid-column: 1 / -1;
+  width: 100%;
+}
+
+
+/* LEFT: SHIPMENTS */
+
+.shipments-panel {
+  grid-column: 1;
+  grid-row: 2;
+  width: 100%;
+  min-width: 0;
+}
+
+
+/* RIGHT: CREATE / PROFILE AREA */
+
+.workspace-grid {
+  grid-column: 2;
+  grid-row: 2;
+
+  display: block;
+
+  width: 100%;
+  min-width: 0;
+}
+
+
+/* GENERAL PANEL */
+
+.mode-panel {
+  min-width: 0;
+  width: 100%;
+  max-width: 100%;
+
+  background:
+    linear-gradient(
+      145deg,
+      #111827,
+      #0b101b
+    );
+
+  border: 1px solid rgba(139, 92, 246, .22);
+  border-radius: 14px;
+}
+
+
+/* CREATE / EDIT PANEL */
+
+.edit-panel {
+  height: auto;
+  min-height: 0;
+  overflow: visible;
+  width: 100%;
+}
+
+
+/* DOCUMENT PANEL */
+
+.view-panel {
+  height: calc(100vh - 145px);
+  min-height: 620px;
+
+  display: none;
+  flex-direction: column;
+
+  min-width: 0;
+  width: 100%;
+
+  margin-top: 16px;
+}
+
+
+/*
+   When a shipment is selected,
+   JavaScript adds .profile-mode
+   to .workspace-grid.
+*/
+
+.workspace-grid.profile-mode .view-panel {
+  display: flex;
+}
+
+
+/* CREATE MODE */
+
+.workspace-grid.create-mode .view-panel {
+  display: none;
+}
+
+
+/* PROFILE MODE */
+
+.workspace-grid.profile-mode .edit-panel {
+  display: block;
+}
+
+
+.mode-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+
+  padding: 14px 17px;
+
+  background: rgba(255, 255, 255, .025);
+  border-bottom: 1px solid rgba(139, 92, 246, .16);
+
+  min-width: 0;
+}
+
+
+.mode-label {
+  display: block;
+  color: #a78bfa;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+
+
+.mode-header h2 {
+  margin: 2px 0 0;
+  color: #f8fafc;
+  font-size: 17px;
+  font-weight: 700;
+}
+
+
+.mode-description {
+  color: #cbd5e1;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+
+.document-status {
+  padding: 5px 9px;
+  border-radius: 20px;
+
+  color: #cbd5e1;
+  background: #1b2234;
+
+  font-size: 10px;
+  font-weight: 700;
+
+  flex-shrink: 0;
+}
+
+
+/* ======================================================
+   FORM
+====================================================== */
+
+#shippingForm {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  padding: 12px;
+  overflow: visible;
+}
+
+.form-section {
+  margin-bottom: 10px;
+  padding: 13px;
+  background: rgba(255, 255, 255, .025);
+  border: 1px solid rgba(139, 92, 246, .15);
+  border-radius: 11px;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.section-heading {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 10px;
+  min-width: 0;
+}
+
+.section-heading h3 {
+  margin: 0;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.info-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+  border: 1px solid #94a3b8;
+  border-radius: 50%;
+  color: #cbd5e1;
+  font-size: 9px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px 12px;
+  width: 100%;
+  min-width: 0;
+}
+
+.full-width {
+  grid-column: 1 / -1;
+}
+
+.form-group {
+  min-width: 0;
+  width: 100%;
+  max-width: 100%;
+}
+
+.form-group label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 5px;
+  color: #e2e8f0;
+  font-size: 11px;
+  font-weight: 700;
+  min-width: 0;
+}
+
+.form-group label span {
+  color: #94a3b8;
+  font-size: 10px;
+  font-weight: 500;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  padding: 8px 9px;
+  border: 1px solid #29344d;
+  border-radius: 7px;
+  outline: none;
+  background: #080d18;
+  color: #f8fafc;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 11px;
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+  color: #94a3b8;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  border-color: #8b5cf6;
+  box-shadow: 0 0 0 2px rgba(139, 92, 246, .1);
+}
+
+.form-group textarea {
+  min-height: 58px;
+  resize: vertical;
+}
+
+.date-time-group {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  width: 100%;
+  min-width: 0;
+}
+
+.date-time-group input {
+  width: 100%;
+  min-width: 0;
+}
+
+
+/* ======================================================
+   WATERMARK INFO
+====================================================== */
+
+.watermark-box {
+  margin-bottom: 10px;
+  padding: 11px 13px;
+  background: rgba(139, 92, 246, .045);
+  border: 1px solid rgba(139, 92, 246, .2);
+  border-radius: 9px;
+}
+
+.watermark-title {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: #fff;
+  font-size: 11px;
+}
+
+.watermark-box p {
+  margin: 6px 0;
+  color: #cbd5e1;
+  font-size: 10px;
+  line-height: 1.4;
+}
+
+.watermark-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #d8b4fe;
+  font-size: 10px;
+}
+
+.watermark-status span {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #8b5cf6;
+}
+
+
+/* ======================================================
+   FORM ACTIONS
+====================================================== */
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+  padding: 2px 0 4px;
+  min-width: 0;
+}
+
+.cancel-btn,
+.create-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 34px;
+  padding: 7px 14px;
+  border-radius: 7px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.cancel-btn {
+  color: #e2e8f0;
+  border: 1px solid #29344d;
+  text-decoration: none;
+}
+
+.cancel-btn:hover {
+  color: #fff;
+  border-color: #8b5cf6;
+}
+
+.create-btn {
+  border: 0;
+  color: #fff;
+  cursor: pointer;
+  background: linear-gradient(90deg, #8b5cf6, #4f46e5);
+}
+
+.create-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 7px 20px rgba(79, 70, 229, .25);
+}
+
+.create-btn:disabled {
+  opacity: .6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+
+/* ======================================================
+   MESSAGES
+====================================================== */
+
+#shippingMessage {
+  margin-top: 8px;
+  font-size: 11px;
+  min-width: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+.success-message,
+.error-message {
+  padding: 10px;
+  border-radius: 8px;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+.success-message {
+  background: rgba(34, 197, 94, .08);
+  border: 1px solid rgba(34, 197, 94, .2);
+  color: #f8fafc;
+}
+
+.error-message {
+  background: rgba(239, 68, 68, .08);
+  border: 1px solid rgba(239, 68, 68, .2);
+  color: #f8fafc;
+}
+
+.success-message h3,
+.error-message h3 {
+  margin: 0 0 5px;
+  font-size: 12px;
+}
+
+.success-message p,
+.error-message p {
+  margin: 3px 0;
+  font-size: 10px;
+}
+
+.success-message strong {
+  color: #16a34a !important;
+  font-size: 18px;
+  letter-spacing: 1px;
+  font-weight: 900;
+  display: inline-block;
+  white-space: nowrap;
+}
+
+
+/* ======================================================
+   SHIPMENTS LIST
+====================================================== */
+
+.shipments-list {
+  width: 100%;
+  min-width: 0;
+  max-height: calc(100vh - 235px);
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+
+/* ======================================================
+   SHIPMENT CARD
+====================================================== */
+
+.shipment-card {
+  display: block;
+
+  width: 100%;
+  min-width: 0;
+
+  padding: 13px 14px;
+
+  border-bottom: 1px solid rgba(139, 92, 246, .15);
+
+  background: rgba(255, 255, 255, .015);
+
+  white-space: normal;
+
+  cursor: pointer;
+
+  transition:
+    background .15s ease,
+    border-color .15s ease;
+}
+
+
+.shipment-card:hover {
+  background: rgba(139, 92, 246, .06);
+}
+
+
+.shipment-card.selected-shipment {
+  background: rgba(139, 92, 246, .09);
+  border-left: 3px solid #8b5cf6;
+}
+
+
+/* ======================================================
+   SHIPMENT HEADER
+====================================================== */
+
+.shipment-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+
+  gap: 8px;
+
+  width: 100%;
+  min-width: 0;
+}
+
+
+.shipment-card-header strong {
+  color: #a78bfa;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: .4px;
+
+  overflow-wrap: anywhere;
+}
+
+
+.shipment-card-header span {
+  flex-shrink: 0;
+
+  color: #cbd5e1;
+  font-size: 9px;
+}
+
+
+/* ======================================================
+   SHIPMENT INFORMATION
+====================================================== */
+
+.shipment-card-body {
+  display: block;
+
+  width: 100%;
+  min-width: 0;
+
+  margin-top: 8px;
+}
+
+
+.shipment-card-body p {
+  display: flex;
+  align-items: flex-start;
+  gap: 5px;
+
+  margin: 4px 0;
+
+  color: #cbd5e1;
+  font-size: 9px;
+
+  overflow-wrap: anywhere;
+}
+
+
+.shipment-card-body p strong {
+  flex-shrink: 0;
+
+  color: #94a3b8;
+  font-size: 8px;
+}
+
+
+/* ======================================================
+   SHIPMENT ACTIONS
+====================================================== */
+
+.shipment-card-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+
+  gap: 5px;
+
+  margin-top: 10px;
+}
+
+
+.shipment-card-actions button,
+.shipment-card-actions a {
+  flex-shrink: 0;
+
+  white-space: nowrap;
+
+  font-size: 9px;
+}
+
+
+/* ======================================================
+   EMPTY / LOADING
+====================================================== */
+
+.empty-shipments,
+.shipment-loading {
+  width: 100%;
+
+  padding: 25px 15px;
+
+  text-align: center;
+
+  color: #94a3b8;
+  font-size: 11px;
+}
+
+/* ======================================================
+   STATUS COLORS
+====================================================== */
+
+.status-delivered {
+  color: #16a34a;
+}
+
+.status-error {
+  color: #dc2626;
+}
+
+.status-transit {
+  color: #2563eb;
+}
+
+.status-arrived {
+  color: #7c3aed;
+}
+
+.status-received {
+  color: #d97706;
+}
+
+.status-processing {
+  color: #6b7280;
+}
+
+
+/* ======================================================
+   DOCUMENT
+====================================================== */
+
+.document-wrapper {
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+  padding: 15px;
+  overflow-y: auto;
+  overflow-x: clip;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  background: #080c15;
+}
+
+.shipping-document {
+  position: relative;
+  width: 100%;
+  max-width: 600px;
+  min-height: 760px;
+  flex-shrink: 0;
+  background: #fff;
+  color: #172033;
+  box-shadow: 0 10px 35px rgba(0, 0, 0, .35);
+}
+
+.document-content {
+  position: relative;
+  z-index: 2;
+  padding: 32px;
+  min-width: 0;
+  width: 100%;
+}
+
+.document-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+  min-width: 0;
+}
+
+.document-top > div {
+  min-width: 0;
+}
+
+.document-brand {
+  display: block;
+  color: #4f46e5;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+
+.document-top h3 {
+  margin: 5px 0 2px;
+  color: #111827;
+  font-size: 24px;
+  font-weight: 800;
+}
+
+.document-top p {
+  margin: 0;
+  color: #475569;
+  font-size: 11px;
+}
+
+.document-invoice {
+  text-align: right;
+  min-width: 0;
+}
+
+.document-invoice span {
+  display: block;
+  color: #64748b;
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+
+.document-invoice strong {
+  display: block;
+  margin-top: 3px;
+  color: #111827;
+  font-size: 11px;
+  overflow-wrap: anywhere;
+}
+
+.document-line {
+  height: 1px;
+  margin: 20px 0 14px;
+  background: #e2e8f0;
+}
+
+.tracking-box {
+  width: 100%;
+  max-width: 100%;
+  padding: 14px;
+  border-radius: 8px;
+  background: #f1f5f9;
+  border: 2px solid #c7d2fe;
+  min-width: 0;
+}
+
+.tracking-box span {
+  display: block;
+  color: #64748b;
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
+#viewTrackingNumber {
+  display: block !important;
+  width: 100%;
+  max-width: 100%;
+  margin-top: 6px;
+  padding: 9px 10px;
+  min-height: 42px;
+  color: #16a34a !important;
+  background: #fff;
+  border: 2px solid #4f46e5;
+  border-radius: 7px;
+  font-size: 20px !important;
+  font-weight: 900 !important;
+  letter-spacing: 2px !important;
+  line-height: 1.3;
+  text-align: center;
+  visibility: visible !important;
+  opacity: 1 !important;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.document-status-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin: 13px 0;
+  min-width: 0;
+}
+
+.document-status-row > div {
+  min-width: 0;
+  padding: 9px;
+  border: 1px solid #e2e8f0;
+  border-radius: 7px;
+}
+
+.document-status-row span {
+  display: block;
+  color: #64748b;
+  font-size: 8px;
+  font-weight: 700;
+}
+
+.document-status-row strong {
+  display: block;
+  margin-top: 3px;
+  color: #334155;
+  font-size: 9px;
+  overflow-wrap: anywhere;
+}
+
+.document-columns {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 12px;
+  min-width: 0;
+}
+
+.document-card {
+  min-height: 125px;
+  padding: 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 7px;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.document-card-title {
+  display: block;
+  margin-bottom: 8px;
+  color: #64748b;
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+
+.document-card strong {
+  display: block;
+  color: #111827;
+  font-size: 12px;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.document-card p {
+  margin: 4px 0 0;
+  color: #475569;
+  font-size: 9px;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.package-document-card {
+  margin-top: 12px;
+  padding: 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 7px;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.package-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 15px;
+  margin-top: 10px;
+  min-width: 0;
+}
+
+.package-row > div {
+  min-width: 0;
+}
+
+.package-row span {
+  display: block;
+  color: #64748b;
+  font-size: 8px;
+  font-weight: 700;
+}
+
+.package-row strong {
+  display: block;
+  margin-top: 3px;
+  color: #334155;
+  font-size: 10px;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.document-error {
+  margin-top: 12px;
+  padding: 11px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 7px;
+  max-width: 100%;
+}
+
+.document-error strong {
+  color: #b91c1c;
+  font-size: 10px;
+}
+
+.document-error p {
+  margin: 4px 0 0;
+  color: #7f1d1d;
+  font-size: 9px;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.document-footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+  margin-top: 35px;
+  padding-top: 12px;
+  border-top: 1px solid #e2e8f0;
+  color: #64748b;
+  font-size: 8px;
+  min-width: 0;
+}
+
+.document-footer span {
+  min-width: 0;
+}
+
+
+/* ======================================================
+   WATERMARK
+====================================================== */
+
+.watermark-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-auto-rows: 100px;
+  align-items: center;
+  justify-items: center;
+  transform: rotate(-30deg);
+  opacity: .12;
+  overflow: visible;
+}
+
+.watermark-layer span {
+  color: #dc2626;
+  font-size: 28px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  white-space: nowrap;
+}
+
+.shipping-document.clean-document .watermark-layer {
+  display: none;
+}
+
+
+/* ======================================================
+   VIEW ACTIONS
+====================================================== */
+
+.view-actions {
+  display: flex;
+  justify-content: flex-end;
+  padding: 10px 14px;
+  border-top: 1px solid rgba(139, 92, 246, .15);
+}
+
+.download-btn {
+  min-height: 34px;
+  padding: 7px 15px;
+  border: 0;
+  border-radius: 7px;
+  color: #fff;
+  background: linear-gradient(90deg, #16a34a, #15803d);
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.download-btn:disabled {
+  opacity: .35;
+  cursor: not-allowed;
+}
+
+
+/* ======================================================
+   SHIPPING MODAL
+====================================================== */
+
+.shipping-modal .modal-dialog {
+  max-width: 560px;
+  margin: auto;
+}
+
+.shipping-modal .modal-content {
+  background: #111827;
+  color: #f8fafc;
+  border: 1px solid rgba(139, 92, 246, .25);
+  border-radius: 20px 20px 0 0;
+}
+
+.shipping-modal .modal-header {
+  padding: 18px 22px 13px;
+  border-bottom: 1px solid #29344d;
+}
+
+.shipping-modal .modal-title {
+  margin: 0;
+  color: #f8fafc;
+  font-size: 19px;
+  font-weight: 700;
+}
+
+.shipping-modal .modal-header p {
+  margin: 4px 0 0;
+  color: #cbd5e1;
+  font-size: 11px;
+}
+
+.shipping-modal .modal-body {
+  padding: 15px 22px;
+  background: #111827;
+}
+
+.shipping-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 13px;
+  margin-bottom: 9px;
+  border: 1px solid #29344d;
+  background: #0c111d;
+  border-radius: 11px;
+  cursor: pointer;
+}
+
+.shipping-option:last-child {
+  margin-bottom: 0;
+}
+
+.shipping-option:hover {
+  border-color: #8b5cf6;
+}
+
+.shipping-option:has(input:checked) {
+  border-color: #8b5cf6;
+  background: #171d30;
+}
+
+.shipping-option input {
+  margin-top: 4px;
+  width: 16px;
+  height: 16px;
+  accent-color: #8b5cf6;
+  flex-shrink: 0;
+}
+
+.shipping-option-content {
+  width: 100%;
+  min-width: 0;
+}
+
+.shipping-option-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.shipping-option-header h5 {
+  margin: 0;
+  color: #f8fafc;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.shipping-option-header strong {
+  color: #c084fc;
+  white-space: nowrap;
+  font-size: 13px;
+}
+
+.shipping-option-content p {
+  margin: 5px 0 7px;
+  color: #cbd5e1;
+  font-size: 10px;
+  line-height: 1.4;
+}
+
+.watermark-label,
+.clean-label {
+  display: inline-block;
+  padding: 3px 7px;
+  border-radius: 20px;
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.watermark-label {
+  color: #fca5a5;
+  background: rgba(239, 68, 68, .1);
+}
+
+.clean-label {
+  color: #86efac;
+  background: rgba(34, 197, 94, .1);
+}
+
+.shipping-modal .modal-footer {
+  padding: 12px 22px 15px;
+  border-top: 1px solid #29344d;
+  background: #111827;
+  gap: 8px;
+}
+
+.cancel-shipping,
+.continue-shipping {
+  padding: 8px 17px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.cancel-shipping {
+  color: #e2e8f0;
+  background: #1b2234;
+  border: 1px solid #29344d;
+}
+
+.continue-shipping {
+  color: #fff;
+  border: 0;
+  background: linear-gradient(90deg, #8b5cf6, #4f46e5);
+}
+
+/* ======================================================
+   RESPONSIVE
+====================================================== */
+
+@media (max-width: 1050px) {
+
+  .shipping-workspace {
+    width: 95%;
+    grid-template-columns: 280px minmax(0, 1fr);
+    column-gap: 12px;
+  }
+
+  .workspace-grid {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .document-content {
+    padding: 24px;
+  }
+
+  .shipping-document {
+    min-height: 700px;
+  }
+
+  .shipment-card {
+    padding: 12px;
+  }
+
+  .shipment-card-header strong {
+    font-size: 11px;
+  }
+
+  .shipment-card-body p {
+    font-size: 9px;
+  }
+
+}
+
+
+/* ======================================================
+   TABLET / MOBILE
+====================================================== */
+
+@media (max-width: 767px) {
+
+  .shipping-workspace {
+    display: block;
+
+    width: 94%;
+    padding: 18px 0;
+
+    min-height: 100vh;
+  }
+
+
+  /* ==================================================
+     PAGE HEADER
+  ================================================== */
+
+  .workspace-header {
+    display: flex;
+    align-items: flex-start;
+
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+
+  .workspace-header h1 {
+    font-size: 22px;
+  }
+
+  .workspace-header p {
+    font-size: 11px;
+  }
+
+
+  /* ==================================================
+     SHIPMENT LIST
+  ================================================== */
+
+  .shipments-panel {
+    width: 100%;
+    margin-bottom: 12px;
+  }
+
+  .shipments-list {
+    max-height: 360px;
+
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  .shipment-card {
+    display: block;
+
+    width: 100%;
+    min-width: 0;
+
+    padding: 12px;
+
+    white-space: normal;
+  }
+
+  .shipment-card-header {
+    width: 100%;
+  }
+
+  .shipment-card-body {
+    width: 100%;
+    margin-top: 7px;
+  }
+
+  .shipment-card-actions {
+    margin-top: 9px;
+  }
+
+
+  /* ==================================================
+     RIGHT CONTENT
+  ================================================== */
+
+  .workspace-grid {
+    display: block;
+
+    width: 100%;
+    min-width: 0;
+  }
+
+
+  .edit-panel {
+    width: 100%;
+
+    height: auto;
+    min-height: 0;
+
+    overflow: visible;
+  }
+
+
+  .view-panel {
+    width: 100%;
+
+    height: 700px;
+    min-height: 700px;
+
+    margin-top: 12px;
+  }
+
+
+  /* ==================================================
+     HEADERS
+  ================================================== */
+
+  .mode-description {
+    display: none;
+  }
+
+
+  .mode-header {
+    padding: 13px 14px;
+  }
+
+
+  .mode-header h2 {
+    font-size: 16px;
+  }
+
+
+  /* ==================================================
+     FORM
+  ================================================== */
+
+  #shippingForm {
+    padding: 10px;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .full-width {
+    grid-column: auto;
+  }
+
+
+  /* ==================================================
+     DOCUMENT
+  ================================================== */
+
+  .document-status-row {
+    grid-template-columns: 1fr;
+  }
+
+  .document-columns {
+    grid-template-columns: 1fr;
+  }
+
+  .shipping-document {
+    min-height: 760px;
+  }
+
+  .document-content {
+    padding: 22px;
+  }
+
+  .document-top h3 {
+    font-size: 20px;
+  }
+
+  #viewTrackingNumber {
+    font-size: 18px !important;
+    letter-spacing: 1.5px !important;
+  }
+
+
+  /* ==================================================
+     FORM ACTIONS
+  ================================================== */
+
+  .form-actions {
+    flex-wrap: wrap;
+  }
+
+
+  /* ==================================================
+     MODAL
+  ================================================== */
+
+  .shipping-modal .modal-dialog {
+    width: 94%;
+    max-width: 560px;
+  }
+
+}
+
+
+/* ======================================================
+   SMALL MOBILE
+====================================================== */
+
+@media (max-width: 480px) {
+
+  .shipping-workspace {
+    width: 95%;
+    padding: 16px 0;
+  }
+
+
+  /* ==================================================
+     PAGE HEADER
+  ================================================== */
+
+  .workspace-header {
+    flex-direction: column;
+    align-items: flex-start;
+
+    gap: 10px;
+  }
+
+  .workspace-header h1 {
+    font-size: 21px;
+  }
+
+  .workspace-header p {
+    font-size: 10px;
+  }
+
+  .back-btn {
+    align-self: flex-start;
+  }
+
+
+  /* ==================================================
+     SHIPMENT LIST
+  ================================================== */
+
+  .shipments-panel {
+    margin-bottom: 10px;
+  }
+
+  .mode-header {
+    padding: 12px;
+  }
+
+  .mode-header h2 {
+    font-size: 15px;
+  }
+
+  .shipment-card {
+    padding: 11px;
+  }
+
+  .shipment-card-header strong {
+    font-size: 11px;
+  }
+
+  .shipment-card-header span {
+    font-size: 8px;
+  }
+
+  .shipment-card-body p {
+    font-size: 9px;
+  }
+
+  .shipment-card-actions {
+    gap: 5px;
+  }
+
+
+  /* ==================================================
+     FORM
+  ================================================== */
+
+  #shippingForm {
+    padding: 9px;
+  }
+
+  .form-actions {
+    flex-direction: column-reverse;
+
+    width: 100%;
+  }
+
+  .cancel-btn,
+  .create-btn {
+    width: 100%;
+  }
+
+
+  .date-time-group {
+    grid-template-columns: 1fr 1fr;
+
+    gap: 10px;
+  }
+
+
+  /* ==================================================
+     DOCUMENT
+  ================================================== */
+
+  .view-panel {
+    height: 680px;
+    min-height: 680px;
+  }
+
+  .document-content {
+    padding: 18px;
+  }
+
+  .document-top {
+    gap: 12px;
+  }
+
+  .document-top h3 {
+    font-size: 18px;
+  }
+
+  #viewTrackingNumber {
+    font-size: 16px !important;
+    letter-spacing: 1px !important;
+  }
+
+  .document-footer {
+    flex-direction: column;
+    gap: 5px;
+  }
+
+
+  /* ==================================================
+     MODAL
+  ================================================== */
+
+  .shipping-modal .modal-dialog {
+    width: 96%;
+  }
+
+  .shipping-modal .modal-header {
+    padding: 15px 16px 11px;
+  }
+
+  .shipping-modal .modal-body {
+    padding: 13px 16px;
+  }
+
+  .shipping-modal .modal-footer {
+    padding: 11px 16px 14px;
+  }
+
+  .shipping-option {
+    padding: 11px;
+  }
+
+  .shipping-option-header {
+    align-items: flex-start;
+  }
+
+}
+
+
+/* ======================================================
+   VERY SMALL SCREENS
+====================================================== */
+
+@media (max-width: 360px) {
+
+  .shipping-workspace {
+    width: 96%;
+  }
+
+  .workspace-header h1 {
+    font-size: 19px;
+  }
+
+  .mode-header {
+    padding: 11px;
+  }
+
+  .mode-header h2 {
+    font-size: 14px;
+  }
+
+  .shipment-card {
+    padding: 10px;
+  }
+
+  .shipment-card-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .shipment-card-actions button,
+  .shipment-card-actions a {
+    width: 100%;
+  }
+
+  .document-content {
+    padding: 15px;
+  }
+
+  #viewTrackingNumber {
+    font-size: 14px !important;
+    letter-spacing: .7px !important;
+  }
+
+  .document-status-row {
+    gap: 7px;
+  }
+
+}

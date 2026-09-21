@@ -1,0 +1,1539 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>MyCargoLane - Online Banking</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <link rel="stylesheet" href="banking.css">
+
+</head>
+
+<body>
+
+  <!-- ======================================================
+       NAVBAR
+  ====================================================== -->
+
+  <nav class="navbar custom-navbar">
+
+    <div class="container nav-container">
+
+      <a class="navbar-brand" href="index.html">
+        MyCargoLane
+      </a>
+
+      <div class="auth-nav" id="authNav"></div>
+
+    </div>
+
+  </nav>
+
+  <!-- ======================================================
+       MAIN BANKING PANEL
+  ====================================================== -->
+
+  <section class="banking-panel">
+
+    <div class="panel-header">
+
+      <div>
+
+        <span class="panel-label">
+          ONLINE BANKING
+        </span>
+
+        <h2>
+          Bank Account Management
+        </h2>
+
+      </div>
+
+      <button type="button" class="back-btn" id="createNewAccountTopBtn">
+        Create New Account
+      </button>
+
+    </div>
+
+
+    <!-- ====================================================
+     BANKING MESSAGE
+==================================================== -->
+
+    <div id="bankingMessage" class="banking-message" role="alert" aria-live="polite"></div>
+
+
+    <!-- ====================================================
+     TWO COLUMN LAYOUT
+==================================================== -->
+
+    <div class="banking-layout">
+
+
+      <!-- ==================================================
+       LEFT SIDE
+       CREATED ACCOUNTS
+  ================================================== -->
+
+      <aside class="accounts-panel">
+
+        <div id="createdAccounts" class="created-accounts"></div>
+
+      </aside>
+
+
+      <!-- ==================================================
+       RIGHT SIDE
+  ================================================== -->
+
+      <div class="banking-content">
+
+
+        <!-- =================================================
+         CREATE ACCOUNT VIEW
+    ================================================= -->
+
+        <div id="createAccountView">
+
+          <form id="bankingForm">
+
+
+            <!-- ============================================
+             01 PERSONAL INFORMATION
+        ============================================= -->
+
+            <div class="form-section">
+
+              <div class="section-heading">
+
+                <span class="section-number">
+                  01
+                </span>
+
+                <div>
+
+                  <h3>
+                    Personal Information
+                  </h3>
+
+                  <p>
+                    Basic account owner information
+                  </p>
+
+                </div>
+
+              </div>
+
+
+              <div class="form-grid">
+
+
+                <div class="form-group">
+
+                  <label for="fullName">
+
+                    Full name
+
+                    <span class="required">
+                      *
+                    </span>
+
+                  </label>
+
+                  <input type="text" id="fullName" name="fullName" placeholder="Enter full name" required>
+
+                  <div class="form-help">
+                    Enter the account holder's full name.
+                  </div>
+
+                </div>
+
+
+                <div class="form-group">
+
+                  <label for="email">
+
+                    Email
+
+                    <span class="required">
+                      *
+                    </span>
+
+                  </label>
+
+                  <input type="email" id="email" name="email" placeholder="Enter email address" required>
+
+                  <div class="form-help">
+                    Enter the email address for this account.
+                  </div>
+
+                </div>
+
+
+              </div>
+
+            </div>
+
+
+            <!-- ============================================
+             02 ACCOUNT INFORMATION
+        ============================================= -->
+
+            <div class="form-section">
+
+              <div class="section-heading">
+
+                <span class="section-number">
+                  02
+                </span>
+
+                <div>
+
+                  <h3>
+                    Account Information
+                  </h3>
+
+                  <p>
+                    Configure the banking account
+                  </p>
+
+                </div>
+
+              </div>
+
+
+              <div class="form-grid">
+
+
+                <div class="form-group">
+
+                  <label for="accountType">
+
+                    Account type
+
+                    <span class="required">
+                      *
+                    </span>
+
+                  </label>
+
+                  <select id="accountType" name="accountType" required>
+
+                    <option value="">
+                      Select account type
+                    </option>
+
+                    <option value="Savings">
+                      Savings
+                    </option>
+
+                    <option value="Checking">
+                      Checking
+                    </option>
+
+                    <option value="Business">
+                      Business
+                    </option>
+
+                  </select>
+
+                </div>
+
+
+                <div class="form-group">
+
+                  <label for="accountCurrency">
+
+                    Account Currency
+
+                    <span class="required">
+                      *
+                    </span>
+
+                  </label>
+
+                  <select id="accountCurrency" name="accountCurrency" required>
+
+                    <option value="">
+                      Select currency
+                    </option>
+
+                    <option value="USD">
+                      United States ($)
+                    </option>
+
+                    <option value="NGN">
+                      Nigeria (₦)
+                    </option>
+
+                    <option value="GBP">
+                      United Kingdom (£)
+                    </option>
+
+                    <option value="EUR">
+                      Euro (€)
+                    </option>
+
+                    <option value="CAD">
+                      Canada (CA$)
+                    </option>
+
+                    <option value="AUD">
+                      Australia (AU$)
+                    </option>
+
+                    <option value="GHS">
+                      Ghana (GH₵)
+                    </option>
+
+                    <option value="KES">
+                      Kenya (KSh)
+                    </option>
+
+                    <option value="ZAR">
+                      South Africa (R)
+                    </option>
+
+                    <option value="INR">
+                      India (₹)
+                    </option>
+
+                    <option value="AED">
+                      United Arab Emirates (د.إ)
+                    </option>
+
+                    <option value="JPY">
+                      Japan (¥)
+                    </option>
+
+                    <option value="CNY">
+                      China (¥)
+                    </option>
+
+                    <option value="CHF">
+                      Switzerland (CHF)
+                    </option>
+
+                  </select>
+
+                </div>
+
+
+              </div>
+
+            </div>
+
+
+            <!-- ============================================
+             03 TRANSACTION SETTINGS
+        ============================================= -->
+
+            <div class="form-section">
+
+              <div class="section-heading">
+
+                <span class="section-number">
+                  03
+                </span>
+
+                <div>
+
+                  <h3>
+                    Transaction Settings
+                  </h3>
+
+                  <p>
+                    Configure transaction processing behavior
+                  </p>
+
+                </div>
+
+              </div>
+
+
+              <div class="form-grid">
+
+
+                <div class="form-group">
+
+                  <label for="transactionProcessingTime">
+
+                    Transaction Processing Time
+
+                    <span class="required">
+                      *
+                    </span>
+
+                  </label>
+
+                  <select id="transactionProcessingTime" name="transactionProcessingTime" required>
+
+                    <option value="">
+                      Select processing time
+                    </option>
+
+                    <option value="0">
+                      Immediately
+                    </option>
+
+                    <option value="5">
+                      5 seconds
+                    </option>
+
+                    <option value="10">
+                      10 seconds
+                    </option>
+
+                    <option value="30">
+                      30 seconds
+                    </option>
+
+                    <option value="60">
+                      1 minute
+                    </option>
+
+                    <option value="300">
+                      5 minutes
+                    </option>
+
+                    <option value="600">
+                      10 minutes
+                    </option>
+
+                    <option value="900">
+                      15 minutes
+                    </option>
+
+                    <option value="1800">
+                      30 minutes
+                    </option>
+
+                    <option value="2700">
+                      45 minutes
+                    </option>
+
+                    <option value="3600">
+                      1 hour
+                    </option>
+
+                    <option value="7200">
+                      2 hours
+                    </option>
+
+                    <option value="14400">
+                      4 hours
+                    </option>
+
+                    <option value="21600">
+                      6 hours
+                    </option>
+
+                    <option value="43200">
+                      12 hours
+                    </option>
+
+                    <option value="86400">
+                      1 day
+                    </option>
+
+                    <option value="172800">
+                      2 days
+                    </option>
+
+                    <option value="259200">
+                      3 days
+                    </option>
+
+                    <option value="604800">
+                      1 week
+                    </option>
+
+                    <option value="1209600">
+                      2 weeks
+                    </option>
+
+                    <option value="1814400">
+                      3 weeks
+                    </option>
+
+                    <option value="2592000">
+                      1 month
+                    </option>
+
+                    <option value="5184000">
+                      2 months
+                    </option>
+
+                    <option value="7776000">
+                      3 months
+                    </option>
+
+                    <option value="15552000">
+                      6 months
+                    </option>
+
+                    <option value="23328000">
+                      9 months
+                    </option>
+
+                    <option value="31536000">
+                      1 year
+                    </option>
+
+                    <option value="63072000">
+                      2 years
+                    </option>
+
+                    <option value="157680000">
+                      5 years
+                    </option>
+
+                  </select>
+
+                  <div class="form-help">
+                    How long a transaction remains pending.
+                  </div>
+
+                </div>
+
+
+                <div class="form-group">
+
+                  <label for="accountPin">
+
+                    Account PIN
+
+                    <span class="required">
+                      *
+                    </span>
+
+                  </label>
+
+                  <input type="text" id="accountPin" name="accountPin" placeholder="Enter 4-digit PIN" maxlength="4"
+                    inputmode="numeric" pattern="[0-9]{4}" autocomplete="off" required>
+
+                  <div class="form-help">
+                    Use a 4-digit account PIN.
+                  </div>
+
+                </div>
+
+
+              </div>
+
+            </div>
+
+
+            <!-- ============================================
+             CREATE ACCOUNT ACTIONS
+        ============================================= -->
+
+            <div class="form-actions">
+
+              <button type="reset" class="reset-btn" id="resetBankingForm">
+                Reset
+              </button>
+
+              <button type="submit" class="create-btn" id="createBankAccount">
+                Create Bank Account
+              </button>
+
+            </div>
+
+
+          </form>
+
+        </div>
+
+
+        <!-- =================================================
+         SELECTED ACCOUNT VIEW
+    ================================================= -->
+
+        <div id="selectedAccountView" class="selected-account-view">
+
+
+          <div class="selected-account-header">
+
+            <div class="selected-account-heading">
+
+              <span class="panel-label">
+                BANK ACCOUNT
+              </span>
+
+              <h2 id="selectedAccountName">
+                Account Name
+              </h2>
+
+              <p id="selectedAccountNumber">
+                Account Number
+              </p>
+
+
+              <div id="selectedAccountPlan" class="selected-account-plan"></div>
+
+
+              <div id="planActionArea" class="plan-action-area"></div>
+
+            </div>
+
+
+            <button type="button" class="new-account-btn" id="newAccountBtn">
+              Create New Account
+            </button>
+
+          </div>
+
+
+          <!-- =================================================
+           ACCOUNT MANAGEMENT TABS
+      ================================================= -->
+
+          <div class="account-tabs">
+
+            <button type="button" class="account-tab active" id="accountSettingsBtn">
+              Account Settings
+            </button>
+
+            <button type="button" class="account-tab" id="transactionsBtn">
+              Transactions
+            </button>
+
+            <button type="button" class="account-tab delete-account-tab" id="deleteAccountBtn">
+              Delete
+            </button>
+
+          </div>
+
+
+          <!-- =================================================
+           SETTINGS
+      ================================================= -->
+
+          <div id="settingsContent" class="settings-content">
+
+            <form id="accountSettingsForm">
+
+
+              <!-- ==========================================
+               01 PERSONAL INFORMATION
+          =========================================== -->
+
+              <div class="form-section">
+
+                <div class="section-heading">
+
+                  <span class="section-number">
+                    01
+                  </span>
+
+                  <div>
+
+                    <h3>
+                      Personal Information
+                    </h3>
+
+                    <p>
+                      Update the account holder information
+                    </p>
+
+                  </div>
+
+                </div>
+
+
+                <div class="form-grid">
+
+
+                  <div class="form-group">
+
+                    <label for="settingsFullName">
+
+                      Full name
+
+                      <span class="required">
+                        *
+                      </span>
+
+                    </label>
+
+                    <input type="text" id="settingsFullName" name="settingsFullName" placeholder="Enter full name"
+                      required>
+
+                  </div>
+
+
+                  <div class="form-group">
+
+                    <label for="settingsEmail">
+
+                      Email
+
+                      <span class="required">
+                        *
+                      </span>
+
+                    </label>
+
+                    <input type="email" id="settingsEmail" name="settingsEmail" placeholder="Enter email address"
+                      required>
+
+                  </div>
+
+
+                </div>
+
+              </div>
+
+
+              <!-- ==========================================
+               02 ACCOUNT INFORMATION
+          =========================================== -->
+
+              <div class="form-section">
+
+                <div class="section-heading">
+
+                  <span class="section-number">
+                    02
+                  </span>
+
+                  <div>
+
+                    <h3>
+                      Account Information
+                    </h3>
+
+                    <p>
+                      Update the account configuration
+                    </p>
+
+                  </div>
+
+                </div>
+
+
+                <div class="form-grid">
+
+
+                  <div class="form-group">
+
+                    <label for="settingsAccountType">
+
+                      Account type
+
+                      <span class="required">
+                        *
+                      </span>
+
+                    </label>
+
+                    <select id="settingsAccountType" name="settingsAccountType" required>
+
+                      <option value="Savings">
+                        Savings
+                      </option>
+
+                      <option value="Checking">
+                        Checking
+                      </option>
+
+                      <option value="Business">
+                        Business
+                      </option>
+
+                    </select>
+
+                  </div>
+
+
+                  <div class="form-group">
+
+                    <label for="settingsAccountCurrency">
+
+                      Account Currency
+
+                      <span class="required">
+                        *
+                      </span>
+
+                    </label>
+
+                    <select id="settingsAccountCurrency" name="settingsAccountCurrency" required>
+
+                      <option value="USD">
+                        United States ($)
+                      </option>
+
+                      <option value="NGN">
+                        Nigeria (₦)
+                      </option>
+
+                      <option value="GBP">
+                        United Kingdom (£)
+                      </option>
+
+                      <option value="EUR">
+                        Euro (€)
+                      </option>
+
+                      <option value="CAD">
+                        Canada (CA$)
+                      </option>
+
+                      <option value="AUD">
+                        Australia (AU$)
+                      </option>
+
+                      <option value="GHS">
+                        Ghana (GH₵)
+                      </option>
+
+                      <option value="KES">
+                        Kenya (KSh)
+                      </option>
+
+                      <option value="ZAR">
+                        South Africa (R)
+                      </option>
+
+                      <option value="INR">
+                        India (₹)
+                      </option>
+
+                      <option value="AED">
+                        United Arab Emirates (د.إ)
+                      </option>
+
+                      <option value="JPY">
+                        Japan (¥)
+                      </option>
+
+                      <option value="CNY">
+                        China (¥)
+                      </option>
+
+                      <option value="CHF">
+                        Switzerland (CHF)
+                      </option>
+
+                    </select>
+
+                  </div>
+
+
+                </div>
+
+              </div>
+
+
+              <!-- ==========================================
+               03 TRANSACTION SETTINGS
+          =========================================== -->
+
+              <div class="form-section">
+
+                <div class="section-heading">
+
+                  <span class="section-number">
+                    03
+                  </span>
+
+                  <div>
+
+                    <h3>
+                      Transaction Settings
+                    </h3>
+
+                    <p>
+                      Configure transaction processing and PIN
+                    </p>
+
+                  </div>
+
+                </div>
+
+
+                <div class="form-grid">
+
+
+                  <div class="form-group">
+
+                    <label for="settingsTransactionProcessingTime">
+
+                      Transaction Processing Time
+
+                      <span class="required">
+                        *
+                      </span>
+
+                    </label>
+
+                    <select id="settingsTransactionProcessingTime" name="settingsTransactionProcessingTime" required>
+
+                      <option value="0">
+                        Immediately
+                      </option>
+
+                      <option value="5">
+                        5 seconds
+                      </option>
+
+                      <option value="10">
+                        10 seconds
+                      </option>
+
+                      <option value="30">
+                        30 seconds
+                      </option>
+
+                      <option value="60">
+                        1 minute
+                      </option>
+
+                      <option value="300">
+                        5 minutes
+                      </option>
+
+                      <option value="600">
+                        10 minutes
+                      </option>
+
+                      <option value="900">
+                        15 minutes
+                      </option>
+
+                      <option value="1800">
+                        30 minutes
+                      </option>
+
+                      <option value="2700">
+                        45 minutes
+                      </option>
+
+                      <option value="3600">
+                        1 hour
+                      </option>
+
+                      <option value="7200">
+                        2 hours
+                      </option>
+
+                      <option value="14400">
+                        4 hours
+                      </option>
+
+                      <option value="21600">
+                        6 hours
+                      </option>
+
+                      <option value="43200">
+                        12 hours
+                      </option>
+
+                      <option value="86400">
+                        1 day
+                      </option>
+
+                      <option value="172800">
+                        2 days
+                      </option>
+
+                      <option value="259200">
+                        3 days
+                      </option>
+
+                      <option value="604800">
+                        1 week
+                      </option>
+
+                      <option value="1209600">
+                        2 weeks
+                      </option>
+
+                      <option value="1814400">
+                        3 weeks
+                      </option>
+
+                      <option value="2592000">
+                        1 month
+                      </option>
+
+                      <option value="5184000">
+                        2 months
+                      </option>
+
+                      <option value="7776000">
+                        3 months
+                      </option>
+
+                      <option value="15552000">
+                        6 months
+                      </option>
+
+                      <option value="23328000">
+                        9 months
+                      </option>
+
+                      <option value="31536000">
+                        1 year
+                      </option>
+
+                      <option value="63072000">
+                        2 years
+                      </option>
+
+                      <option value="157680000">
+                        5 years
+                      </option>
+
+                    </select>
+
+                    <div class="form-help">
+                      How long a transaction remains pending.
+                    </div>
+
+                  </div>
+
+
+                  <div class="form-group">
+
+                    <label for="settingsAccountPin">
+
+                      Account PIN
+
+                      <span class="required">
+                        *
+                      </span>
+
+                    </label>
+
+                    <input type="text" id="settingsAccountPin" name="settingsAccountPin" placeholder="Enter 4-digit PIN"
+                      maxlength="4" inputmode="numeric" pattern="[0-9]{4}" autocomplete="off" required>
+
+                    <div class="form-help">
+                      Update the account's 4-digit PIN.
+                    </div>
+
+                  </div>
+
+
+                </div>
+
+              </div>
+
+
+              <!-- ==========================================
+               04 WITHDRAWAL SETTINGS
+          =========================================== -->
+
+              <div class="form-section">
+
+                <div class="section-heading">
+
+                  <span class="section-number">
+                    04
+                  </span>
+
+                  <div>
+
+                    <h3>
+                      Withdrawal Settings
+                    </h3>
+
+                    <p>
+                      Control whether this customer can make withdrawals
+                    </p>
+
+                  </div>
+
+                </div>
+
+
+                <div class="form-grid">
+
+
+                  <div class="form-group">
+
+                    <label for="settingsWithdrawalEnabled">
+
+                      Withdrawal Status
+
+                      <span class="required">
+                        *
+                      </span>
+
+                    </label>
+
+                    <select id="settingsWithdrawalEnabled" name="settingsWithdrawalEnabled" required>
+
+                      <option value="true">
+                        Enabled
+                      </option>
+
+                      <option value="false">
+                        Disabled
+                      </option>
+
+                    </select>
+
+                    <div class="form-help">
+                      Enable or disable customer withdrawals for this account.
+                    </div>
+
+                  </div>
+
+
+                  <div class="form-group">
+
+                    <label for="settingsWithdrawalErrorMessage">
+
+                      Withdrawal Error Message
+
+                    </label>
+
+                    <textarea id="settingsWithdrawalErrorMessage" name="settingsWithdrawalErrorMessage" rows="4"
+                      placeholder="Enter the message customers should see when withdrawals are disabled."></textarea>
+
+                    <div class="form-help">
+                      This message will be displayed to the customer when a withdrawal is blocked.
+                    </div>
+
+                  </div>
+
+
+                </div>
+
+              </div>
+
+
+              <!-- ==========================================
+               SAVE SETTINGS
+          =========================================== -->
+
+              <div class="form-actions">
+
+                <button type="submit" class="create-btn" id="saveAccountSettings">
+                  Save Changes
+                </button>
+
+              </div>
+
+
+            </form>
+
+          </div>
+
+
+          <!-- =================================================
+           TRANSACTIONS CONTENT
+      ================================================= -->
+
+          <div id="transactionsContent" class="transactions-content">
+
+
+            <div class="balance-card">
+
+              <div>
+
+                <span class="balance-label">
+                  BALANCE
+                </span>
+
+                <h3 id="transactionAccountBalance">
+                  $0.00
+                </h3>
+
+              </div>
+
+            </div>
+
+
+            <!-- =================================================
+             ADD TRANSACTION
+        ================================================= -->
+
+            <div class="transaction-form-section">
+
+              <div class="section-heading">
+
+                <span class="section-number">
+                  01
+                </span>
+
+                <div>
+
+                  <h3>
+                    Add Transaction
+                  </h3>
+
+                  <p>
+                    Credit or debit the selected account
+                  </p>
+
+                </div>
+
+              </div>
+
+
+              <form id="transactionForm">
+
+
+                <div class="form-grid">
+
+
+                  <div class="form-group">
+
+                    <label for="transactionType">
+
+                      Transaction Type
+
+                      <span class="required">
+                        *
+                      </span>
+
+                    </label>
+
+                    <select id="transactionType" name="transactionType" required>
+
+                      <option value="credit">
+                        Credit
+                      </option>
+
+                      <option value="debit">
+                        Debit
+                      </option>
+
+                    </select>
+
+                  </div>
+
+
+                  <div class="form-group">
+
+                    <label for="transactionAmount">
+
+                      Amount
+
+                      <span class="required">
+                        *
+                      </span>
+
+                    </label>
+
+                    <input type="number" id="transactionAmount" name="transactionAmount" placeholder="0.00" min="0.01"
+                      step="0.01" required>
+
+                  </div>
+
+
+                </div>
+
+
+                <div class="form-group">
+
+                  <label for="transactionNarration">
+
+                    Narration
+
+                    <span class="required">
+                      *
+                    </span>
+
+                  </label>
+
+                  <input type="text" id="transactionNarration" name="transactionNarration"
+                    placeholder="e.g. Salary, Transfer, Payment" required>
+
+                </div>
+
+
+                <div class="form-group">
+
+                  <label for="transactionDate">
+
+                    Date and Time
+
+                    <span class="required">
+                      *
+                    </span>
+
+                  </label>
+
+                  <input type="datetime-local" id="transactionDate" name="transactionDate" required>
+
+                </div>
+
+
+                <div class="form-actions">
+
+                  <button type="submit" class="create-btn" id="addTransactionBtn">
+                    Add Transaction
+                  </button>
+
+                </div>
+
+
+              </form>
+
+            </div>
+
+
+            <!-- =================================================
+             TRANSACTION HISTORY
+        ================================================= -->
+
+            <div class="transaction-history">
+
+              <div class="section-heading">
+
+                <span class="section-number">
+                  02
+                </span>
+
+                <div>
+
+                  <h3>
+                    Transaction History
+                  </h3>
+
+                  <p>
+                    Transactions for this account
+                  </p>
+
+                </div>
+
+              </div>
+
+
+              <div id="transactionHistory" class="transaction-list">
+
+                <div class="empty-transactions">
+                  No transactions yet.
+                </div>
+
+              </div>
+
+
+            </div>
+
+
+          </div>
+
+
+        </div>
+
+
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- ======================================================
+       ACCOUNT PLAN MODAL
+  ====================================================== -->
+
+  <div class="plan-modal-overlay" id="planModalOverlay" aria-hidden="true">
+
+    <div class="plan-modal" role="dialog" aria-modal="true" aria-labelledby="planModalTitle">
+
+      <div class="plan-modal-header">
+
+        <span class="panel-label">
+          ACCOUNT PLAN
+        </span>
+
+        <h2 id="planModalTitle">
+          Choose Account Plan
+        </h2>
+
+        <p>
+          Select the plan for this banking account.
+        </p>
+
+      </div>
+
+
+      <div class="plan-options">
+
+
+        <button type="button" class="plan-card free-plan" id="freePlanBtn">
+
+          <div class="plan-card-top">
+
+            <span class="plan-badge">
+              FREE
+            </span>
+
+            <span class="plan-price">
+              $0
+            </span>
+
+          </div>
+
+          <h3>
+            Free / Demo
+          </h3>
+
+          <p>
+            Create the banking account on the free demo plan.
+          </p>
+
+          <span class="plan-action">
+            Select Free
+          </span>
+
+        </button>
+
+
+        <button type="button" class="plan-card clean-plan" id="cleanPlanBtn">
+
+          <div class="plan-card-top">
+
+            <span class="plan-badge">
+              CLEAN
+            </span>
+
+            <span class="plan-price">
+              $15
+            </span>
+
+          </div>
+
+          <h3>
+            Clean Version
+          </h3>
+
+          <p>
+            Create the account without the demo plan restrictions.
+          </p>
+
+          <span class="plan-action">
+            Pay $15
+          </span>
+
+        </button>
+
+
+      </div>
+
+
+      <div id="planModalMessage" class="plan-modal-message" role="alert" aria-live="polite"></div>
+
+
+      <div class="plan-modal-actions">
+
+        <button type="button" class="plan-cancel-btn" id="planCancelBtn">
+          Cancel
+        </button>
+
+        <button type="button" class="plan-continue-btn" id="planContinueBtn">
+          Continue
+        </button>
+
+      </div>
+
+
+      <div class="plan-modal-footer">
+
+        <small>
+          Choose Free to continue at no cost or Clean for $15 to use the paid version.
+        </small>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- ======================================================
+       DELETE ACCOUNT CONFIRMATION MODAL
+  ====================================================== -->
+
+  <div class="plan-modal-overlay delete-modal-overlay" id="deleteAccountModal" aria-hidden="true">
+
+    <div class="plan-modal delete-modal" role="dialog" aria-modal="true" aria-labelledby="deleteAccountModalTitle">
+
+      <div class="plan-modal-header">
+
+        <span class="panel-label">
+          DELETE BANK ACCOUNT
+        </span>
+
+        <h2 id="deleteAccountModalTitle">
+          Delete Banking Profile?
+        </h2>
+
+        <p>
+          You are about to permanently delete this Banking profile.
+        </p>
+
+      </div>
+
+
+      <div class="delete-account-warning">
+
+        <strong id="deleteAccountName">
+          Account
+        </strong>
+
+        <span id="deleteAccountNumber">
+          Account Number
+        </span>
+
+        <p>
+          This removes the Banking profile and its transaction history.
+          Your Controller user account will not be deleted.
+        </p>
+
+      </div>
+
+
+      <div id="deleteAccountMessage" class="plan-modal-message" role="alert" aria-live="polite"></div>
+
+
+      <div class="plan-modal-actions">
+
+        <button type="button" class="plan-cancel-btn" id="cancelDeleteAccountBtn">
+          Cancel
+        </button>
+
+        <button type="button" class="delete-confirm-btn" id="confirmDeleteAccountBtn">
+          Delete Account
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- ======================================================
+       BOOTSTRAP
+  ====================================================== -->
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- ======================================================
+       AUTHENTICATION
+  ====================================================== -->
+
+  <script src="index.js"></script>
+
+  <!-- ======================================================
+       BANKING JAVASCRIPT
+  ====================================================== -->
+
+  <script src="banking.js"></script>
+
+</body>
+
+</html>

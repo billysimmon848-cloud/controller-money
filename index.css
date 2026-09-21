@@ -1,0 +1,1534 @@
+/* ===========================
+   THEME COLORS
+=========================== */
+
+:root{
+
+    --bg:#05070d;
+
+    --surface:#111827;
+
+    --surface-2:#1b2234;
+
+    --primary:#c084fc;
+
+    --secondary:#4f46e5;
+
+    --accent:#8b5cf6;
+
+    --text:#f8fafc;
+
+    --text-light:#cbd5e1;
+
+    --border:rgba(139,92,246,.25);
+
+}
+
+
+/* ===========================
+   BODY
+=========================== */
+
+body{
+
+    margin:0;
+
+    padding:0;
+
+    background:
+        radial-gradient(
+            circle at top right,
+            #312e81 0%,
+            transparent 25%
+        ),
+
+        radial-gradient(
+            circle at bottom left,
+            #6d28d9 0%,
+            transparent 30%
+        ),
+
+        #05070d;
+
+    color:var(--text);
+
+    font-family:Arial, Helvetica, sans-serif;
+
+}
+
+
+/* ===========================
+   TOOL LINKS
+=========================== */
+
+.tool-link{
+
+    text-decoration:none;
+
+    color:inherit;
+
+}
+
+
+.tool-link:hover{
+
+    text-decoration:none;
+
+    color:inherit;
+
+}
+
+
+/* ===========================
+   AUTH LINKS
+=========================== */
+
+.auth-link{
+
+    color:var(--primary);
+
+    font-weight:600;
+
+    text-decoration:none;
+
+    transition:.2s;
+
+}
+
+
+.auth-link:hover{
+
+    color:#e9d5ff;
+
+    text-decoration:none;
+
+}
+
+
+/* ===========================
+   AUTH DESCRIPTION
+=========================== */
+
+.auth-description{
+
+    color:var(--text-light)!important;
+
+    text-align:center!important;
+
+    font-size:15px;
+
+    line-height:1.7;
+
+    margin-bottom:25px!important;
+
+}
+
+
+/* ===========================
+   AUTH MESSAGE
+=========================== */
+
+.auth-message{
+
+    min-height:24px;
+
+    color:#fca5a5!important;
+
+    text-align:center!important;
+
+    font-size:14px;
+
+    line-height:1.5;
+
+}
+
+
+/* ===========================
+   DEVELOPMENT RESET BOX
+=========================== */
+
+.development-reset-box{
+
+    margin-top:20px;
+
+    padding:18px;
+
+    background:rgba(139,92,246,.10);
+
+    border:1px solid rgba(192,132,252,.35);
+
+    border-radius:12px;
+
+    text-align:center;
+
+}
+
+
+.development-reset-box p{
+
+    color:var(--text-light)!important;
+
+    font-size:14px;
+
+    line-height:1.6;
+
+    margin-bottom:10px;
+
+}
+
+
+.development-reset-box strong{
+
+    color:var(--primary);
+
+}
+
+
+.development-reset-box a{
+
+    color:#c084fc;
+
+    font-weight:700;
+
+    text-decoration:none;
+
+    word-break:break-word;
+
+}
+
+
+.development-reset-box a:hover{
+
+    color:#e9d5ff;
+
+    text-decoration:underline;
+
+}
+
+
+/* ===========================
+   FORM LABELS
+=========================== */
+
+.ai-box label{
+
+    color:var(--text-light);
+
+    font-weight:600;
+
+}
+
+
+/* ===========================
+   FORM INPUTS
+=========================== */
+
+.ai-box .form-control{
+
+    background:#0c111d;
+
+    color:white;
+
+    border:1px solid rgba(139,92,246,.35);
+
+    border-radius:10px;
+
+    min-height:45px;
+
+}
+
+
+.ai-box .form-control:focus{
+
+    background:#0c111d;
+
+    color:white;
+
+    border-color:#8b5cf6;
+
+    box-shadow:
+        0 0 0 0.15rem rgba(139,92,246,.20);
+
+}
+
+
+.ai-box .form-control::placeholder{
+
+    color:#64748b;
+
+}
+
+
+/* ===========================
+   NAVBAR
+=========================== */
+
+.custom-navbar{
+
+    width:100%;
+
+    background:rgba(10,12,20,.92)!important;
+
+    border-bottom:1px solid var(--border);
+
+    backdrop-filter:blur(15px);
+
+    box-shadow:0 10px 35px rgba(0,0,0,.45);
+
+    padding:12px 0;
+
+}
+
+
+/* ===========================
+   NAVBAR CONTAINER
+=========================== */
+
+.nav-container{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+}
+
+
+/* ===========================
+   BRAND
+=========================== */
+
+.navbar-brand{
+
+    color:var(--primary)!important;
+
+    font-size:20px;
+
+    font-weight:700;
+
+    white-space:nowrap;
+
+}
+
+
+.navbar-brand:hover{
+
+    text-decoration:none;
+
+}
+
+
+/* ===========================
+   NAVBAR COLLAPSE
+=========================== */
+
+.custom-navbar .navbar-collapse{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:flex-end;
+
+}
+
+
+/* ===========================
+   MAIN NAVIGATION
+=========================== */
+
+.custom-navbar .navbar-nav{
+
+    display:flex;
+
+    align-items:center;
+
+    margin-left:auto;
+
+    margin-right:0;
+
+}
+
+
+/* ===========================
+   NAVIGATION ITEMS
+=========================== */
+
+.custom-navbar .nav-item{
+
+    display:flex;
+
+    align-items:center;
+
+}
+
+
+/* ===========================
+   NAVIGATION LINKS
+=========================== */
+
+.custom-navbar .nav-link{
+
+    color:var(--text)!important;
+
+    white-space:nowrap;
+
+    padding-left:12px;
+
+    padding-right:12px;
+
+    transition:.2s;
+
+    text-decoration:none;
+
+}
+
+
+.custom-navbar .nav-link:hover{
+
+    color:var(--primary)!important;
+
+    text-decoration:none;
+
+}
+
+
+/* ===========================
+   ACTIVE LINK
+=========================== */
+
+.custom-navbar .nav-link.active{
+
+    color:var(--primary)!important;
+
+}
+
+
+.nav-link.active::after{
+
+    background:linear-gradient(
+        90deg,
+        #8b5cf6,
+        #4f46e5
+    );
+
+}
+
+
+/* ===========================
+   AUTH NAVIGATION
+=========================== */
+
+.auth-nav{
+
+    display:flex;
+
+    align-items:center;
+
+    margin-left:5px;
+
+    gap:0;
+
+}
+
+
+.auth-nav .nav-item{
+
+    display:flex;
+
+    align-items:center;
+
+}
+
+
+.auth-nav .nav-link{
+
+    display:flex;
+
+    align-items:center;
+
+    white-space:nowrap;
+
+}
+
+
+/* ===========================
+   WALLET BALANCE
+=========================== */
+
+.wallet-balance{
+
+    color:#86efac!important;
+
+    font-weight:700;
+
+    cursor:pointer;
+
+    transition:.2s;
+
+}
+
+
+.wallet-balance:hover{
+
+    color:#bbf7d0!important;
+
+    text-decoration:none;
+
+    transform:translateY(-1px);
+
+}
+
+
+/* ===========================
+   USERNAME
+=========================== */
+
+.username-link{
+
+    color:var(--primary)!important;
+
+    font-weight:600;
+
+}
+
+
+.username-link:hover{
+
+    color:#e9d5ff!important;
+
+    text-decoration:none;
+
+}
+
+
+/* ===========================
+   DROPDOWN
+=========================== */
+
+.dropdown-menu{
+
+    background:#121826;
+
+    border:1px solid var(--border);
+
+}
+
+
+.dropdown-item{
+
+    background:transparent;
+
+    color:white;
+
+}
+
+
+.dropdown-item:hover{
+
+    background:#232d47;
+
+    color:var(--primary);
+
+}
+
+
+/* ===========================
+   NAVBAR TOGGLER
+=========================== */
+
+.navbar-toggler{
+
+    border:1px solid var(--border);
+
+    padding:6px 9px;
+
+}
+
+
+.navbar-toggler:focus{
+
+    outline:none;
+
+    box-shadow:none;
+
+}
+
+
+/* ===========================
+   MOBILE TOGGLER ICON
+=========================== */
+
+.navbar-toggler-icon{
+
+    background-image:
+
+        url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba(192,132,252,1)' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
+
+}
+
+
+/* ===========================
+   INTRODUCTION SECTION
+=========================== */
+
+.ai-box{
+
+    background:
+        linear-gradient(
+            145deg,
+            #131b2d,
+            #0c111d
+        );
+
+    color:white;
+
+    border:1px solid rgba(139,92,246,.25);
+
+    border-radius:18px;
+
+    padding:30px;
+
+    text-align:center;
+
+    box-shadow:
+
+        0 0 30px rgba(79,70,229,.25),
+
+        0 0 60px rgba(139,92,246,.15);
+
+    transition:.35s;
+
+}
+
+
+/* ===========================
+   INTRODUCTION HEADING
+=========================== */
+
+.ai-box h2{
+
+    color:var(--primary);
+
+    font-weight:700;
+
+    margin-bottom:25px;
+
+    text-align:center;
+
+}
+
+
+/* ===========================
+   INTRODUCTION TEXT
+=========================== */
+
+.ai-box p{
+
+    color:var(--text-light);
+
+    text-align:center !important;
+
+    line-height:1.8;
+
+    margin-bottom:0;
+
+}
+
+
+/* ===========================
+   INTRO BOX BUTTON
+=========================== */
+
+.ai-box .btn-primary{
+
+    display:inline-block;
+
+    margin-top:25px;
+
+}
+
+
+/* ===========================
+   INTRO BOX HOVER
+=========================== */
+
+.ai-box:hover{
+
+    transform:translateY(-10px);
+
+    box-shadow:
+
+        0 0 35px rgba(79,70,229,.45),
+
+        0 0 80px rgba(139,92,246,.25);
+
+}
+
+
+/* ===========================
+   PRIMARY BUTTON
+=========================== */
+
+.btn-primary{
+
+    background:
+        linear-gradient(
+            90deg,
+            #8b5cf6,
+            #4f46e5
+        );
+
+    border:none;
+
+    border-radius:10px;
+
+    padding:12px 28px;
+
+}
+
+
+.btn-primary:hover{
+
+    background:
+        linear-gradient(
+            90deg,
+            #4f46e5,
+            #8b5cf6
+        );
+
+}
+
+
+/* ===========================
+   DISABLED BUTTON
+=========================== */
+
+.btn-primary:disabled{
+
+    opacity:.6;
+
+    cursor:not-allowed;
+
+}
+
+
+/* ===========================
+   AI TOOLS SECTION
+=========================== */
+
+.container.my-5{
+
+    margin-top:100px !important;
+
+    margin-bottom:100px !important;
+
+}
+
+
+/* ===========================
+   AI TOOLS HEADING
+=========================== */
+
+.container.my-5 > .mb-4{
+
+    text-align:center;
+
+    color:#ffffff;
+
+    font-size:3rem;
+
+    font-weight:800;
+
+    margin-bottom:70px !important;
+
+    letter-spacing:2px;
+
+    text-transform:uppercase;
+
+}
+
+
+/* ===========================
+   CARDS CONTAINER
+=========================== */
+
+.row.g-4{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:40px;
+
+}
+
+
+/* ===========================
+   TOOL CARD
+=========================== */
+
+.tool-card{
+
+    width:420px;
+
+    padding:25px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #171d30,
+            #101523
+        );
+
+    border:1px solid rgba(139,92,246,.25);
+
+    border-radius:18px;
+
+    box-shadow:
+
+        0 15px 35px rgba(0,0,0,.45),
+
+        0 0 25px rgba(79,70,229,.20);
+
+    transition:.35s;
+
+}
+
+
+/* ===========================
+   TOOL CARD HOVER
+=========================== */
+
+.tool-card:hover{
+
+    transform:translateY(-10px);
+
+    border-color:#8b5cf6;
+
+    box-shadow:
+
+        0 20px 45px rgba(0,0,0,.45),
+
+        0 0 35px rgba(79,70,229,.35),
+
+        0 0 70px rgba(139,92,246,.25);
+
+}
+
+
+/* ===========================
+   TOOL CARD HEADING
+=========================== */
+
+.tool-card h1{
+
+    color:#ffffff;
+
+    font-size:1.6rem;
+
+    font-weight:700;
+
+    margin-bottom:20px;
+
+}
+
+
+/* ===========================
+   TOOL IMAGE
+=========================== */
+
+.tool-card img{
+
+    width:100%;
+
+    height:220px;
+
+    object-fit:cover;
+
+    border-radius:12px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #4338ca,
+            #9333ea
+        );
+
+    display:block;
+
+}
+
+/* ======================================================
+   ADMIN USER SEARCH RESULTS
+====================================================== */
+
+#userResults .card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 14px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+}
+
+#userResults .card-body {
+  background: transparent;
+}
+
+#userResults h5 {
+  color: var(--text);
+  font-weight: 600;
+}
+
+#userResults p {
+  color: var(--text-light);
+}
+
+#userResults small {
+  color: var(--text-light) !important;
+}
+
+#userResults .btn-primary {
+  color: #ffffff;
+}
+
+
+/* =========================================================
+   RESPONSIVE DESIGN
+========================================================= */
+
+
+/* =========================================================
+   TABLETS AND SMALLER SCREENS
+========================================================= */
+
+@media (max-width:991px){
+
+    /* =========================
+       NAVBAR
+    ========================= */
+
+    .custom-navbar{
+
+        padding:10px 0;
+
+    }
+
+
+    .custom-navbar .navbar-collapse{
+
+        width:100%;
+
+        padding-top:15px;
+
+    }
+
+
+    .custom-navbar .navbar-nav{
+
+        display:block;
+
+        width:100%;
+
+        margin:0;
+
+    }
+
+
+    .custom-navbar .nav-item{
+
+        display:block;
+
+        width:100%;
+
+    }
+
+
+    .custom-navbar .nav-link{
+
+        padding:10px 0;
+
+    }
+
+
+    .auth-nav{
+
+        display:block;
+
+        width:100%;
+
+        margin:0;
+
+    }
+
+
+    .auth-nav .nav-item{
+
+        display:block;
+
+        width:100%;
+
+    }
+
+
+    .auth-nav .nav-link{
+
+        padding:10px 0;
+
+    }
+
+
+    .dropdown-menu{
+
+        position:static;
+
+        float:none;
+
+        width:100%;
+
+        margin-top:0;
+
+    }
+
+
+    /* =========================
+       GENERAL BOX
+    ========================= */
+
+    .ai-box{
+
+        width:100%;
+
+        max-width:100%;
+
+    }
+
+
+    /* =========================
+       TOOL CARDS
+    ========================= */
+
+    .tool-card{
+
+        max-width:100%;
+
+    }
+
+}
+
+
+/* =========================================================
+   PHONES
+========================================================= */
+
+@media (max-width:576px){
+
+    /* =========================
+       GENERAL
+    ========================= */
+
+    body{
+
+        overflow-x:hidden;
+
+    }
+
+
+    /* =========================
+       NAVBAR
+    ========================= */
+
+    .custom-navbar{
+
+        padding:8px 0;
+
+    }
+
+
+    .nav-container{
+
+        padding-left:15px;
+
+        padding-right:15px;
+
+    }
+
+
+    .navbar-brand{
+
+        font-size:18px;
+
+    }
+
+
+    .navbar-toggler{
+
+        padding:5px 8px;
+
+    }
+
+
+    /* =========================
+       CONTAINERS
+    ========================= */
+
+    .container{
+
+        padding-left:12px;
+
+        padding-right:12px;
+
+    }
+
+
+    /* =========================
+       MAIN TOP SPACING
+    ========================= */
+
+    .container.mt-5.pt-5{
+
+        margin-top:20px !important;
+
+        padding-top:10px !important;
+
+    }
+
+
+    .container.my-5.pt-5{
+
+        margin-top:75px !important;
+
+        padding-top:15px !important;
+
+    }
+
+
+    /* =========================
+       AI BOX
+    ========================= */
+
+    .ai-box{
+
+        width:100%;
+
+        max-width:100%;
+
+        padding:24px 18px;
+
+        border-radius:16px;
+
+    }
+
+
+    /* =========================
+       AI BOX HEADING
+    ========================= */
+
+    .ai-box h2{
+
+        font-size:1.5rem;
+
+        line-height:1.35;
+
+        margin-bottom:20px;
+
+    }
+
+
+    /* =========================
+       AI BOX TEXT
+    ========================= */
+
+    .ai-box p{
+
+        font-size:14px;
+
+        line-height:1.7;
+
+    }
+
+
+    /* =========================
+       FORM LABELS
+    ========================= */
+
+    .ai-box label{
+
+        font-size:14px;
+
+    }
+
+
+    /* =========================
+       FORM GROUPS
+    ========================= */
+
+    .ai-box .form-group{
+
+        margin-bottom:18px;
+
+    }
+
+
+    /* =========================
+       FORM INPUTS
+    ========================= */
+
+    .ai-box .form-control{
+
+        width:100%;
+
+        min-height:46px;
+
+        font-size:16px;
+
+        padding:10px 12px;
+
+    }
+
+
+    /* =========================
+       BUTTONS
+    ========================= */
+
+    .ai-box .btn-primary{
+
+        width:100%;
+
+        min-height:46px;
+
+        padding:11px 20px;
+
+        font-size:15px;
+
+    }
+
+
+    /* =========================
+       HOME BUTTON
+    ========================= */
+
+    .ai-box > .mb-4{
+
+        margin-bottom:25px !important;
+
+    }
+
+
+    .ai-box > .mb-4 .btn{
+
+        padding:9px 18px;
+
+        font-size:14px;
+
+    }
+
+
+    /* =========================
+       AUTH LINKS
+    ========================= */
+
+    .auth-link{
+
+        font-size:14px;
+
+    }
+
+
+    /* =========================
+       AUTH DESCRIPTION
+    ========================= */
+
+    .auth-description{
+
+        font-size:14px;
+
+        line-height:1.6;
+
+        margin-bottom:20px !important;
+
+    }
+
+
+    /* =========================
+       AUTH MESSAGE
+    ========================= */
+
+    .auth-message{
+
+        font-size:13px;
+
+        min-height:22px;
+
+    }
+
+
+    /* =========================
+       TEXT CENTER
+    ========================= */
+
+    .ai-box p.text-center{
+
+        font-size:14px;
+
+        line-height:1.6;
+
+    }
+
+
+    /* =========================
+       DEVELOPMENT RESET
+    ========================= */
+
+    .development-reset-box{
+
+        padding:15px;
+
+        margin-top:18px;
+
+        border-radius:10px;
+
+    }
+
+
+    .development-reset-box p{
+
+        font-size:13px;
+
+        line-height:1.5;
+
+    }
+
+
+    .development-reset-box a{
+
+        font-size:13px;
+
+        overflow-wrap:anywhere;
+
+        word-break:break-word;
+
+    }
+
+
+    /* =========================
+       AI TOOLS SECTION
+    ========================= */
+
+    .container.my-5{
+
+        margin-top:60px !important;
+
+        margin-bottom:60px !important;
+
+    }
+
+
+    .container.my-5 > .mb-4{
+
+        font-size:1.8rem;
+
+        letter-spacing:1px;
+
+        margin-bottom:35px !important;
+
+    }
+
+
+    /* =========================
+       TOOL ROW
+    ========================= */
+
+    .row.g-4{
+
+        gap:25px;
+
+    }
+
+
+    /* =========================
+       TOOL CARD
+    ========================= */
+
+    .tool-card{
+
+        width:100%;
+
+        max-width:100%;
+
+        padding:18px;
+
+        border-radius:15px;
+
+    }
+
+
+    /* =========================
+       TOOL CARD HEADING
+    ========================= */
+
+    .tool-card h1{
+
+        font-size:1.3rem;
+
+        line-height:1.35;
+
+        margin-bottom:15px;
+
+    }
+
+
+    /* =========================
+       TOOL IMAGE
+    ========================= */
+
+    .tool-card img{
+
+        width:100%;
+
+        height:auto;
+
+        min-height:180px;
+
+        max-height:220px;
+
+        object-fit:cover;
+
+        border-radius:10px;
+
+    }
+
+}
+
+
+/* =========================================================
+   VERY SMALL PHONES
+========================================================= */
+
+@media (max-width:380px){
+
+    /* =========================
+       NAVBAR
+    ========================= */
+
+    .navbar-brand{
+
+        font-size:17px;
+
+    }
+
+
+    .nav-container{
+
+        padding-left:10px;
+
+        padding-right:10px;
+
+    }
+
+
+    /* =========================
+       CONTAINER
+    ========================= */
+
+    .container{
+
+        padding-left:8px;
+
+        padding-right:8px;
+
+    }
+
+
+    /* =========================
+       AI BOX
+    ========================= */
+
+    .ai-box{
+
+        padding:20px 14px;
+
+        border-radius:14px;
+
+    }
+
+
+    .ai-box h2{
+
+        font-size:1.35rem;
+
+    }
+
+
+    .ai-box p{
+
+        font-size:13px;
+
+    }
+
+
+    /* =========================
+       INPUTS
+    ========================= */
+
+    .ai-box .form-control{
+
+        min-height:44px;
+
+    }
+
+
+    /* =========================
+       BUTTONS
+    ========================= */
+
+    .ai-box .btn-primary{
+
+        min-height:44px;
+
+        padding:10px 15px;
+
+    }
+
+
+    /* =========================
+       AI TOOLS HEADING
+    ========================= */
+
+    .container.my-5 > .mb-4{
+
+        font-size:1.6rem;
+
+    }
+
+
+    /* =========================
+       TOOL CARD
+    ========================= */
+
+    .tool-card{
+
+        padding:15px;
+
+    }
+
+
+    .tool-card h1{
+
+        font-size:1.2rem;
+
+    }
+
+
+    /* =========================
+       TOOL IMAGE
+    ========================= */
+
+    .tool-card img{
+
+        min-height:160px;
+
+    }
+
+}

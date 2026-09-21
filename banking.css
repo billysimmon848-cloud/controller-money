@@ -1,0 +1,2794 @@
+/* =========================================================
+GLOBAL
+========================================================= */
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  margin: 0;
+  padding: 20px;
+
+  font-family: Arial, sans-serif;
+
+  background:
+    radial-gradient(
+      circle at top left,
+      rgba(124, 58, 237, 0.18),
+      transparent 35%
+    ),
+    radial-gradient(
+      circle at top right,
+      rgba(88, 28, 135, 0.15),
+      transparent 35%
+    ),
+    #05070d;
+
+  color: #f5f3ff;
+
+  min-height: 100vh;
+}
+
+button,
+input,
+select,
+textarea {
+  font-family: Arial, sans-serif;
+}
+
+
+/* =========================================================
+MAIN WORKSPACE
+========================================================= */
+
+.banking-workspace {
+  width: 96%;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+/* =========================================================
+   NAVBAR
+   ========================================================= */
+
+.custom-navbar {
+  width: 100%;
+  background: #111827 !important;
+  border-bottom: 1px solid rgba(139, 92, 246, .25);
+  padding: 10px 22px;
+}
+
+
+/* Navbar container */
+
+.custom-navbar .nav-container {
+  width: 100% !important;
+  max-width: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+
+  display: flex !important;
+  align-items: center;
+  gap: 30px;
+}
+
+
+/* Brand */
+
+.custom-navbar .navbar-brand {
+  color: #f8fafc !important;
+  font-size: 19px;
+  font-weight: 700;
+  text-decoration: none;
+  margin: 0;
+}
+
+
+.custom-navbar .navbar-brand:hover {
+  color: #c084fc !important;
+}
+
+
+/* Right side */
+
+.custom-navbar .auth-nav {
+  display: flex !important;
+  align-items: center;
+  gap: 50px !important;
+  margin-left: auto !important;
+}
+
+
+/* Navigation items */
+
+.custom-navbar .auth-nav .nav-item {
+  display: flex;
+  align-items: center;
+}
+
+
+/* Navigation links */
+
+.custom-navbar .auth-nav .nav-link {
+  color: #cbd5e1 !important;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 4px 0 !important;
+  margin: 0 !important;
+}
+
+
+/* Hover */
+
+.custom-navbar .auth-nav .nav-link:hover {
+  color: #fff !important;
+}
+
+
+/* Username */
+
+.custom-navbar .auth-nav .username-link {
+  color: #f8fafc !important;
+}
+
+
+/* Wallet */
+
+.custom-navbar .auth-nav .wallet-balance {
+  color: #86efac !important;
+  font-weight: 700;
+}
+
+
+/* =========================================================
+USERNAME
+========================================================= */
+
+.username-link {
+  color: #c084fc !important;
+
+  font-weight: 600;
+
+  text-decoration: none;
+}
+
+.username-link:hover {
+  color: #e9d5ff !important;
+}
+
+
+/* =========================================================
+DROPDOWN
+========================================================= */
+
+.dropdown-menu {
+  background: #121826;
+
+  border: 1px solid rgba(139, 92, 246, 0.25);
+}
+
+.dropdown-item {
+  background: transparent;
+
+  color: white;
+}
+
+.dropdown-item:hover {
+  background: #232d47;
+
+  color: #c084fc;
+}
+
+
+/* =========================================================
+PAGE HEADER
+========================================================= */
+
+.workspace-header {
+  width: 100%;
+
+  margin-bottom: 18px;
+
+  padding: 20px 22px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 15px;
+
+  background:
+    linear-gradient(
+      145deg,
+      #111827,
+      #0b101b
+    );
+
+  border: 1px solid rgba(139, 92, 246, 0.30);
+
+  border-radius: 14px;
+
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.30);
+}
+
+.banking-label {
+  display: block;
+
+  font-size: 11px;
+
+  font-weight: 700;
+
+  letter-spacing: 1px;
+
+  color: #a78bfa;
+}
+
+.workspace-header h1 {
+  margin: 5px 0 6px;
+
+  font-size: 25px;
+
+  font-weight: 700;
+
+  color: #ffffff;
+}
+
+.workspace-header p {
+  margin: 0;
+
+  color: #9ca3af;
+
+  line-height: 1.4;
+
+  font-size: 13px;
+}
+
+
+/* =========================================================
+BACK BUTTON
+========================================================= */
+
+.back-btn {
+  display: inline-flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  min-width: 70px;
+
+  padding: 8px 14px;
+
+  background: #1f2937;
+
+  border: 1px solid rgba(139, 92, 246, 0.35);
+
+  border-radius: 8px;
+
+  color: #e5e7eb;
+
+  text-decoration: none;
+
+  font-size: 13px;
+
+  font-weight: 600;
+
+  transition: 0.2s ease;
+}
+
+.back-btn:hover {
+  background: #312e81;
+
+  border-color: #8b5cf6;
+
+  color: #ffffff;
+}
+
+
+/* =========================================================
+MAIN BANKING PANEL
+========================================================= */
+
+.banking-panel {
+  width: 100%;
+
+  padding: 18px;
+
+  background:
+    linear-gradient(
+      145deg,
+      #111827,
+      #0b101b
+    );
+
+  border: 1px solid rgba(139, 92, 246, 0.30);
+
+  border-radius: 14px;
+
+  box-shadow:
+    0 10px 35px rgba(0, 0, 0, 0.35),
+    0 0 25px rgba(124, 58, 237, 0.06);
+}
+
+
+/* =========================================================
+PANEL HEADER
+========================================================= */
+
+.panel-header {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 15px;
+
+  margin-bottom: 18px;
+}
+
+.panel-label {
+  display: block;
+
+  font-size: 10px;
+
+  font-weight: 700;
+
+  letter-spacing: 1px;
+
+  color: #a78bfa;
+}
+
+.panel-header h2 {
+  margin: 4px 0 0;
+
+  font-size: 20px;
+
+  font-weight: 700;
+
+  color: #ffffff;
+}
+
+
+/* =========================================================
+BANKING MESSAGE
+========================================================= */
+
+.banking-message {
+  width: 100%;
+
+  margin: 0 0 15px 0;
+
+  padding: 0;
+
+  min-height: 0;
+
+  border-radius: 8px;
+
+  font-size: 13px;
+
+  line-height: 1.4;
+
+  font-weight: 500;
+
+  box-sizing: border-box;
+
+  opacity: 1;
+
+  visibility: visible;
+
+  transition:
+    opacity 0.2s ease,
+    padding 0.2s ease,
+    margin 0.2s ease;
+}
+
+.banking-message:empty {
+  display: none;
+}
+
+
+/* =========================================================
+SUCCESS MESSAGE
+========================================================= */
+
+.banking-message.success {
+  display: block;
+
+  padding: 12px 15px;
+
+  background: #e8f7ee;
+
+  border: 1px solid #38a169;
+
+  color: #166534;
+}
+
+
+/* =========================================================
+ERROR MESSAGE
+========================================================= */
+
+.banking-message.error {
+  display: block;
+
+  padding: 12px 15px;
+
+  background: #fdecec;
+
+  border: 1px solid #ef4444;
+
+  color: #991b1b;
+}
+
+
+/* =========================================================
+WARNING MESSAGE
+========================================================= */
+
+.banking-message.warning {
+  display: block;
+
+  padding: 12px 15px;
+
+  background: #fff7e6;
+
+  border: 1px solid #f59e0b;
+
+  color: #92400e;
+}
+
+
+/* =========================================================
+TWO COLUMN BANKING LAYOUT
+========================================================= */
+
+.banking-layout {
+  width: 100%;
+
+  display: grid;
+
+  grid-template-columns:
+    235px minmax(0, 1fr);
+
+  gap: 14px;
+
+  align-items: start;
+}
+
+
+/* =========================================================
+LEFT ACCOUNTS PANEL
+========================================================= */
+
+.accounts-panel {
+  width: 100%;
+
+  min-height: 80px;
+
+  background: transparent;
+
+  border: none;
+
+  padding: 0;
+}
+
+
+/* =========================================================
+CREATED ACCOUNTS
+========================================================= */
+
+.created-accounts {
+  width: 100%;
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 7px;
+
+  padding: 0;
+}
+
+
+/* =========================================================
+ACCOUNT PROFILE CARD
+========================================================= */
+
+.account-card {
+  width: 100%;
+
+  min-height: 58px;
+
+  padding: 8px;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 9px;
+
+  background: #0d1420;
+
+  border: 1px solid rgba(139, 92, 246, 0.18);
+
+  border-radius: 9px;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.account-card:hover {
+  background: #121b2b;
+
+  border-color: rgba(139, 92, 246, 0.45);
+
+  transform: translateY(-1px);
+}
+
+
+/* =========================================================
+SELECTED ACCOUNT
+========================================================= */
+
+.account-card.selected {
+  background: rgba(124, 58, 237, 0.14);
+
+  border-color: #8b5cf6;
+
+  box-shadow:
+    0 0 12px rgba(124, 58, 237, 0.10);
+}
+
+
+/* =========================================================
+ACCOUNT PROFILE IMAGE
+========================================================= */
+
+.account-card-image {
+  width: 40px;
+
+  height: 40px;
+
+  flex-shrink: 0;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  overflow: hidden;
+
+  border-radius: 50%;
+
+  background:
+    linear-gradient(
+      135deg,
+      #312e81,
+      #7c3aed
+    );
+
+  border: 1px solid rgba(167, 139, 250, 0.35);
+
+  color: #ffffff;
+
+  font-size: 13px;
+
+  font-weight: 700;
+}
+
+.account-card-image img {
+  width: 100%;
+
+  height: 100%;
+
+  object-fit: cover;
+}
+
+
+/* =========================================================
+ACCOUNT CARD INFORMATION
+========================================================= */
+
+.account-card-info {
+  min-width: 0;
+
+  flex: 1;
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 3px;
+}
+
+
+/* =========================================================
+ACCOUNT NAME
+========================================================= */
+
+.account-card-name {
+  display: block;
+
+  overflow: hidden;
+
+  white-space: nowrap;
+
+  text-overflow: ellipsis;
+
+  color: #f8fafc;
+
+  font-size: 13px;
+
+  font-weight: 600;
+}
+
+
+/* =========================================================
+ACCOUNT NUMBER
+========================================================= */
+
+.account-card-number {
+  display: block;
+
+  color: #8f9bb3;
+
+  font-size: 11px;
+
+  letter-spacing: 0.4px;
+}
+
+
+/* =========================================================
+RIGHT CONTENT
+========================================================= */
+
+.banking-content {
+  width: 100%;
+
+  min-width: 0;
+}
+
+
+/* =========================================================
+FORM SECTIONS
+========================================================= */
+
+.form-section {
+  width: 100%;
+
+  padding: 16px;
+
+  margin-bottom: 14px;
+
+  background:
+    linear-gradient(
+      145deg,
+      #111827,
+      #0d1420
+    );
+
+  border: 1px solid rgba(139, 92, 246, 0.22);
+
+  border-radius: 10px;
+
+  transition: border-color 0.2s ease;
+}
+
+.form-section:hover {
+  border-color: rgba(139, 92, 246, 0.38);
+}
+
+
+/* =========================================================
+SECTION HEADING
+========================================================= */
+
+.section-heading {
+  display: flex;
+
+  align-items: center;
+
+  gap: 10px;
+
+  margin-bottom: 15px;
+}
+
+.section-number {
+  width: 30px;
+
+  height: 30px;
+
+  flex-shrink: 0;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  border-radius: 7px;
+
+  background: rgba(124, 58, 237, 0.14);
+
+  border: 1px solid rgba(139, 92, 246, 0.40);
+
+  color: #a78bfa;
+
+  font-size: 11px;
+
+  font-weight: 700;
+}
+
+.section-heading h3 {
+  margin: 0;
+
+  font-size: 15px;
+
+  font-weight: 700;
+
+  color: #ffffff;
+}
+
+.section-heading p {
+  margin: 2px 0 0;
+
+  font-size: 11px;
+
+  color: #9ca3af;
+}
+
+
+/* =========================================================
+FORM GRID
+========================================================= */
+
+.form-grid {
+  width: 100%;
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
+  gap: 14px;
+}
+
+
+/* =========================================================
+FORM GROUP
+========================================================= */
+
+.form-group {
+  width: 100%;
+
+  min-width: 0;
+}
+
+.form-group label {
+  display: block;
+
+  margin-bottom: 5px;
+
+  font-size: 12px;
+
+  font-weight: 600;
+
+  color: #e5e7eb;
+}
+
+.required {
+  color: #f87171;
+
+  margin-left: 2px;
+}
+
+
+/* =========================================================
+ALL FORM INPUTS
+========================================================= */
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+
+  outline: none;
+
+  background: #080d16 !important;
+
+  border: 1px solid #293244 !important;
+
+  border-radius: 7px;
+
+  color: #f3f4f6 !important;
+
+  -webkit-text-fill-color: #f3f4f6 !important;
+
+  font-size: 13px;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+}
+
+
+/* =========================================================
+TEXT INPUTS
+========================================================= */
+
+.form-group input[type="text"],
+.form-group input[type="email"],
+.form-group input[type="password"],
+.form-group input[type="number"],
+.form-group input[type="date"],
+.form-group input[type="datetime-local"],
+.form-group input[type="time"] {
+  height: 40px;
+
+  padding: 0 10px;
+}
+
+
+/* =========================================================
+PIN INPUTS
+========================================================= */
+
+#accountPin,
+#settingsAccountPin {
+  letter-spacing: 2px;
+
+  font-weight: 600;
+
+  background: #080d16 !important;
+
+  color: #f3f4f6 !important;
+
+  -webkit-text-fill-color: #f3f4f6 !important;
+}
+
+
+/* =========================================================
+TEXTAREA
+========================================================= */
+
+.form-group textarea {
+  min-height: 90px;
+
+  padding: 10px;
+
+  resize: vertical;
+
+  line-height: 1.4;
+}
+
+
+/* =========================================================
+NUMBER INPUT
+========================================================= */
+
+.form-group input[type="number"] {
+  color: #f3f4f6 !important;
+
+  -webkit-text-fill-color: #f3f4f6 !important;
+
+  background: #080d16 !important;
+}
+
+
+/* =========================================================
+NUMBER SPINNER
+========================================================= */
+
+.form-group input[type="number"]::-webkit-inner-spin-button,
+.form-group input[type="number"]::-webkit-outer-spin-button {
+  opacity: 1;
+}
+
+
+/* =========================================================
+DATE / DATETIME INPUTS
+========================================================= */
+
+.form-group input[type="date"],
+.form-group input[type="datetime-local"],
+.form-group input[type="time"] {
+  color: #f3f4f6 !important;
+
+  -webkit-text-fill-color: #f3f4f6 !important;
+
+  background: #080d16 !important;
+
+  cursor: pointer;
+}
+
+
+/* =========================================================
+DATE ICON
+========================================================= */
+
+.form-group input[type="date"]::-webkit-calendar-picker-indicator,
+.form-group input[type="datetime-local"]::-webkit-calendar-picker-indicator,
+.form-group input[type="time"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+
+  opacity: 0.85;
+
+  cursor: pointer;
+}
+
+
+/* =========================================================
+PLACEHOLDER
+========================================================= */
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+  color: #6b7280 !important;
+
+  opacity: 1;
+}
+
+
+/* =========================================================
+INPUT HOVER
+========================================================= */
+
+.form-group input:hover,
+.form-group select:hover,
+.form-group textarea:hover {
+  background: #0a101c !important;
+
+  border-color: #4b5563 !important;
+
+  color: #f3f4f6 !important;
+
+  -webkit-text-fill-color: #f3f4f6 !important;
+}
+
+
+/* =========================================================
+INPUT FOCUS
+========================================================= */
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  background: #080d16 !important;
+
+  border-color: #8b5cf6 !important;
+
+  color: #f3f4f6 !important;
+
+  -webkit-text-fill-color: #f3f4f6 !important;
+
+  box-shadow:
+    0 0 0 2px rgba(139, 92, 246, 0.12);
+
+  outline: none;
+}
+
+
+/* =========================================================
+INPUT NOT FOCUSED
+========================================================= */
+
+.form-group input:not(:focus),
+.form-group textarea:not(:focus) {
+  background: #080d16 !important;
+
+  color: #f3f4f6 !important;
+
+  -webkit-text-fill-color: #f3f4f6 !important;
+}
+
+
+/* =========================================================
+TRANSACTION NARRATION
+========================================================= */
+
+#transactionNarration {
+  width: 100%;
+
+  height: 40px;
+
+  padding: 0 10px;
+
+  background: #080d16 !important;
+
+  border: 1px solid #293244 !important;
+
+  border-radius: 7px;
+
+  color: #f3f4f6 !important;
+
+  -webkit-text-fill-color: #f3f4f6 !important;
+
+  font-size: 13px;
+
+  outline: none;
+
+  box-shadow: none;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+}
+
+#transactionNarration:hover {
+  background: #0a101c !important;
+
+  border-color: #4b5563 !important;
+}
+
+#transactionNarration:focus {
+  background: #080d16 !important;
+
+  border-color: #8b5cf6 !important;
+
+  box-shadow:
+    0 0 0 2px rgba(139, 92, 246, 0.12) !important;
+}
+
+#transactionNarration:not(:focus) {
+  background: #080d16 !important;
+
+  color: #f3f4f6 !important;
+
+  -webkit-text-fill-color: #f3f4f6 !important;
+
+  border-color: #293244 !important;
+}
+
+#transactionNarration:-webkit-autofill,
+#transactionNarration:-webkit-autofill:hover,
+#transactionNarration:-webkit-autofill:focus,
+#transactionNarration:-webkit-autofill:active {
+  -webkit-box-shadow:
+    0 0 0 1000px #080d16 inset !important;
+
+  box-shadow:
+    0 0 0 1000px #080d16 inset !important;
+
+  -webkit-text-fill-color: #f3f4f6 !important;
+
+  background-color: #080d16 !important;
+}
+
+
+/* =========================================================
+SELECT
+========================================================= */
+
+.form-group select {
+  height: 40px;
+
+  padding: 0 10px;
+
+  cursor: pointer;
+
+  appearance: auto;
+}
+
+.form-group select option {
+  background: #111827;
+
+  color: #f3f4f6;
+}
+
+
+/* =========================================================
+FORM HELP
+========================================================= */
+
+.form-help {
+  margin-top: 4px;
+
+  font-size: 10px;
+
+  line-height: 1.3;
+
+  color: #6b7280;
+}
+
+
+/* =========================================================
+PROFILE UPLOAD
+========================================================= */
+
+.profile-upload {
+  width: 100%;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 15px;
+}
+
+.profile-preview {
+  width: 75px;
+
+  height: 75px;
+
+  flex-shrink: 0;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  overflow: hidden;
+
+  background: #080d16;
+
+  border: 2px dashed #4b5563;
+
+  border-radius: 50%;
+}
+
+.profile-preview img {
+  width: 100%;
+
+  height: 100%;
+
+  object-fit: cover;
+
+  display: none;
+}
+
+.profile-placeholder {
+  padding: 5px;
+
+  text-align: center;
+
+  color: #6b7280;
+
+  font-size: 10px;
+
+  line-height: 1.2;
+}
+
+
+/* =========================================================
+UPLOAD AREA
+========================================================= */
+
+.upload-area {
+  flex: 1;
+
+  min-width: 0;
+}
+
+.upload-button {
+  display: inline-flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  padding: 8px 13px;
+
+  background: #1f2937;
+
+  border: 1px solid rgba(139, 92, 246, 0.35);
+
+  border-radius: 7px;
+
+  color: #e5e7eb;
+
+  cursor: pointer;
+
+  font-size: 12px;
+
+  font-weight: 600;
+
+  transition: 0.2s ease;
+}
+
+.upload-button:hover {
+  background: #312e81;
+
+  border-color: #8b5cf6;
+
+  color: #ffffff;
+}
+
+
+/* =========================================================
+HIDE FILE INPUTS
+========================================================= */
+
+#profilePicture,
+#settingsProfilePicture {
+  display: none;
+}
+
+
+/* =========================================================
+FORM ACTIONS
+========================================================= */
+
+.form-actions {
+  width: 100%;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: flex-end;
+
+  gap: 8px;
+
+  margin-top: 5px;
+}
+
+
+/* =========================================================
+RESET BUTTON
+========================================================= */
+
+.reset-btn {
+  min-height: 40px;
+
+  padding: 8px 16px;
+
+  background: #1f2937;
+
+  border: 1px solid #374151;
+
+  border-radius: 7px;
+
+  color: #d1d5db;
+
+  font-size: 13px;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: 0.2s ease;
+}
+
+.reset-btn:hover {
+  background: #374151;
+
+  border-color: #4b5563;
+
+  color: #ffffff;
+}
+
+
+/* =========================================================
+CREATE BUTTON
+========================================================= */
+
+.create-btn {
+  min-height: 40px;
+
+  min-width: 175px;
+
+  padding: 8px 16px;
+
+  background: #198754;
+
+  border: 1px solid #198754;
+
+  border-radius: 7px;
+
+  color: #ffffff;
+
+  font-size: 13px;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: 0.2s ease;
+}
+
+.create-btn:hover {
+  background: #157347;
+
+  border-color: #157347;
+
+  box-shadow:
+    0 0 15px rgba(25, 135, 84, 0.20);
+}
+
+.create-btn:active {
+  transform: translateY(1px);
+}
+
+.create-btn:disabled,
+.reset-btn:disabled {
+  opacity: 0.6;
+
+  cursor: not-allowed;
+
+  box-shadow: none;
+}
+
+
+/* =========================================================
+ACCOUNT SETTINGS
+========================================================= */
+
+.account-settings {
+  width: 100%;
+
+  padding: 16px;
+
+  background:
+    linear-gradient(
+      145deg,
+      #111827,
+      #0d1420
+    );
+
+  border: 1px solid rgba(139, 92, 246, 0.25);
+
+  border-radius: 10px;
+}
+
+
+/* =========================================================
+SETTINGS HEADER
+========================================================= */
+
+.settings-header {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 12px;
+
+  padding-bottom: 14px;
+
+  margin-bottom: 14px;
+
+  border-bottom: 1px solid rgba(139, 92, 246, 0.15);
+}
+
+.settings-header h2 {
+  margin: 3px 0 2px;
+
+  font-size: 19px;
+
+  color: #ffffff;
+}
+
+.settings-header p {
+  margin: 0;
+
+  color: #9ca3af;
+
+  font-size: 12px;
+}
+
+
+/* =========================================================
+NEW ACCOUNT BUTTON
+========================================================= */
+
+.new-account-btn {
+  flex-shrink: 0;
+
+  padding: 8px 12px;
+
+  background: #1f2937;
+
+  border: 1px solid rgba(139, 92, 246, 0.35);
+
+  border-radius: 7px;
+
+  color: #e5e7eb;
+
+  font-size: 12px;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: 0.2s ease;
+}
+
+.new-account-btn:hover {
+  background: #312e81;
+
+  border-color: #8b5cf6;
+
+  color: #ffffff;
+}
+
+
+/* =========================================================
+ACCOUNT SUMMARY
+========================================================= */
+
+.account-summary {
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
+  gap: 8px;
+}
+
+.summary-item {
+  min-width: 0;
+
+  padding: 11px;
+
+  background: #080d16;
+
+  border: 1px solid #293244;
+
+  border-radius: 7px;
+}
+
+.summary-item span {
+  display: block;
+
+  margin-bottom: 4px;
+
+  color: #6b7280;
+
+  font-size: 10px;
+
+  text-transform: uppercase;
+
+  letter-spacing: 0.5px;
+}
+
+.summary-item strong {
+  display: block;
+
+  overflow: hidden;
+
+  white-space: nowrap;
+
+  text-overflow: ellipsis;
+
+  color: #f3f4f6;
+
+  font-size: 13px;
+}
+
+
+/* =========================================================
+WITHDRAWAL ERROR MESSAGE
+========================================================= */
+
+#settingsWithdrawalErrorMessage {
+  width: 100%;
+
+  min-height: 100px;
+
+  resize: vertical;
+
+  padding: 12px 14px;
+
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+
+  border-radius: 8px;
+
+  background: #111827 !important;
+
+  color: #e5e7eb !important;
+
+  -webkit-text-fill-color: #e5e7eb !important;
+
+  font: inherit;
+
+  font-size: 13px;
+
+  line-height: 1.5;
+
+  outline: none;
+}
+
+#settingsWithdrawalErrorMessage:focus {
+  border-color: rgba(139, 92, 246, 0.55) !important;
+
+  box-shadow:
+    0 0 0 3px rgba(139, 92, 246, 0.10);
+}
+
+#settingsWithdrawalErrorMessage::placeholder {
+  color: #6b7280;
+}
+
+
+/* =========================================================
+TRANSACTION FORM SECTION
+========================================================= */
+
+.transaction-form-section {
+  width: 100%;
+
+  padding: 16px;
+
+  margin-top: 14px;
+
+  margin-bottom: 14px;
+
+  background:
+    linear-gradient(
+      145deg,
+      #111827,
+      #0d1420
+    );
+
+  border: 1px solid rgba(139, 92, 246, 0.22);
+
+  border-radius: 10px;
+}
+
+
+/* =========================================================
+TRANSACTION HISTORY
+========================================================= */
+
+.transactions-content {
+  width: 100%;
+}
+
+.balance-card {
+  width: 100%;
+
+  padding: 18px;
+
+  margin-bottom: 14px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  background:
+    linear-gradient(
+      145deg,
+      #111827,
+      #0d1420
+    );
+
+  border: 1px solid rgba(139, 92, 246, 0.22);
+
+  border-radius: 10px;
+}
+
+.balance-label {
+  display: block;
+
+  margin-bottom: 5px;
+
+  color: #9ca3af;
+
+  font-size: 10px;
+
+  font-weight: 700;
+
+  letter-spacing: 1px;
+}
+
+#transactionAccountBalance {
+  margin: 0;
+
+  color: #ffffff;
+
+  font-size: 25px;
+
+  font-weight: 700;
+}
+
+.transaction-history {
+  width: 100%;
+
+  padding: 16px;
+
+  background:
+    linear-gradient(
+      145deg,
+      #111827,
+      #0d1420
+    );
+
+  border: 1px solid rgba(139, 92, 246, 0.22);
+
+  border-radius: 10px;
+}
+
+.transaction-list {
+  width: 100%;
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 8px;
+}
+
+
+/* =========================================================
+TRANSACTION ROW
+========================================================= */
+
+.transaction-row {
+  width: 100%;
+
+  min-height: 52px;
+
+  padding: 12px 14px;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 15px;
+
+  background: #080d16;
+
+  border: 1px solid #293244;
+
+  border-radius: 8px;
+
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.transaction-row:hover {
+  background: #0d1420;
+
+  border-color: rgba(139, 92, 246, 0.35);
+}
+
+.transaction-type {
+  flex: 0 0 75px;
+
+  font-size: 12px;
+
+  font-weight: 700;
+}
+
+.transaction-narration {
+  flex: 1;
+
+  min-width: 0;
+
+  overflow: hidden;
+
+  white-space: nowrap;
+
+  text-overflow: ellipsis;
+
+  color: #e5e7eb;
+
+  font-size: 13px;
+}
+
+.transaction-amount {
+  flex: 0 0 125px;
+
+  text-align: right;
+
+  font-size: 13px;
+
+  font-weight: 700;
+
+  white-space: nowrap;
+}
+
+.transaction-date {
+  flex: 0 0 175px;
+
+  text-align: right;
+
+  color: #6b7280;
+
+  font-size: 11px;
+
+  white-space: nowrap;
+}
+
+.transaction-row.credit .transaction-type,
+.transaction-row.credit .transaction-amount {
+  color: #4ade80;
+}
+
+.transaction-row.debit .transaction-type,
+.transaction-row.debit .transaction-amount {
+  color: #f87171;
+}
+
+.empty-transactions {
+  width: 100%;
+
+  padding: 25px 15px;
+
+  text-align: center;
+
+  color: #6b7280;
+
+  font-size: 13px;
+
+  background: #080d16;
+
+  border: 1px dashed #293244;
+
+  border-radius: 8px;
+}
+
+
+/* =========================================================
+===========================================================
+PLAN SELECTION MODAL
+===========================================================
+========================================================= */
+
+.plan-modal-overlay {
+  position: fixed;
+
+  inset: 0;
+
+  z-index: 9999;
+
+  display: none;
+
+  align-items: center;
+
+  justify-content: center;
+
+  padding: 20px;
+
+  background: rgba(0, 0, 0, 0.72);
+
+  backdrop-filter: blur(7px);
+
+  -webkit-backdrop-filter: blur(7px);
+}
+
+.plan-modal-overlay.show {
+  display: flex;
+}
+
+
+/* =========================================================
+PLAN MODAL
+========================================================= */
+
+.plan-modal {
+  width: 100%;
+
+  max-width: 650px;
+
+  padding: 24px;
+
+  background:
+    linear-gradient(
+      145deg,
+      #151b29,
+      #0b101b
+    );
+
+  border: 1px solid rgba(139, 92, 246, 0.38);
+
+  border-radius: 16px;
+
+  box-shadow:
+    0 25px 70px rgba(0, 0, 0, 0.65),
+    0 0 35px rgba(124, 58, 237, 0.10);
+
+  animation:
+    planModalIn 0.2s ease;
+}
+
+@keyframes planModalIn {
+
+  from {
+    opacity: 0;
+
+    transform:
+      translateY(12px)
+      scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+
+    transform:
+      translateY(0)
+      scale(1);
+  }
+}
+
+
+/* =========================================================
+PLAN MODAL HEADER
+========================================================= */
+
+.plan-modal-header {
+  text-align: center;
+
+  margin-bottom: 22px;
+}
+
+.plan-modal-label {
+  display: block;
+
+  margin-bottom: 5px;
+
+  color: #a78bfa;
+
+  font-size: 10px;
+
+  font-weight: 700;
+
+  letter-spacing: 1.2px;
+}
+
+.plan-modal-header h2 {
+  margin: 0;
+
+  color: #ffffff;
+
+  font-size: 22px;
+
+  font-weight: 700;
+}
+
+.plan-modal-header p {
+  max-width: 500px;
+
+  margin: 8px auto 0;
+
+  color: #9ca3af;
+
+  font-size: 13px;
+
+  line-height: 1.5;
+}
+
+
+/* =========================================================
+PLAN OPTIONS
+========================================================= */
+
+.plan-options {
+  width: 100%;
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
+  gap: 14px;
+}
+
+
+/* =========================================================
+PLAN CARD
+========================================================= */
+
+.plan-card {
+  position: relative;
+
+  width: 100%;
+
+  padding: 18px;
+
+  background: #080d16;
+
+  border: 1px solid #293244;
+
+  border-radius: 12px;
+
+  cursor: pointer;
+
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.plan-card:hover {
+  background: #0d1420;
+
+  border-color: rgba(139, 92, 246, 0.55);
+
+  transform: translateY(-2px);
+}
+
+.plan-card.selected {
+  border-color: #8b5cf6;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(124, 58, 237, 0.16),
+      #080d16
+    );
+
+  box-shadow:
+    0 0 20px rgba(124, 58, 237, 0.12);
+}
+
+
+/* =========================================================
+PLAN RADIO
+========================================================= */
+
+.plan-radio {
+  position: absolute;
+
+  top: 15px;
+
+  right: 15px;
+
+  width: 17px;
+
+  height: 17px;
+
+  margin: 0;
+
+  accent-color: #8b5cf6;
+
+  cursor: pointer;
+}
+
+
+/* =========================================================
+PLAN ICON
+========================================================= */
+
+.plan-icon {
+  width: 42px;
+
+  height: 42px;
+
+  margin-bottom: 12px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  border-radius: 10px;
+
+  background: rgba(139, 92, 246, 0.12);
+
+  border: 1px solid rgba(139, 92, 246, 0.25);
+
+  color: #c084fc;
+
+  font-size: 17px;
+
+  font-weight: 700;
+}
+
+
+/* =========================================================
+PLAN TITLE
+========================================================= */
+
+.plan-card h3 {
+  margin: 0 0 5px;
+
+  color: #ffffff;
+
+  font-size: 16px;
+
+  font-weight: 700;
+}
+
+
+/* =========================================================
+PLAN PRICE
+========================================================= */
+
+.plan-price {
+  margin-bottom: 10px;
+
+  color: #ffffff;
+
+  font-size: 22px;
+
+  font-weight: 700;
+}
+
+.plan-price span {
+  color: #9ca3af;
+
+  font-size: 11px;
+
+  font-weight: 400;
+}
+
+
+/* =========================================================
+PLAN DESCRIPTION
+========================================================= */
+
+.plan-card p {
+  margin: 0;
+
+  color: #9ca3af;
+
+  font-size: 11px;
+
+  line-height: 1.5;
+}
+
+
+/* =========================================================
+FREE PLAN
+========================================================= */
+
+.plan-card.free-plan .plan-icon {
+  color: #86efac;
+
+  background: rgba(34, 197, 94, 0.10);
+
+  border-color: rgba(34, 197, 94, 0.25);
+}
+
+
+/* =========================================================
+CLEAN PLAN
+========================================================= */
+
+.plan-card.clean-plan {
+  border-color: rgba(25, 135, 84, 0.35);
+}
+
+.plan-card.clean-plan .plan-icon {
+  color: #4ade80;
+
+  background: rgba(25, 135, 84, 0.12);
+
+  border-color: rgba(25, 135, 84, 0.30);
+}
+
+.plan-card.clean-plan.selected {
+  border-color: #198754;
+
+  box-shadow:
+    0 0 20px rgba(25, 135, 84, 0.14);
+}
+
+
+/* =========================================================
+PLAN BADGE
+========================================================= */
+
+.plan-badge {
+  display: inline-flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  margin-bottom: 8px;
+
+  padding: 4px 7px;
+
+  border-radius: 5px;
+
+  background: rgba(25, 135, 84, 0.13);
+
+  border: 1px solid rgba(25, 135, 84, 0.25);
+
+  color: #86efac;
+
+  font-size: 9px;
+
+  font-weight: 700;
+
+  letter-spacing: 0.5px;
+
+  text-transform: uppercase;
+}
+
+
+/* =========================================================
+PLAN MODAL ACTIONS
+========================================================= */
+
+.plan-modal-actions {
+  width: 100%;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: flex-end;
+
+  gap: 8px;
+
+  margin-top: 20px;
+
+  padding-top: 16px;
+
+  border-top: 1px solid rgba(139, 92, 246, 0.12);
+}
+
+
+/* =========================================================
+PLAN CANCEL BUTTON
+========================================================= */
+
+.plan-cancel-btn {
+  min-height: 40px;
+
+  padding: 8px 16px;
+
+  background: #1f2937;
+
+  border: 1px solid #374151;
+
+  border-radius: 7px;
+
+  color: #d1d5db;
+
+  font-size: 13px;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: 0.2s ease;
+}
+
+.plan-cancel-btn:hover {
+  background: #374151;
+
+  color: #ffffff;
+}
+
+
+/* =========================================================
+PLAN CONTINUE BUTTON
+========================================================= */
+
+.plan-continue-btn {
+  min-height: 40px;
+
+  min-width: 145px;
+
+  padding: 8px 16px;
+
+  background: #198754;
+
+  border: 1px solid #198754;
+
+  border-radius: 7px;
+
+  color: #ffffff;
+
+  font-size: 13px;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: 0.2s ease;
+}
+
+.plan-continue-btn:hover {
+  background: #157347;
+
+  border-color: #157347;
+
+  box-shadow:
+    0 0 15px rgba(25, 135, 84, 0.20);
+}
+
+.plan-continue-btn:disabled {
+  opacity: 0.5;
+
+  cursor: not-allowed;
+
+  box-shadow: none;
+}
+
+
+/* =========================================================
+PLAN PAYMENT NOTE
+========================================================= */
+
+.plan-payment-note {
+  margin-top: 12px;
+
+  text-align: center;
+
+  color: #6b7280;
+
+  font-size: 10px;
+
+  line-height: 1.4;
+}
+
+.account-card-image {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.account-card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+
+/* =========================================================
+TABLET
+========================================================= */
+
+@media (max-width: 991px) {
+
+  .custom-navbar {
+    padding: 10px 15px;
+  }
+
+  .nav-container {
+    width: 100%;
+  }
+
+  .auth-nav {
+    display: flex;
+
+    align-items: center;
+  }
+
+  .banking-layout {
+    grid-template-columns:
+      200px minmax(0, 1fr);
+  }
+
+  .transaction-row {
+    gap: 10px;
+  }
+
+  .transaction-date {
+    flex: 0 0 150px;
+  }
+
+  .transaction-amount {
+    flex: 0 0 110px;
+  }
+
+  .plan-modal {
+    max-width: 600px;
+  }
+}
+
+
+/* =========================================================
+MOBILE
+========================================================= */
+
+@media (max-width: 768px) {
+
+  body {
+    padding: 10px;
+  }
+
+  .banking-workspace {
+    width: 100%;
+  }
+
+  .custom-navbar {
+    width: 100%;
+
+    margin-bottom: 12px;
+  }
+
+  .workspace-header {
+    padding: 15px;
+
+    align-items: flex-start;
+
+    flex-direction: column;
+  }
+
+  .workspace-header h1 {
+    font-size: 22px;
+  }
+
+  .back-btn {
+    width: 100%;
+  }
+
+  .banking-panel {
+    padding: 12px;
+  }
+
+  .banking-layout {
+    grid-template-columns: 1fr;
+
+    gap: 12px;
+  }
+
+  .created-accounts {
+    display: grid;
+
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+
+    gap: 7px;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+
+    gap: 13px;
+  }
+
+  .panel-header {
+    align-items: flex-start;
+
+    flex-direction: column;
+  }
+
+  .settings-header {
+    align-items: flex-start;
+
+    flex-direction: column;
+  }
+
+  .new-account-btn {
+    width: 100%;
+  }
+
+
+  /* =======================================================
+     TRANSACTIONS
+  ======================================================= */
+
+  .transaction-row {
+    display: grid;
+
+    grid-template-columns:
+      minmax(0, 1fr)
+      auto;
+
+    grid-template-rows:
+      auto
+      auto;
+
+    gap: 7px 10px;
+
+    padding: 12px;
+  }
+
+  .transaction-type {
+    grid-column: 1;
+
+    grid-row: 2;
+
+    flex: none;
+
+    font-size: 10px;
+  }
+
+  .transaction-narration {
+    grid-column: 1;
+
+    grid-row: 1;
+
+    min-width: 0;
+
+    font-size: 13px;
+  }
+
+  .transaction-amount {
+    grid-column: 2;
+
+    grid-row: 1;
+
+    flex: none;
+
+    font-size: 13px;
+
+    text-align: right;
+  }
+
+  .transaction-date {
+    grid-column: 2;
+
+    grid-row: 2;
+
+    flex: none;
+
+    text-align: right;
+
+    font-size: 10px;
+  }
+
+  #transactionAccountBalance {
+    font-size: 22px;
+  }
+
+
+  /* =======================================================
+     PLAN MODAL
+  ======================================================= */
+
+  .plan-modal-overlay {
+    padding: 14px;
+  }
+
+  .plan-modal {
+    padding: 20px;
+
+    max-width: 520px;
+
+    border-radius: 14px;
+  }
+
+  .plan-modal-header h2 {
+    font-size: 20px;
+  }
+
+  .plan-options {
+    grid-template-columns: 1fr;
+  }
+
+  .plan-card {
+    padding: 15px;
+  }
+}
+
+
+/* =========================================================
+SMALL MOBILE
+========================================================= */
+
+@media (max-width: 576px) {
+
+  .custom-navbar {
+    padding: 10px 14px;
+  }
+
+  .navbar-brand {
+    font-size: 18px;
+  }
+
+  .auth-nav {
+    gap: 0;
+  }
+
+  .auth-nav .nav-link {
+    padding-left: 7px;
+
+    padding-right: 7px;
+
+    font-size: 12px;
+  }
+
+  .created-accounts {
+    grid-template-columns: 1fr;
+  }
+
+  .account-summary {
+    grid-template-columns: 1fr;
+  }
+
+
+  /* =======================================================
+     TRANSACTION
+  ======================================================= */
+
+  .transaction-row {
+    padding: 11px;
+
+    gap: 6px 9px;
+  }
+
+  .transaction-type {
+    font-size: 10px;
+  }
+
+  .transaction-narration {
+    font-size: 12px;
+  }
+
+  .transaction-amount {
+    font-size: 12px;
+  }
+
+  .transaction-date {
+    font-size: 9px;
+  }
+
+
+  /* =======================================================
+     PLAN MODAL
+  ======================================================= */
+
+  .plan-modal-overlay {
+    padding: 10px;
+  }
+
+  .plan-modal {
+    padding: 16px;
+
+    max-height: 92vh;
+
+    overflow-y: auto;
+  }
+
+  .plan-modal-header {
+    margin-bottom: 15px;
+  }
+
+  .plan-modal-header h2 {
+    font-size: 18px;
+  }
+
+  .plan-modal-header p {
+    font-size: 11px;
+  }
+
+  .plan-options {
+    gap: 9px;
+  }
+
+  .plan-card {
+    padding: 13px;
+  }
+
+  .plan-icon {
+    width: 36px;
+
+    height: 36px;
+
+    margin-bottom: 9px;
+  }
+
+  .plan-card h3 {
+    font-size: 14px;
+  }
+
+  .plan-price {
+    font-size: 19px;
+  }
+
+  .plan-card p {
+    font-size: 10px;
+  }
+
+  .plan-modal-actions {
+    flex-direction: column-reverse;
+
+    align-items: stretch;
+  }
+
+  .plan-cancel-btn,
+  .plan-continue-btn {
+    width: 100%;
+  }
+}
+
+
+/* =========================================================
+VERY SMALL SCREENS
+========================================================= */
+
+@media (max-width: 480px) {
+
+  body {
+    padding: 8px;
+  }
+
+  .custom-navbar {
+    padding: 10px 12px;
+  }
+
+  .workspace-header {
+    padding: 13px;
+  }
+
+  .workspace-header h1 {
+    font-size: 20px;
+  }
+
+  .banking-panel {
+    padding: 10px;
+  }
+
+  .form-section {
+    padding: 12px;
+  }
+
+  .section-heading {
+    align-items: flex-start;
+  }
+
+  .section-number {
+    width: 28px;
+
+    height: 28px;
+
+    font-size: 10px;
+  }
+
+  .section-heading h3 {
+    font-size: 14px;
+  }
+
+  .section-heading p {
+    font-size: 10px;
+  }
+
+  .profile-upload {
+    align-items: flex-start;
+
+    flex-direction: column;
+  }
+
+  .upload-area {
+    width: 100%;
+  }
+
+  .upload-button {
+    width: 100%;
+  }
+
+  .form-actions {
+    flex-direction: column;
+
+    align-items: stretch;
+  }
+
+  .reset-btn,
+  .create-btn {
+    width: 100%;
+  }
+
+  .settings-header h2 {
+    font-size: 17px;
+  }
+
+
+  /* =======================================================
+     VERY SMALL TRANSACTIONS
+  ======================================================= */
+
+  .transaction-row {
+    grid-template-columns:
+      minmax(0, 1fr)
+      auto;
+
+    padding: 10px;
+
+    gap: 6px 8px;
+  }
+
+  .transaction-narration {
+    font-size: 11px;
+  }
+
+  .transaction-amount {
+    font-size: 11px;
+  }
+
+  .transaction-type {
+    font-size: 9px;
+  }
+
+  .transaction-date {
+    font-size: 8px;
+  }
+
+
+  /* =======================================================
+     PLAN MODAL
+  ======================================================= */
+
+  .plan-modal {
+    padding: 14px;
+
+    border-radius: 12px;
+  }
+
+  .plan-modal-header h2 {
+    font-size: 17px;
+  }
+
+  .plan-modal-header p {
+    font-size: 10px;
+  }
+
+  .plan-card {
+    padding: 12px;
+  }
+
+  .plan-price {
+    font-size: 18px;
+  }
+
+  .plan-payment-note {
+    font-size: 9px;
+  }
+}
+
+
+/* =========================================================
+EXTRA SMALL
+========================================================= */
+
+@media (max-width: 360px) {
+
+  .workspace-header h1 {
+    font-size: 19px;
+  }
+
+  .banking-panel {
+    padding: 8px;
+  }
+
+  .form-section {
+    padding: 10px;
+  }
+
+  .radio-group {
+    gap: 10px;
+  }
+
+  .transaction-row {
+    gap: 5px 7px;
+  }
+
+  .transaction-narration {
+    font-size: 10px;
+  }
+
+  .transaction-amount {
+    font-size: 10px;
+  }
+
+  .transaction-type {
+    font-size: 8px;
+  }
+
+  .transaction-date {
+    font-size: 8px;
+  }
+
+  .plan-modal {
+    padding: 12px;
+  }
+
+  .plan-modal-header h2 {
+    font-size: 16px;
+  }
+}

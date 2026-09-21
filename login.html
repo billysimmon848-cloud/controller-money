@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>Authentication | MyCargoLane</title>
+
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
+  >
+
+  <link
+    rel="stylesheet"
+    href="index.css"
+  >
+
+</head>
+
+
+<body>
+
+
+  <section class="container mt-5 pt-5">
+
+
+    <div
+      class="ai-box p-4 mx-auto"
+      style="max-width:500px;"
+    >
+
+
+      <!-- ===========================
+           HOME BUTTON
+      ============================ -->
+
+      <div class="mb-4">
+
+        <a
+          href="index.html"
+          class="btn btn-secondary"
+        >
+          Home
+        </a>
+
+      </div>
+
+
+
+      <!-- ===========================
+           LOGIN SECTION
+      ============================ -->
+
+      <div id="loginSection">
+
+
+        <h2 class="mb-4 text-center">
+          Controller Login
+        </h2>
+
+
+        <form id="loginForm">
+
+
+          <!-- EMAIL -->
+
+          <div class="form-group">
+
+            <label for="email">
+              Email
+            </label>
+
+            <input
+              type="email"
+              id="email"
+              class="form-control"
+              placeholder="Enter your email"
+              required
+            >
+
+          </div>
+
+
+
+          <!-- PASSWORD -->
+
+          <div class="form-group">
+
+            <label for="password">
+              Password
+            </label>
+
+            <input
+              type="password"
+              id="password"
+              class="form-control"
+              placeholder="Enter your password"
+              required
+            >
+
+          </div>
+
+
+
+          <!-- FORGOT PASSWORD -->
+
+          <div class="text-right mb-3">
+
+            <a
+              href="#"
+              id="showForgotPassword"
+              class="auth-link"
+            >
+              Forgot password?
+            </a>
+
+          </div>
+
+
+
+          <!-- LOGIN MESSAGE -->
+
+          <p
+            id="loginMessage"
+            class="auth-message"
+          ></p>
+
+
+
+          <!-- LOGIN BUTTON -->
+
+          <button
+            type="submit"
+            class="btn btn-primary btn-block"
+            id="loginButton"
+          >
+            Login
+          </button>
+
+
+        </form>
+
+
+
+        <p class="text-center mt-4">
+
+          Not a user yet?
+
+          <a
+            href="#"
+            id="showSignup"
+            class="auth-link"
+          >
+            Sign Up
+          </a>
+
+        </p>
+
+
+      </div>
+
+
+
+      <!-- ===========================
+           SIGNUP SECTION
+      ============================ -->
+
+      <div
+        id="signupSection"
+        style="display:none;"
+      >
+
+
+        <h2 class="mb-4 text-center">
+          Create Account
+        </h2>
+
+
+
+        <form id="signupForm">
+
+
+          <!-- NAME -->
+
+          <div class="form-group">
+
+            <label for="signupName">
+              Username
+            </label>
+
+            <input
+              type="text"
+              id="signupName"
+              class="form-control"
+              placeholder="Choose a username"
+              required
+            >
+
+          </div>
+
+
+
+          <!-- EMAIL -->
+
+          <div class="form-group">
+
+            <label for="signupEmail">
+              Email
+            </label>
+
+            <input
+              type="email"
+              id="signupEmail"
+              class="form-control"
+              placeholder="Enter your email"
+              required
+            >
+
+          </div>
+
+
+
+          <!-- PASSWORD -->
+
+          <div class="form-group">
+
+            <label for="signupPassword">
+              Password
+            </label>
+
+            <input
+              type="password"
+              id="signupPassword"
+              class="form-control"
+              placeholder="Create a password"
+              minlength="6"
+              required
+            >
+
+          </div>
+
+
+
+          <!-- CONFIRM PASSWORD -->
+
+          <div class="form-group">
+
+            <label for="signupConfirmPassword">
+              Confirm Password
+            </label>
+
+            <input
+              type="password"
+              id="signupConfirmPassword"
+              class="form-control"
+              placeholder="Confirm your password"
+              minlength="6"
+              required
+            >
+
+          </div>
+
+
+
+          <!-- SIGNUP MESSAGE -->
+
+          <p
+            id="signupMessage"
+            class="auth-message"
+          ></p>
+
+
+
+          <!-- SIGNUP BUTTON -->
+
+          <button
+            type="submit"
+            class="btn btn-primary btn-block"
+            id="signupButton"
+          >
+            Create Account
+          </button>
+
+
+        </form>
+
+
+
+        <p class="text-center mt-4">
+
+          Already have an account?
+
+          <a
+            href="#"
+            id="showLogin"
+            class="auth-link"
+          >
+            Login
+          </a>
+
+        </p>
+
+
+      </div>
+
+
+
+      <!-- ===========================
+           FORGOT PASSWORD SECTION
+      ============================ -->
+
+      <div
+        id="forgotPasswordSection"
+        style="display:none;"
+      >
+
+
+        <h2 class="mb-4 text-center">
+          Forgot Password
+        </h2>
+
+
+        <p class="auth-description">
+
+          Enter the email address associated with
+          your Controller account.
+
+        </p>
+
+
+        <form id="forgotPasswordForm">
+
+
+          <div class="form-group">
+
+            <label for="forgotEmail">
+              Email
+            </label>
+
+            <input
+              type="email"
+              id="forgotEmail"
+              class="form-control"
+              placeholder="Enter your email"
+              required
+            >
+
+          </div>
+
+
+
+          <p
+            id="forgotMessage"
+            class="auth-message"
+          ></p>
+
+
+
+          <button
+            type="submit"
+            class="btn btn-primary btn-block"
+            id="forgotButton"
+          >
+            Send Reset Request
+          </button>
+
+
+        </form>
+
+
+
+        <!-- DEVELOPMENT RESET LINK -->
+
+        <div
+          id="developmentResetBox"
+          class="development-reset-box"
+          style="display:none;"
+        >
+
+          <p>
+            <strong>Development Reset Link</strong>
+          </p>
+
+          <p>
+            Your email system is not connected yet.
+            Use this link to test the password reset.
+          </p>
+
+          <a
+            href="#"
+            id="developmentResetLink"
+            target="_blank"
+          >
+            Open Password Reset
+          </a>
+
+        </div>
+
+
+
+        <p class="text-center mt-4">
+
+          <a
+            href="#"
+            id="forgotBackToLogin"
+            class="auth-link"
+          >
+            Back to Login
+          </a>
+
+        </p>
+
+
+      </div>
+
+
+
+      <!-- ===========================
+           RESET PASSWORD SECTION
+      ============================ -->
+
+      <div
+        id="resetPasswordSection"
+        style="display:none;"
+      >
+
+
+        <h2 class="mb-4 text-center">
+          Create New Password
+        </h2>
+
+
+        <p class="auth-description">
+
+          Enter a new password for your Controller
+          account.
+
+        </p>
+
+
+        <form id="resetPasswordForm">
+
+
+          <!-- NEW PASSWORD -->
+
+          <div class="form-group">
+
+            <label for="newPassword">
+              New Password
+            </label>
+
+            <input
+              type="password"
+              id="newPassword"
+              class="form-control"
+              placeholder="Enter your new password"
+              minlength="6"
+              required
+            >
+
+          </div>
+
+
+
+          <!-- CONFIRM NEW PASSWORD -->
+
+          <div class="form-group">
+
+            <label for="confirmNewPassword">
+              Confirm New Password
+            </label>
+
+            <input
+              type="password"
+              id="confirmNewPassword"
+              class="form-control"
+              placeholder="Confirm your new password"
+              minlength="6"
+              required
+            >
+
+          </div>
+
+
+
+          <!-- RESET MESSAGE -->
+
+          <p
+            id="resetMessage"
+            class="auth-message"
+          ></p>
+
+
+
+          <!-- RESET BUTTON -->
+
+          <button
+            type="submit"
+            class="btn btn-primary btn-block"
+            id="resetButton"
+          >
+            Reset Password
+          </button>
+
+
+        </form>
+
+
+      </div>
+
+
+    </div>
+
+
+  </section>
+
+
+  <script src="login.js"></script>
+
+
+</body>
+
+</html>
