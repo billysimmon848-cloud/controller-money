@@ -1,5 +1,5 @@
 const API_URL =
-  "http://localhost:5000/api";
+"https://api.justdoks.com/api";
 
 
 let selectedUserId =

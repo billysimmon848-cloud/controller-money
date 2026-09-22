@@ -1,9 +1,9 @@
 // =====================================================
-// MYCARGOLANE BANKING
+// JustDoks BANKING
 // =====================================================
 
-const BANKING_API_URL = "http://localhost:5000/api";
-
+const BANKING_API_URL =
+  "https://api.justdoks.com/api";
 
 // =====================================================
 // STATE

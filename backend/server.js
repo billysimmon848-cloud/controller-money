@@ -56,7 +56,7 @@ app.get(
         "SERVER-V2",
 
       message:
-        "This is the current MyCargoLane backend"
+        "This is the current JustDoks backend"
 
     });
 
@@ -120,7 +120,7 @@ app.get(
     res.json({
 
       message:
-        "MyCargoLane backend is running"
+        "JustDoks backend is running"
 
     });
 

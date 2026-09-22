@@ -3386,7 +3386,7 @@ function printDocument() {
     <head>
 
       <title>
-        MyCargoLane Shipping Document
+        JustDoks Shipping Document
       </title>
 
       <style>
@@ -3470,7 +3470,7 @@ if (removeWatermark) {
 async function initializeCargo() {
 
   console.log(
-    "MyCargoLane Cargo JS loaded."
+    "JustDoks Cargo JS loaded."
   );
 
   /*
