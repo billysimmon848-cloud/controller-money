@@ -311,8 +311,8 @@ function updateCargoNavbar() {
 
         <strong id="cargoNavbarWallet">
           ${formatMoney(
-            currentWalletBalance
-          )}
+    currentWalletBalance
+  )}
         </strong>
 
       </span>
@@ -854,16 +854,13 @@ async function createShipping() {
 
         `Shipping Created Successfully\n\n` +
 
-        `Tracking Number: ${
-          shipment.trackingNumber
+        `Tracking Number: ${shipment.trackingNumber
         }\n` +
 
-        `Payment: ${
-          formatMoney(paymentAmount)
+        `Payment: ${formatMoney(paymentAmount)
         }\n` +
 
-        `Wallet Balance: ${
-          formatMoney(currentWalletBalance)
+        `Wallet Balance: ${formatMoney(currentWalletBalance)
         }`
 
       );
@@ -874,20 +871,17 @@ async function createShipping() {
 
         `Test Shipping Created Successfully\n\n` +
 
-        `Tracking Number: ${
-          shipment.trackingNumber
+        `Tracking Number: ${shipment.trackingNumber
         }\n` +
 
         `Payment: $0.00\n` +
 
-        `Wallet Balance: ${
-          formatMoney(currentWalletBalance)
+        `Wallet Balance: ${formatMoney(currentWalletBalance)
         }\n` +
 
         `Document: Watermarked\n\n` +
 
-        `You can remove the watermark for ${
-          formatMoney(CLEAN_SHIPPING_PRICE)
+        `You can remove the watermark for ${formatMoney(CLEAN_SHIPPING_PRICE)
         }.`
 
       );
@@ -1131,8 +1125,8 @@ async function loadShipments() {
 
         <div class="alert alert-danger">
           ${escapeHTML(
-            error.message
-          )}
+        error.message
+      )}
         </div>
 
       `;
@@ -1229,16 +1223,15 @@ function createShipmentCard(
   const isSelected =
     currentShipment &&
     currentShipment.trackingNumber ===
-      tracking;
+    tracking;
 
   return `
 
     <div
-      class="shipment-card ${
-        isSelected
-          ? "selected-shipment"
-          : ""
-      }"
+      class="shipment-card ${isSelected
+      ? "selected-shipment"
+      : ""
+    }"
       onclick="selectShipment(${index})"
     >
 
@@ -1250,14 +1243,14 @@ function createShipmentCard(
 
         <strong>
           ${escapeHTML(
-            tracking
-          )}
+      tracking
+    )}
         </strong>
 
         <span>
           ${escapeHTML(
-            status
-          )}
+      status
+    )}
         </span>
 
       </div>
@@ -1277,8 +1270,8 @@ function createShipmentCard(
 
           <a
             href="${escapeAttribute(
-              trackingURL
-            )}"
+      trackingURL
+    )}"
             target="_blank"
             rel="noopener noreferrer"
             onclick="event.stopPropagation();"
@@ -1295,18 +1288,16 @@ function createShipmentCard(
             Document:
           </strong>
 
-          ${
-            isClean
-              ? "Clean"
-              : "Watermarked"
-          }
+          ${isClean
+      ? "Clean"
+      : "Watermarked"
+    }
 
         </p>
 
 
-        ${
-          hasError
-            ? `
+        ${hasError
+      ? `
 
               <p class="shipment-card-error">
 
@@ -1315,14 +1306,14 @@ function createShipmentCard(
                 </strong>
 
                 ${escapeHTML(
-                  shipment.errorMessage
-                )}
+        shipment.errorMessage
+      )}
 
               </p>
 
             `
-            : ""
-        }
+      : ""
+    }
 
       </div>
 
@@ -1347,9 +1338,8 @@ function createShipmentCard(
 
         <!-- REMOVE WATERMARK -->
 
-        ${
-          !isClean
-            ? `
+        ${!isClean
+      ? `
 
               <button
                 type="button"
@@ -1360,8 +1350,8 @@ function createShipmentCard(
               </button>
 
             `
-            : ""
-        }
+      : ""
+    }
 
 
         <!-- DELETE -->
@@ -1996,14 +1986,12 @@ async function updateShipment() {
 
       `Shipment Updated Successfully\n\n` +
 
-      `Tracking Number: ${
-        shipment.trackingNumber
+      `Tracking Number: ${shipment.trackingNumber
       }\n` +
 
-      `Status: ${
-        shipment.status ||
-        shipment.currentStatus ||
-        "Pending"
+      `Status: ${shipment.status ||
+      shipment.currentStatus ||
+      "Pending"
       }`
 
     );
@@ -2137,7 +2125,7 @@ async function deleteShipment(
     if (
       currentShipment &&
       currentShipment.trackingNumber ===
-        trackingNumber
+      trackingNumber
     ) {
 
       currentShipment = null;
@@ -2172,8 +2160,7 @@ async function deleteShipment(
 
       `Shipment Deleted Successfully\n\n` +
 
-      `Tracking Number: ${
-        trackingNumber
+      `Tracking Number: ${trackingNumber
       }`
 
     );
@@ -2361,16 +2348,13 @@ async function removeShipmentWatermark(
 
       `Watermark Removed Successfully\n\n` +
 
-      `Tracking Number: ${
-        updatedShipment.trackingNumber
+      `Tracking Number: ${updatedShipment.trackingNumber
       }\n` +
 
-      `Payment: ${
-        formatMoney(CLEAN_SHIPPING_PRICE)
+      `Payment: ${formatMoney(CLEAN_SHIPPING_PRICE)
       }\n` +
 
-      `Wallet Balance: ${
-        formatMoney(currentWalletBalance)
+      `Wallet Balance: ${formatMoney(currentWalletBalance)
       }`
 
     );
@@ -2419,6 +2403,12 @@ function fillDocumentFromShipment(
 
   if (!shipment) {
     return;
+  }
+
+  currentShipment = shipment;
+
+  if (downloadDocument) {
+    downloadDocument.disabled = false;
   }
 
   setText(
@@ -3336,18 +3326,13 @@ if (downloadDocument) {
 
 }
 
-
 // ======================================================
-// PRINT DOCUMENT
+// PRINT CARGO RECEIPT
 // ======================================================
 
 function printDocument() {
 
-  if (
-    !shippingDocument ||
-    shippingDocument.style.display ===
-      "none"
-  ) {
+  if (!currentShipment) {
 
     alert(
       "No shipping document available."
@@ -3357,25 +3342,182 @@ function printDocument() {
 
   }
 
-  const documentHTML =
-    shippingDocument.outerHTML;
+
+  const shipment =
+    currentShipment;
+
+
+  // ====================================================
+  // VALUES
+  // ====================================================
+
+  const invoice =
+    shipment.invoiceNumber ||
+    "N/A";
+
+  const tracking =
+    shipment.trackingNumber ||
+    "N/A";
+
+  const status =
+    shipment.status ||
+    shipment.currentStatus ||
+    "Processing";
+
+  const shipmentDateValue =
+    formatDateDisplay(
+      shipment.shipmentDate
+    ) || "N/A";
+
+  const arrivalDateValue =
+    formatDateDisplay(
+      shipment.estimatedDelivery
+    ) || "N/A";
+
+
+  const senderName =
+    shipment.sender ||
+    "N/A";
+
+  const senderEmailValue =
+    shipment.senderEmail ||
+    "N/A";
+
+  const originValue =
+    shipment.origin ||
+    "N/A";
+
+
+  const recipientName =
+    shipment.recipient ||
+    "N/A";
+
+  const recipientEmailValue =
+    shipment.recipientEmail ||
+    "N/A";
+
+  const recipientAddressValue =
+    shipment.recipientAddress ||
+    "N/A";
+
+
+  const packageContentValue =
+    shipment.packageContent ||
+    "N/A";
+
+  const packageWeightValue =
+    shipment.packageWeight ||
+    "N/A";
+
+
+  const errorValue =
+    shipment.errorMessage ||
+    "";
+
+
+  const isWatermarked =
+    shipment.watermarkEnabled !== false;
+
+
+  const trackingURL =
+    getTrackingURL(
+      tracking
+    );
+
+
+  // ====================================================
+  // PRINT WINDOW
+  // ====================================================
 
   const printWindow =
     window.open(
       "",
       "_blank",
-      "width=900,height=900"
+      "width=900,height=1000"
     );
+
 
   if (!printWindow) {
 
     alert(
-      "Please allow pop-ups to print the shipping document."
+      "Please allow pop-ups to print the shipping receipt."
     );
 
     return;
 
   }
+
+
+  // ====================================================
+  // SAFE HTML
+  // ====================================================
+
+  const safe =
+    function (value) {
+
+      return escapeHTML(
+        value
+      );
+
+    };
+
+
+  // ====================================================
+  // WATERMARK
+  // ====================================================
+
+  const watermarkHTML =
+    isWatermarked
+
+      ? `
+
+        <div class="receipt-watermark">
+
+          <span>TEST SHIPPING</span>
+          <span>TEST SHIPPING</span>
+          <span>TEST SHIPPING</span>
+          <span>TEST SHIPPING</span>
+          <span>TEST SHIPPING</span>
+          <span>TEST SHIPPING</span>
+          <span>TEST SHIPPING</span>
+          <span>TEST SHIPPING</span>
+
+        </div>
+
+      `
+
+      : "";
+
+
+  // ====================================================
+  // ERROR MESSAGE
+  // ====================================================
+
+  const errorHTML =
+    errorValue.trim()
+
+      ? `
+
+        <div class="receipt-error">
+
+          <strong>
+            Shipment Message
+          </strong>
+
+          <p>
+            ${safe(errorValue)}
+          </p>
+
+        </div>
+
+      `
+
+      : "";
+
+
+  // ====================================================
+  // PRINT HTML
+  // ====================================================
 
   printWindow.document.write(`
 
@@ -3385,9 +3527,17 @@ function printDocument() {
 
     <head>
 
+      <meta charset="UTF-8">
+
+      <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+      >
+
       <title>
-        JustDoks Shipping Document
+        Cargo Receipt - ${safe(tracking)}
       </title>
+
 
       <style>
 
@@ -3395,33 +3545,1006 @@ function printDocument() {
           box-sizing: border-box;
         }
 
+
+        @page {
+          size: A4;
+          margin: 12mm;
+        }
+
+
+        html,
         body {
           margin: 0;
-          padding: 30px;
-          font-family: Arial, sans-serif;
-          background: white;
+          padding: 0;
+          background: #ffffff;
+          color: #172033;
+          font-family: Arial, Helvetica, sans-serif;
         }
 
-        .d-none {
-          display: none !important;
+
+        body {
+          padding: 0;
         }
 
-        button,
-        .btn {
-          display: none !important;
+
+        .receipt {
+          position: relative;
+
+          width: 100%;
+          max-width: 186mm;
+
+          min-height: 273mm;
+
+          margin: 0 auto;
+
+          background: #ffffff;
+
+          overflow: hidden;
         }
 
-        .watermark-layer {
+
+        /* ============================================
+           WATERMARK
+        ============================================ */
+
+        .receipt-watermark {
           position: absolute;
+
+          inset: 0;
+
+          z-index: 1;
+
+          display: grid;
+
+          grid-template-columns:
+            repeat(2, 1fr);
+
+          grid-template-rows:
+            repeat(4, 1fr);
+
+          align-items: center;
+
+          justify-items: center;
+
+          pointer-events: none;
+
+          transform: rotate(-28deg);
+
+          opacity: .09;
+        }
+
+
+        .receipt-watermark span {
+          color: #dc2626;
+
+          font-size: 27px;
+
+          font-weight: 900;
+
+          letter-spacing: 2px;
+
+          white-space: nowrap;
+        }
+
+
+        /* ============================================
+           CONTENT
+        ============================================ */
+
+        .receipt-content {
+          position: relative;
+
+          z-index: 2;
+
+          width: 100%;
+
+          padding: 7mm;
+        }
+
+
+        /* ============================================
+           HEADER
+        ============================================ */
+
+        .receipt-header {
+          display: flex;
+
+          justify-content: space-between;
+
+          align-items: flex-start;
+
+          gap: 20px;
+
+          padding-bottom: 7mm;
+
+          border-bottom: 2px solid #111827;
+        }
+
+
+        .brand {
+          color: #4f46e5;
+
+          font-size: 22px;
+
+          font-weight: 900;
+
+          letter-spacing: 1px;
+        }
+
+
+        .brand-subtitle {
+          margin-top: 4px;
+
+          color: #64748b;
+
+          font-size: 10px;
+
+          font-weight: 600;
+        }
+
+
+        .receipt-title {
+          text-align: right;
+        }
+
+
+        .receipt-title h1 {
+          margin: 0;
+
+          color: #111827;
+
+          font-size: 24px;
+
+          font-weight: 900;
+
+          letter-spacing: .5px;
+        }
+
+
+        .receipt-title p {
+          margin: 5px 0 0;
+
+          color: #64748b;
+
+          font-size: 9px;
+        }
+
+
+        /* ============================================
+           REFERENCE AREA
+        ============================================ */
+
+        .reference-grid {
+          display: grid;
+
+          grid-template-columns:
+            1fr 1fr;
+
+          gap: 12px;
+
+          margin-top: 6mm;
+        }
+
+
+        .reference-box {
+          padding: 12px;
+
+          border: 1px solid #dbe2ea;
+
+          border-radius: 6px;
+
+          background: #f8fafc;
+        }
+
+
+        .reference-label {
+          display: block;
+
+          margin-bottom: 5px;
+
+          color: #64748b;
+
+          font-size: 8px;
+
+          font-weight: 800;
+
+          letter-spacing: 1px;
+
+          text-transform: uppercase;
+        }
+
+
+        .reference-value {
+          display: block;
+
+          color: #111827;
+
+          font-size: 12px;
+
+          font-weight: 800;
+
+          overflow-wrap: anywhere;
+        }
+
+
+        /* ============================================
+           STATUS
+        ============================================ */
+
+        .status-section {
+          margin-top: 5mm;
+
+          padding: 13px;
+
+          border: 1px solid #c7d2fe;
+
+          border-radius: 7px;
+
+          background: #eef2ff;
+        }
+
+
+        .status-label {
+          display: block;
+
+          margin-bottom: 5px;
+
+          color: #64748b;
+
+          font-size: 8px;
+
+          font-weight: 800;
+
+          letter-spacing: 1px;
+
+          text-transform: uppercase;
+        }
+
+
+        .status-value {
+          color: #312e81;
+
+          font-size: 14px;
+
+          font-weight: 900;
+
+          text-transform: uppercase;
+        }
+
+
+        /* ============================================
+           DATE GRID
+        ============================================ */
+
+        .date-grid {
+          display: grid;
+
+          grid-template-columns:
+            1fr 1fr;
+
+          gap: 12px;
+
+          margin-top: 5mm;
+        }
+
+
+        .date-box {
+          padding: 12px;
+
+          border: 1px solid #e2e8f0;
+
+          border-radius: 6px;
+        }
+
+
+        .date-label {
+          display: block;
+
+          margin-bottom: 5px;
+
+          color: #64748b;
+
+          font-size: 8px;
+
+          font-weight: 800;
+
+          letter-spacing: 1px;
+
+          text-transform: uppercase;
+        }
+
+
+        .date-value {
+          color: #334155;
+
+          font-size: 10px;
+
+          font-weight: 700;
+
+          overflow-wrap: anywhere;
+        }
+
+
+        /* ============================================
+           SECTION TITLE
+        ============================================ */
+
+        .section-title {
+          margin: 7mm 0 3mm;
+
+          padding-bottom: 5px;
+
+          border-bottom: 1px solid #dbe2ea;
+
+          color: #111827;
+
+          font-size: 10px;
+
+          font-weight: 900;
+
+          letter-spacing: 1px;
+
+          text-transform: uppercase;
+        }
+
+
+        /* ============================================
+           FROM / TO
+        ============================================ */
+
+        .address-grid {
+          display: grid;
+
+          grid-template-columns:
+            1fr 1fr;
+
+          gap: 12px;
+        }
+
+
+        .address-box {
+          min-height: 42mm;
+
+          padding: 13px;
+
+          border: 1px solid #dbe2ea;
+
+          border-radius: 7px;
+        }
+
+
+        .address-label {
+          display: block;
+
+          margin-bottom: 8px;
+
+          color: #4f46e5;
+
+          font-size: 9px;
+
+          font-weight: 900;
+
+          letter-spacing: 1px;
+
+          text-transform: uppercase;
+        }
+
+
+        .person-name {
+          color: #111827;
+
+          font-size: 12px;
+
+          font-weight: 800;
+        }
+
+
+        .person-email {
+          margin-top: 5px;
+
+          color: #475569;
+
+          font-size: 9px;
+
+          overflow-wrap: anywhere;
+        }
+
+
+        .person-location {
+          margin-top: 8px;
+
+          color: #334155;
+
+          font-size: 9px;
+
+          line-height: 1.5;
+
+          overflow-wrap: anywhere;
+        }
+
+
+        /* ============================================
+           PACKAGE
+        ============================================ */
+
+        .package-box {
+          padding: 13px;
+
+          border: 1px solid #dbe2ea;
+
+          border-radius: 7px;
+        }
+
+
+        .package-grid {
+          display: grid;
+
+          grid-template-columns:
+            2fr 1fr;
+
+          gap: 12px;
+        }
+
+
+        .package-item-label {
+          display: block;
+
+          margin-bottom: 5px;
+
+          color: #64748b;
+
+          font-size: 8px;
+
+          font-weight: 800;
+
+          letter-spacing: 1px;
+
+          text-transform: uppercase;
+        }
+
+
+        .package-item-value {
+          color: #111827;
+
+          font-size: 10px;
+
+          font-weight: 700;
+
+          line-height: 1.5;
+
+          overflow-wrap: anywhere;
+        }
+
+
+        /* ============================================
+           TRACKING
+        ============================================ */
+
+        .tracking-section {
+          margin-top: 7mm;
+
+          padding: 15px;
+
+          border: 2px solid #4f46e5;
+
+          border-radius: 8px;
+
+          text-align: center;
+
+          background: #f8fafc;
+        }
+
+
+        .tracking-label {
+          display: block;
+
+          margin-bottom: 7px;
+
+          color: #64748b;
+
+          font-size: 8px;
+
+          font-weight: 900;
+
+          letter-spacing: 1.5px;
+
+          text-transform: uppercase;
+        }
+
+
+        .tracking-number {
+          color: #16a34a;
+
+          font-size: 20px;
+
+          font-weight: 900;
+
+          letter-spacing: 2px;
+
+          overflow-wrap: anywhere;
+        }
+
+
+        .tracking-url {
+          display: block;
+
+          margin-top: 7px;
+
+          color: #4f46e5;
+
+          font-size: 8px;
+
+          overflow-wrap: anywhere;
+        }
+
+
+        /* ============================================
+           ERROR
+        ============================================ */
+
+        .receipt-error {
+          margin-top: 5mm;
+
+          padding: 12px;
+
+          border: 1px solid #fecaca;
+
+          border-radius: 6px;
+
+          background: #fef2f2;
+        }
+
+
+        .receipt-error strong {
+          color: #b91c1c;
+
+          font-size: 9px;
+        }
+
+
+        .receipt-error p {
+          margin: 5px 0 0;
+
+          color: #7f1d1d;
+
+          font-size: 9px;
+
+          line-height: 1.5;
+
+          overflow-wrap: anywhere;
+        }
+
+
+        /* ============================================
+           FOOTER
+        ============================================ */
+
+        .receipt-footer {
+          display: flex;
+
+          justify-content: space-between;
+
+          align-items: flex-end;
+
+          gap: 20px;
+
+          margin-top: 10mm;
+
+          padding-top: 5mm;
+
+          border-top: 1px solid #dbe2ea;
+
+          color: #64748b;
+
+          font-size: 8px;
+
+          line-height: 1.5;
+        }
+
+
+        .footer-right {
+          text-align: right;
+        }
+
+
+        .footer-right strong {
+          color: #334155;
+        }
+
+
+        /* ============================================
+           PRINT
+        ============================================ */
+
+        @media print {
+
+          html,
+          body {
+            width: 210mm;
+
+            min-height: 297mm;
+          }
+
+
+          .receipt {
+            width: 186mm;
+
+            min-height: 273mm;
+
+            margin: 0;
+          }
+
+
+          .receipt-content {
+            padding: 5mm;
+          }
+
+
+          * {
+            -webkit-print-color-adjust: exact !important;
+
+            print-color-adjust: exact !important;
+          }
+
+        }
+
+
+        /* ============================================
+           SMALL PRINT WINDOW
+        ============================================ */
+
+        @media (max-width: 700px) {
+
+          .receipt-header {
+            flex-direction: column;
+          }
+
+
+          .receipt-title {
+            text-align: left;
+          }
+
+
+          .reference-grid,
+          .date-grid,
+          .address-grid,
+          .package-grid {
+            grid-template-columns: 1fr;
+          }
+
+
+          .receipt-footer {
+            flex-direction: column;
+
+            align-items: flex-start;
+          }
+
+
+          .footer-right {
+            text-align: left;
+          }
+
         }
 
       </style>
 
     </head>
 
+
     <body>
 
-      ${documentHTML}
+
+      <div class="receipt">
+
+
+        ${watermarkHTML}
+
+
+        <div class="receipt-content">
+
+
+          <!-- ======================================
+               HEADER
+          ======================================= -->
+
+          <div class="receipt-header">
+
+
+            <div>
+
+              <div class="brand">
+                ZENDITCARGO
+              </div>
+
+              <div class="brand-subtitle">
+                Cargo &amp; Shipping Services
+              </div>
+
+            </div>
+
+
+            <div class="receipt-title">
+
+              <h1>
+                CARGO RECEIPT
+              </h1>
+
+              <p>
+                Official shipment document
+              </p>
+
+            </div>
+
+
+          </div>
+
+
+          <!-- ======================================
+               REFERENCE
+          ======================================= -->
+
+          <div class="reference-grid">
+
+
+            <div class="reference-box">
+
+              <span class="reference-label">
+                Invoice Number
+              </span>
+
+              <span class="reference-value">
+                ${safe(invoice)}
+              </span>
+
+            </div>
+
+
+            <div class="reference-box">
+
+              <span class="reference-label">
+                Tracking Number
+              </span>
+
+              <span class="reference-value">
+                ${safe(tracking)}
+              </span>
+
+            </div>
+
+
+          </div>
+
+
+          <!-- ======================================
+               STATUS
+          ======================================= -->
+
+          <div class="status-section">
+
+            <span class="status-label">
+              Shipment Status
+            </span>
+
+            <span class="status-value">
+              ${safe(status)}
+            </span>
+
+          </div>
+
+
+          <!-- ======================================
+               DATES
+          ======================================= -->
+
+          <div class="date-grid">
+
+
+            <div class="date-box">
+
+              <span class="date-label">
+                Shipment Date
+              </span>
+
+              <div class="date-value">
+                ${safe(shipmentDateValue)}
+              </div>
+
+            </div>
+
+
+            <div class="date-box">
+
+              <span class="date-label">
+                Expected Arrival
+              </span>
+
+              <div class="date-value">
+                ${safe(arrivalDateValue)}
+              </div>
+
+            </div>
+
+
+          </div>
+
+
+          <!-- ======================================
+               FROM / TO
+          ======================================= -->
+
+          <div class="section-title">
+            Shipment Details
+          </div>
+
+
+          <div class="address-grid">
+
+
+            <div class="address-box">
+
+              <span class="address-label">
+                From
+              </span>
+
+              <div class="person-name">
+                ${safe(senderName)}
+              </div>
+
+              <div class="person-email">
+                ${safe(senderEmailValue)}
+              </div>
+
+              <div class="person-location">
+                ${safe(originValue)}
+              </div>
+
+            </div>
+
+
+            <div class="address-box">
+
+              <span class="address-label">
+                To
+              </span>
+
+              <div class="person-name">
+                ${safe(recipientName)}
+              </div>
+
+              <div class="person-email">
+                ${safe(recipientEmailValue)}
+              </div>
+
+              <div class="person-location">
+                ${safe(recipientAddressValue)}
+              </div>
+
+            </div>
+
+
+          </div>
+
+
+          <!-- ======================================
+               PACKAGE
+          ======================================= -->
+
+          <div class="section-title">
+            Package Information
+          </div>
+
+
+          <div class="package-box">
+
+
+            <div class="package-grid">
+
+
+              <div>
+
+                <span class="package-item-label">
+                  Package Content
+                </span>
+
+                <div class="package-item-value">
+                  ${safe(packageContentValue)}
+                </div>
+
+              </div>
+
+
+              <div>
+
+                <span class="package-item-label">
+                  Weight
+                </span>
+
+                <div class="package-item-value">
+                  ${safe(packageWeightValue)}
+                </div>
+
+              </div>
+
+
+            </div>
+
+
+          </div>
+
+
+          <!-- ======================================
+               TRACKING
+          ======================================= -->
+
+          <div class="tracking-section">
+
+            <span class="tracking-label">
+              Track This Shipment
+            </span>
+
+            <div class="tracking-number">
+              ${safe(tracking)}
+            </div>
+
+            <div class="tracking-url">
+              ${safe(trackingURL)}
+            </div>
+
+          </div>
+
+
+          <!-- ======================================
+               ERROR MESSAGE
+          ======================================= -->
+
+          ${errorHTML}
+
+
+          <!-- ======================================
+               FOOTER
+          ======================================= -->
+
+          <div class="receipt-footer">
+
+
+            <div>
+
+              <strong>
+                ZendItCargo
+              </strong>
+
+              <br>
+
+              Cargo &amp; Shipping Services
+
+              <br>
+
+              Thank you for choosing ZendItCargo.
+
+            </div>
+
+
+            <div class="footer-right">
+
+              <strong>
+                zenditcargo.com
+              </strong>
+
+              <br>
+
+              Tracking available online
+
+            </div>
+
+
+          </div>
+
+
+        </div>
+
+
+      </div>
+
 
     </body>
 
@@ -3429,9 +4552,12 @@ function printDocument() {
 
   `);
 
+
   printWindow.document.close();
 
+
   printWindow.focus();
+
 
   setTimeout(
     function () {
@@ -3439,7 +4565,7 @@ function printDocument() {
       printWindow.print();
 
     },
-    500
+    700
   );
 
 }

@@ -1274,6 +1274,25 @@ body {
   background: linear-gradient(90deg, #8b5cf6, #4f46e5);
 }
 
+.receipt-logo-watermark {
+  position: absolute;
+
+  width: 165mm;
+  height: 165mm;
+
+  left: 50%;
+  top: 50%;
+
+  transform: translate(-50%, -50%);
+
+  object-fit: contain;
+
+  opacity: 0.05;
+
+  z-index: 0;
+  pointer-events: none;
+}
+
 /* ======================================================
    RESPONSIVE
 ====================================================== */
