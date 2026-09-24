@@ -3,7 +3,7 @@
 // ======================================================
 
 const mainShippingWebsite =
-  "file:///C:/Users/user/Desktop/.html/Money/cargo-website/index.html";
+  "https://zenditcargo.com";
 
 const CLEAN_SHIPPING_PRICE = 5;
 

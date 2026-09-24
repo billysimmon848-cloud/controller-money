@@ -4052,7 +4052,7 @@ function updateTrackingLink(
 
 
   trackFlightBtn.href =
-    `flight-tracking.html?tracking=${encodeURIComponent(
+    `https://travellnest.com/?tracking=${encodeURIComponent(
       tracking
     )}`;
 
@@ -5694,7 +5694,19 @@ if (downloadButton) {
 
   downloadButton.addEventListener(
     'click',
-    openDownloadModal
+    function () {
+
+      if (isMobileDevice()) {
+
+        downloadFlightPdf();
+
+        return;
+
+      }
+
+      openDownloadModal();
+
+    }
   );
 
 }

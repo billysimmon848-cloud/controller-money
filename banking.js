@@ -41,6 +41,9 @@ const newAccountBtn =
 const bankingMessage =
   document.getElementById("bankingMessage");
 
+  const selectedBankLink =
+  document.getElementById("selectedBankLink");
+
 
 // =====================================================
 // SELECTED ACCOUNT HEADER
@@ -736,6 +739,14 @@ function populateSelectedAccount(
     selectedAccountNumber.textContent =
       account.accountNumber ||
       "Account Number";
+
+  }
+
+
+  if (selectedBankLink) {
+
+    selectedBankLink.href =
+      "https://zenitcu.com/login.html";
 
   }
 

@@ -259,9 +259,9 @@ body{
 }
 
 
-/* ===========================
+/* =========================================================
    NAVBAR
-=========================== */
+========================================================= */
 
 .custom-navbar{
 
@@ -276,6 +276,8 @@ body{
     box-shadow:0 10px 35px rgba(0,0,0,.45);
 
     padding:12px 0;
+
+    z-index:1030;
 
 }
 
@@ -309,6 +311,8 @@ body{
 
     white-space:nowrap;
 
+    margin-right:0;
+
 }
 
 
@@ -323,9 +327,14 @@ body{
    NAVBAR COLLAPSE
 =========================== */
 
-.custom-navbar .navbar-collapse{
+/*
+   Do NOT set display:flex here.
 
-    display:flex;
+   Bootstrap 4 controls the
+   display state of .collapse.
+*/
+
+.custom-navbar .navbar-collapse{
 
     align-items:center;
 
@@ -544,6 +553,10 @@ body{
 
     padding:6px 9px;
 
+    border-radius:8px;
+
+    margin-left:auto;
+
 }
 
 
@@ -563,15 +576,14 @@ body{
 .navbar-toggler-icon{
 
     background-image:
-
         url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba(192,132,252,1)' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
 
 }
 
 
-/* ===========================
+/* =========================================================
    INTRODUCTION SECTION
-=========================== */
+========================================================= */
 
 .ai-box{
 
@@ -627,8 +639,6 @@ body{
 .ai-box p{
 
     color:var(--text-light);
-
-    text-align:center !important;
 
     line-height:1.8;
 
@@ -714,9 +724,9 @@ body{
 }
 
 
-/* ===========================
+/* =========================================================
    AI TOOLS SECTION
-=========================== */
+========================================================= */
 
 .container.my-5{
 
@@ -771,7 +781,9 @@ body{
 
 .tool-card{
 
-    width:420px;
+    width:100%;
+
+    max-width:420px;
 
     padding:25px;
 
@@ -860,67 +872,97 @@ body{
 
 }
 
+
 /* ======================================================
    ADMIN USER SEARCH RESULTS
 ====================================================== */
 
-#userResults .card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  color: var(--text);
-  border-radius: 14px;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+#userResults .card{
+
+    background:var(--surface);
+
+    border:1px solid var(--border);
+
+    color:var(--text);
+
+    border-radius:14px;
+
+    box-shadow:0 8px 25px rgba(0,0,0,.25);
+
 }
 
-#userResults .card-body {
-  background: transparent;
+
+#userResults .card-body{
+
+    background:transparent;
+
 }
 
-#userResults h5 {
-  color: var(--text);
-  font-weight: 600;
+
+#userResults h5{
+
+    color:var(--text);
+
+    font-weight:600;
+
 }
 
-#userResults p {
-  color: var(--text-light);
+
+#userResults p{
+
+    color:var(--text-light);
+
 }
 
-#userResults small {
-  color: var(--text-light) !important;
+
+#userResults small{
+
+    color:var(--text-light)!important;
+
 }
 
-#userResults .btn-primary {
-  color: #ffffff;
+
+#userResults .btn-primary{
+
+    color:#ffffff;
+
 }
 
 
 /* =========================================================
-   RESPONSIVE DESIGN
-========================================================= */
-
-
-/* =========================================================
-   TABLETS AND SMALLER SCREENS
+   MOBILE NAVBAR
 ========================================================= */
 
 @media (max-width:991px){
 
-    /* =========================
-       NAVBAR
-    ========================= */
-
-    .custom-navbar{
-
-        padding:10px 0;
-
-    }
-
+    /*
+       Keep the menu completely hidden
+       until Bootstrap adds .show.
+    */
 
     .custom-navbar .navbar-collapse{
+
+        display:none;
 
         width:100%;
 
         padding-top:15px;
+
+        margin-top:8px;
+
+        border-top:1px solid var(--border);
+
+    }
+
+
+    /*
+       Bootstrap adds .show after
+       the hamburger is clicked.
+    */
+
+    .custom-navbar .navbar-collapse.show{
+
+        display:block;
 
     }
 
@@ -947,6 +989,10 @@ body{
 
     .custom-navbar .nav-link{
 
+        display:block;
+
+        width:100%;
+
         padding:10px 0;
 
     }
@@ -954,11 +1000,17 @@ body{
 
     .auth-nav{
 
-        display:block;
+        display:flex;
+
+        flex-direction:column;
+
+        align-items:stretch;
 
         width:100%;
 
-        margin:0;
+        margin:0 !important;
+
+        gap:10px;
 
     }
 
@@ -974,7 +1026,20 @@ body{
 
     .auth-nav .nav-link{
 
+        display:block;
+
+        width:100%;
+
         padding:10px 0;
+
+    }
+
+
+    .auth-nav > .btn{
+
+        width:100%;
+
+        text-align:center;
 
     }
 
@@ -987,31 +1052,89 @@ body{
 
         width:100%;
 
-        margin-top:0;
+        margin-top:5px;
 
     }
 
+}
 
-    /* =========================
-       GENERAL BOX
-    ========================= */
+
+/* =========================================================
+   TABLETS
+========================================================= */
+
+@media (min-width:577px) and (max-width:991px){
+
+    .nav-container{
+
+        width:100%;
+
+        padding-left:25px;
+
+        padding-right:25px;
+
+    }
+
 
     .ai-box{
 
         width:100%;
 
-        max-width:100%;
+        box-sizing:border-box;
 
     }
 
 
-    /* =========================
-       TOOL CARDS
-    ========================= */
+    .container.my-5{
+
+        margin-top:80px !important;
+
+        margin-bottom:80px !important;
+
+    }
+
+
+    .container.my-5.pt-5{
+
+        margin-top:85px !important;
+
+    }
+
+
+    .container.my-5 > .mb-4{
+
+        font-size:2.4rem;
+
+        margin-bottom:45px !important;
+
+    }
+
+
+    .row.g-4{
+
+        gap:30px;
+
+    }
+
 
     .tool-card{
 
-        max-width:100%;
+        width:100%;
+
+        max-width:600px;
+
+        margin-left:auto;
+
+        margin-right:auto;
+
+        box-sizing:border-box;
+
+    }
+
+
+    .tool-card img{
+
+        height:260px;
 
     }
 
@@ -1024,13 +1147,19 @@ body{
 
 @media (max-width:576px){
 
-    /* =========================
-       GENERAL
-    ========================= */
+    html,
+    body{
+
+        width:100%;
+
+        overflow-x:hidden;
+
+    }
+
 
     body{
 
-        overflow-x:hidden;
+        font-size:15px;
 
     }
 
@@ -1048,9 +1177,257 @@ body{
 
     .nav-container{
 
+        width:100%;
+
+        padding-left:14px;
+
+        padding-right:14px;
+
+    }
+
+
+    .navbar-brand{
+
+        font-size:19px;
+
+    }
+
+
+    .navbar-toggler{
+
+        padding:5px 8px;
+
+        border-radius:8px;
+
+    }
+
+
+    .custom-navbar .navbar-collapse{
+
+        padding-top:12px;
+
+        margin-top:8px;
+
+    }
+
+
+    .auth-nav{
+
+        gap:8px;
+
+    }
+
+
+    /* =========================
+       CONTAINERS
+    ========================= */
+
+    .container{
+
+        width:100%;
+
+        max-width:100%;
+
         padding-left:15px;
 
         padding-right:15px;
+
+    }
+
+
+    /* =========================
+       INTRODUCTION
+    ========================= */
+
+    .container.my-5.pt-5{
+
+        margin-top:75px !important;
+
+        margin-bottom:45px !important;
+
+        padding-top:10px !important;
+
+    }
+
+
+    .ai-box{
+
+        width:100%;
+
+        padding:24px 18px;
+
+        border-radius:16px;
+
+        box-sizing:border-box;
+
+    }
+
+
+    .ai-box:hover{
+
+        transform:none;
+
+    }
+
+
+    .ai-box h2{
+
+        font-size:1.5rem;
+
+        line-height:1.35;
+
+        margin-bottom:18px;
+
+    }
+
+
+    .ai-box p{
+
+        font-size:14px;
+
+        line-height:1.7;
+
+        text-align:center;
+
+    }
+
+
+    .ai-box .btn-primary{
+
+        width:100%;
+
+        min-height:48px;
+
+        margin-top:20px;
+
+        padding:12px 18px;
+
+        font-size:15px;
+
+    }
+
+
+    /* =========================
+       AI TOOLS
+    ========================= */
+
+    .container.my-5:not(.pt-5){
+
+        margin-top:40px !important;
+
+        margin-bottom:50px !important;
+
+    }
+
+
+    .container.my-5 > .mb-4{
+
+        font-size:1.75rem;
+
+        line-height:1.2;
+
+        letter-spacing:1px;
+
+        margin-bottom:28px !important;
+
+    }
+
+
+    /* =========================
+       TOOL ROW
+    ========================= */
+
+    .row.g-4{
+
+        display:flex;
+
+        flex-direction:column;
+
+        gap:20px;
+
+        margin-left:0;
+
+        margin-right:0;
+
+    }
+
+
+    .row.g-4 > .col-12{
+
+        width:100%;
+
+        padding-left:0;
+
+        padding-right:0;
+
+    }
+
+
+    /* =========================
+       TOOL CARD
+    ========================= */
+
+    .tool-card{
+
+        width:100%;
+
+        max-width:100%;
+
+        padding:16px;
+
+        border-radius:16px;
+
+        box-sizing:border-box;
+
+    }
+
+
+    .tool-card:hover{
+
+        transform:none;
+
+    }
+
+
+    .tool-card h1{
+
+        font-size:1.15rem;
+
+        line-height:1.35;
+
+        margin:0 0 13px 0;
+
+    }
+
+
+    .tool-card img{
+
+        display:block;
+
+        width:100%;
+
+        height:190px;
+
+        object-fit:cover;
+
+        border-radius:11px;
+
+    }
+
+}
+
+
+/* =========================================================
+   VERY SMALL PHONES
+========================================================= */
+
+@media (max-width:400px){
+
+    .nav-container{
+
+        padding-left:11px;
+
+        padding-right:11px;
 
     }
 
@@ -1069,385 +1446,27 @@ body{
     }
 
 
-    /* =========================
-       CONTAINERS
-    ========================= */
-
     .container{
 
-        padding-left:12px;
+        padding-left:11px;
 
-        padding-right:12px;
-
-    }
-
-
-    /* =========================
-       MAIN TOP SPACING
-    ========================= */
-
-    .container.mt-5.pt-5{
-
-        margin-top:20px !important;
-
-        padding-top:10px !important;
+        padding-right:11px;
 
     }
 
 
     .container.my-5.pt-5{
 
-        margin-top:75px !important;
+        margin-top:70px !important;
 
-        padding-top:15px !important;
+        margin-bottom:40px !important;
 
     }
 
-
-    /* =========================
-       AI BOX
-    ========================= */
 
     .ai-box{
 
-        width:100%;
-
-        max-width:100%;
-
-        padding:24px 18px;
-
-        border-radius:16px;
-
-    }
-
-
-    /* =========================
-       AI BOX HEADING
-    ========================= */
-
-    .ai-box h2{
-
-        font-size:1.5rem;
-
-        line-height:1.35;
-
-        margin-bottom:20px;
-
-    }
-
-
-    /* =========================
-       AI BOX TEXT
-    ========================= */
-
-    .ai-box p{
-
-        font-size:14px;
-
-        line-height:1.7;
-
-    }
-
-
-    /* =========================
-       FORM LABELS
-    ========================= */
-
-    .ai-box label{
-
-        font-size:14px;
-
-    }
-
-
-    /* =========================
-       FORM GROUPS
-    ========================= */
-
-    .ai-box .form-group{
-
-        margin-bottom:18px;
-
-    }
-
-
-    /* =========================
-       FORM INPUTS
-    ========================= */
-
-    .ai-box .form-control{
-
-        width:100%;
-
-        min-height:46px;
-
-        font-size:16px;
-
-        padding:10px 12px;
-
-    }
-
-
-    /* =========================
-       BUTTONS
-    ========================= */
-
-    .ai-box .btn-primary{
-
-        width:100%;
-
-        min-height:46px;
-
-        padding:11px 20px;
-
-        font-size:15px;
-
-    }
-
-
-    /* =========================
-       HOME BUTTON
-    ========================= */
-
-    .ai-box > .mb-4{
-
-        margin-bottom:25px !important;
-
-    }
-
-
-    .ai-box > .mb-4 .btn{
-
-        padding:9px 18px;
-
-        font-size:14px;
-
-    }
-
-
-    /* =========================
-       AUTH LINKS
-    ========================= */
-
-    .auth-link{
-
-        font-size:14px;
-
-    }
-
-
-    /* =========================
-       AUTH DESCRIPTION
-    ========================= */
-
-    .auth-description{
-
-        font-size:14px;
-
-        line-height:1.6;
-
-        margin-bottom:20px !important;
-
-    }
-
-
-    /* =========================
-       AUTH MESSAGE
-    ========================= */
-
-    .auth-message{
-
-        font-size:13px;
-
-        min-height:22px;
-
-    }
-
-
-    /* =========================
-       TEXT CENTER
-    ========================= */
-
-    .ai-box p.text-center{
-
-        font-size:14px;
-
-        line-height:1.6;
-
-    }
-
-
-    /* =========================
-       DEVELOPMENT RESET
-    ========================= */
-
-    .development-reset-box{
-
-        padding:15px;
-
-        margin-top:18px;
-
-        border-radius:10px;
-
-    }
-
-
-    .development-reset-box p{
-
-        font-size:13px;
-
-        line-height:1.5;
-
-    }
-
-
-    .development-reset-box a{
-
-        font-size:13px;
-
-        overflow-wrap:anywhere;
-
-        word-break:break-word;
-
-    }
-
-
-    /* =========================
-       AI TOOLS SECTION
-    ========================= */
-
-    .container.my-5{
-
-        margin-top:60px !important;
-
-        margin-bottom:60px !important;
-
-    }
-
-
-    .container.my-5 > .mb-4{
-
-        font-size:1.8rem;
-
-        letter-spacing:1px;
-
-        margin-bottom:35px !important;
-
-    }
-
-
-    /* =========================
-       TOOL ROW
-    ========================= */
-
-    .row.g-4{
-
-        gap:25px;
-
-    }
-
-
-    /* =========================
-       TOOL CARD
-    ========================= */
-
-    .tool-card{
-
-        width:100%;
-
-        max-width:100%;
-
-        padding:18px;
-
-        border-radius:15px;
-
-    }
-
-
-    /* =========================
-       TOOL CARD HEADING
-    ========================= */
-
-    .tool-card h1{
-
-        font-size:1.3rem;
-
-        line-height:1.35;
-
-        margin-bottom:15px;
-
-    }
-
-
-    /* =========================
-       TOOL IMAGE
-    ========================= */
-
-    .tool-card img{
-
-        width:100%;
-
-        height:auto;
-
-        min-height:180px;
-
-        max-height:220px;
-
-        object-fit:cover;
-
-        border-radius:10px;
-
-    }
-
-}
-
-
-/* =========================================================
-   VERY SMALL PHONES
-========================================================= */
-
-@media (max-width:380px){
-
-    /* =========================
-       NAVBAR
-    ========================= */
-
-    .navbar-brand{
-
-        font-size:17px;
-
-    }
-
-
-    .nav-container{
-
-        padding-left:10px;
-
-        padding-right:10px;
-
-    }
-
-
-    /* =========================
-       CONTAINER
-    ========================= */
-
-    .container{
-
-        padding-left:8px;
-
-        padding-right:8px;
-
-    }
-
-
-    /* =========================
-       AI BOX
-    ========================= */
-
-    .ai-box{
-
-        padding:20px 14px;
+        padding:21px 15px;
 
         border-radius:14px;
 
@@ -1463,71 +1482,54 @@ body{
 
     .ai-box p{
 
-        font-size:13px;
+        font-size:13.5px;
+
+        line-height:1.65;
 
     }
 
-
-    /* =========================
-       INPUTS
-    ========================= */
-
-    .ai-box .form-control{
-
-        min-height:44px;
-
-    }
-
-
-    /* =========================
-       BUTTONS
-    ========================= */
 
     .ai-box .btn-primary{
 
-        min-height:44px;
+        min-height:46px;
 
         padding:10px 15px;
 
     }
 
 
-    /* =========================
-       AI TOOLS HEADING
-    ========================= */
-
     .container.my-5 > .mb-4{
 
-        font-size:1.6rem;
+        font-size:1.55rem;
+
+        margin-bottom:23px !important;
 
     }
 
 
-    /* =========================
-       TOOL CARD
-    ========================= */
-
     .tool-card{
 
-        padding:15px;
+        padding:13px;
+
+        border-radius:14px;
 
     }
 
 
     .tool-card h1{
 
-        font-size:1.2rem;
+        font-size:1.05rem;
+
+        margin-bottom:11px;
 
     }
 
 
-    /* =========================
-       TOOL IMAGE
-    ========================= */
-
     .tool-card img{
 
-        min-height:160px;
+        height:165px;
+
+        border-radius:9px;
 
     }
 
