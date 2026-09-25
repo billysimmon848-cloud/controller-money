@@ -196,7 +196,7 @@ router.post("/signup", async (req, res) => {
       );
 
 
-    console.log(
+     (
       `ACCOUNT CREATED: ${user.email}`
     );
 
@@ -421,7 +421,7 @@ router.post("/login", async (req, res) => {
     });
 
 
-    console.log(
+     (
       `USER LOGIN: ${user.email}`
     );
 
@@ -637,7 +637,7 @@ router.post(
         `http://localhost:3000/login.html?token=${resetToken}&email=${encodeURIComponent(user.email)}`;
 
 
-      console.log(
+       (
         "PASSWORD RESET LINK:",
         resetLink
       );

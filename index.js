@@ -61,13 +61,6 @@ async function loadUserNavbar() {
     const userData =
       await userResponse.json();
 
-
-    console.log(
-      "CURRENT USER:",
-      userData
-    );
-
-
     // ==================================================
     // INVALID TOKEN
     // ==================================================
@@ -105,12 +98,6 @@ async function loadUserNavbar() {
 
     const walletData =
       await walletResponse.json();
-
-
-    console.log(
-      "WALLET:",
-      walletData
-    );
 
 
     // ==================================================

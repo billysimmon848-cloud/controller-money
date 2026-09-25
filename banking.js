@@ -2644,13 +2644,6 @@ async function deleteSelectedBankingAccount() {
     const data =
       await response.json();
 
-
-    console.log(
-      "Delete Banking response:",
-      data
-    );
-
-
     if (
       !response.ok ||
       !data.success

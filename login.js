@@ -264,13 +264,6 @@ loginForm.onsubmit =
       const data =
         await response.json();
 
-
-      console.log(
-        "LOGIN RESPONSE:",
-        data
-      );
-
-
       // ==========================================
       // LOGIN FAILED
       // ==========================================
@@ -348,13 +341,6 @@ loginForm.onsubmit =
         userRole
       );
 
-
-      console.log(
-        "USER ROLE:",
-        userRole
-      );
-
-
       // ==========================================
       // ADMIN REDIRECT
       // ==========================================
@@ -362,11 +348,6 @@ loginForm.onsubmit =
       if (
         userRole === "admin"
       ) {
-
-        console.log(
-          "Admin detected. Redirecting to admin dashboard..."
-        );
-
 
         window.location.href =
           "admin.html";
@@ -380,11 +361,6 @@ loginForm.onsubmit =
       // ==========================================
       // NORMAL USER REDIRECT
       // ==========================================
-
-      console.log(
-        "Normal user detected. Redirecting to user dashboard..."
-      );
-
 
       window.location.href =
         "index.html";
@@ -522,13 +498,6 @@ signupForm.onsubmit =
 
       const data =
         await response.json();
-
-
-      console.log(
-        "SIGNUP RESPONSE:",
-        data
-      );
-
 
       // ==========================================
       // SIGNUP FAILED
@@ -683,13 +652,6 @@ forgotPasswordForm.onsubmit =
 
       const data =
         await response.json();
-
-
-      console.log(
-        "FORGOT PASSWORD RESPONSE:",
-        data
-      );
-
 
       if (!response.ok) {
 
@@ -891,13 +853,6 @@ resetPasswordForm.onsubmit =
 
       const data =
         await response.json();
-
-
-      console.log(
-        "RESET PASSWORD RESPONSE:",
-        data
-      );
-
 
       if (!response.ok) {
 

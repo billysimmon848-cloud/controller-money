@@ -142,7 +142,7 @@ async function getCachedBnbUsdPrice() {
     now;
 
 
-  console.log(
+   (
     "BNB/USD PRICE UPDATED:",
     price
   );
@@ -276,46 +276,46 @@ async function checkBlock(
       }
 
 
-      console.log("");
+       ("");
 
-      console.log(
+       (
         "========================================"
       );
 
-      console.log(
+       (
         "BNB DEPOSIT DETECTED"
       );
 
-      console.log(
+       (
         "========================================"
       );
 
-      console.log(
+       (
         "User:",
         depositAddress.user.toString()
       );
 
-      console.log(
+       (
         "Address:",
         depositAddress.address
       );
 
-      console.log(
+       (
         "Amount:",
         amountBnb,
         "BNB"
       );
 
-      console.log(
+       (
         "Transaction:",
         transaction.hash
       );
 
-      console.log(
+       (
         "Status: pending"
       );
 
-      console.log(
+       (
         "========================================"
       );
 
@@ -398,26 +398,26 @@ async function processConfirmedDeposit(
     }
 
 
-    console.log("");
+     ("");
 
-    console.log(
+     (
       "========================================"
     );
 
-    console.log(
+     (
       "PROCESSING CONFIRMED BNB DEPOSIT"
     );
 
-    console.log(
+     (
       "========================================"
     );
 
-    console.log(
+     (
       "Transaction:",
       processingDeposit.transactionHash
     );
 
-    console.log(
+     (
       "Amount:",
       processingDeposit.amountBnb,
       "BNB"
@@ -454,7 +454,7 @@ async function processConfirmedDeposit(
       existingWalletTransaction
     ) {
 
-      console.log(
+       (
         "Existing BNB wallet transaction found."
       );
 
@@ -491,7 +491,7 @@ async function processConfirmedDeposit(
       );
 
 
-      console.log(
+       (
         "Deposit marked as already credited."
       );
 
@@ -529,13 +529,13 @@ async function processConfirmedDeposit(
     }
 
 
-    console.log(
+     (
       "BNB/USD rate:",
       exchangeRate
     );
 
 
-    console.log(
+     (
       "USD credit:",
       usdAmount
     );
@@ -635,21 +635,21 @@ async function processConfirmedDeposit(
     }
 
 
-    console.log(
+     (
       "Wallet credited:",
       usdAmount,
       "USD"
     );
 
 
-    console.log(
+     (
       "New wallet balance:",
       walletResult.balance,
       "USD"
     );
 
 
-    console.log(
+     (
       "BNB wallet credit completed."
     );
 
@@ -658,7 +658,7 @@ async function processConfirmedDeposit(
     // IMMEDIATE SWEEP
     // ==================================================
 
-    console.log(
+     (
       "Starting immediate BNB sweep..."
     );
 
@@ -698,52 +698,52 @@ async function processConfirmedDeposit(
       );
 
 
-      console.log("");
+       ("");
 
-      console.log(
+       (
         "========================================"
       );
 
-      console.log(
+       (
         "BNB DEPOSIT FULLY PROCESSED"
       );
 
-      console.log(
+       (
         "========================================"
       );
 
-      console.log(
+       (
         "Deposit:",
         processingDeposit.transactionHash
       );
 
-      console.log(
+       (
         "BNB:",
         processingDeposit.amountBnb
       );
 
-      console.log(
+       (
         "Rate:",
         exchangeRate
       );
 
-      console.log(
+       (
         "USD credited:",
         usdAmount
       );
 
-      console.log(
+       (
         "Sweep:",
         sweepResult.transactionHash
       );
 
-      console.log(
+       (
         "Sweep fee:",
         sweepResult.feeBnb,
         "BNB"
       );
 
-      console.log(
+       (
         "========================================"
       );
 
@@ -757,7 +757,7 @@ async function processConfirmedDeposit(
         sweepResult.error
       );
 
-      console.log(
+       (
         "Wallet was already credited."
       );
 
@@ -994,7 +994,7 @@ async function updatePendingDeposits() {
 
 async function startBnbMonitor() {
 
-  console.log(
+   (
     "BNB MONITOR STARTING..."
   );
 
@@ -1003,7 +1003,7 @@ async function startBnbMonitor() {
     await provider.getNetwork();
 
 
-  console.log(
+   (
     "BNB NETWORK:",
     network.chainId.toString()
   );
@@ -1012,7 +1012,7 @@ async function startBnbMonitor() {
   await loadDepositAddresses();
 
 
-  console.log(
+   (
     "BNB DEPOSIT ADDRESSES:",
     depositAddresses.length
   );
@@ -1052,7 +1052,7 @@ async function startBnbMonitor() {
   );
 
 
-  console.log(
+   (
     "BNB MONITOR IS RUNNING."
   );
 

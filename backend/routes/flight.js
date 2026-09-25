@@ -2610,7 +2610,7 @@ router.delete(
         req.params.trackingNumber;
 
 
-      console.log(
+       (
 
         "DELETE FLIGHT REQUEST:",
 
@@ -2636,7 +2636,7 @@ router.delete(
 
       if (!flight) {
 
-        console.log(
+         (
           "DELETE FLIGHT: NOT FOUND"
         );
 
@@ -2662,7 +2662,7 @@ router.delete(
       });
 
 
-      console.log(
+       (
 
         "DELETE FLIGHT: DELETED",
 

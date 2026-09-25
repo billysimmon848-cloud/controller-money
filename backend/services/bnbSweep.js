@@ -141,28 +141,28 @@ async function sweepDeposit(
       getTreasuryWallet();
 
 
-    console.log("");
+     ("");
 
-    console.log(
+     (
       "========================================"
     );
 
-    console.log(
+     (
       "BNB SWEEP STARTING"
     );
 
-    console.log(
+     (
       "========================================"
     );
 
 
-    console.log(
+     (
       "Deposit address:",
       depositWallet.address
     );
 
 
-    console.log(
+     (
       "Treasury address:",
       treasuryWallet.address
     );
@@ -190,7 +190,7 @@ async function sweepDeposit(
       );
 
 
-    console.log(
+     (
       "Deposit balance:",
       formatEther(balance),
       "BNB"
@@ -236,7 +236,7 @@ async function sweepDeposit(
       feeData.gasPrice;
 
 
-    console.log(
+     (
       "Estimated sweep fee:",
       formatEther(
         estimatedGas
@@ -262,7 +262,7 @@ async function sweepDeposit(
       estimatedGas;
 
 
-    console.log(
+     (
       "Amount to treasury:",
       formatEther(
         amountToSend
@@ -293,7 +293,7 @@ async function sweepDeposit(
       });
 
 
-    console.log(
+     (
       "Sweep transaction:",
       transaction.hash
     );
@@ -321,7 +321,7 @@ async function sweepDeposit(
       actualGasPrice;
 
 
-    console.log(
+     (
       "Actual sweep fee:",
       formatEther(
         actualFee
@@ -330,12 +330,12 @@ async function sweepDeposit(
     );
 
 
-    console.log(
+     (
       "Sweep confirmed."
     );
 
 
-    console.log(
+     (
       "========================================"
     );
 

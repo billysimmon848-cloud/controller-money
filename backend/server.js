@@ -20,16 +20,6 @@ const app = express();
 
 
 // ======================================================
-// SHOW LOADED FILES
-// ======================================================
-
-console.log(
-  "AUTH FILE LOADED FROM:",
-  require.resolve("./routes/auth")
-);
-
-
-// ======================================================
 // MIDDLEWARE
 // ======================================================
 
@@ -147,7 +137,7 @@ mongoose
 
   .then(() => {
 
-    console.log(
+     (
       "MongoDB connected"
     );
 
@@ -160,7 +150,7 @@ mongoose
       PORT,
       () => {
 
-        console.log(
+         (
           `Server running on port ${PORT}`
         );
 
