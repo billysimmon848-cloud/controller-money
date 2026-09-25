@@ -176,9 +176,11 @@
 
 /* ======================================================
    MOBILE
-   ====================================================== */
+====================================================== */
 
 @media (max-width: 576px) {
+
+  /* WALLET BOX */
 
   .ai-box {
 
@@ -187,6 +189,8 @@
   }
 
 
+  /* BALANCE */
+
   #walletBalance {
 
     font-size: 34px;
@@ -194,12 +198,16 @@
   }
 
 
+  /* BNB FUNDING BOX */
+
   .bnb-funding-box {
 
     padding: 18px;
 
   }
 
+
+  /* BNB ADDRESS */
 
   .bnb-address-row {
 
@@ -217,11 +225,39 @@
   }
 
 
+  /* COPY BUTTON */
+
   #copyBnbButton {
 
     width: 100%;
 
     margin-left: 0 !important;
+
+  }
+
+
+  /* HIDE AI TOOLS */
+
+  .custom-navbar .nav-link {
+
+    display: none !important;
+
+  }
+
+
+  /* MOBILE LOGOUT */
+
+  #logoutButton {
+
+    border: none !important;
+
+    padding: 0 !important;
+
+    background: transparent !important;
+
+    box-shadow: none !important;
+
+    color: #86efac !important;
 
   }
 
