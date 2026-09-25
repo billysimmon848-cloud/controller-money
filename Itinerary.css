@@ -1441,6 +1441,102 @@ USERNAME
   filter: brightness(0) invert(1);
 }
 
+/* ======================================================
+   RESPONSIVE MOBILE NAVBAR
+====================================================== */
+
+.navbar-toggler {
+  display: none;
+  width: 42px;
+  height: 38px;
+  padding: 7px;
+  border: 1px solid rgba(139, 92, 246, .35);
+  border-radius: 7px;
+  background: transparent;
+  cursor: pointer;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+
+.navbar-toggler span {
+  display: block;
+  width: 22px;
+  height: 2px;
+  border-radius: 2px;
+  background: #c084fc;
+}
+
+.navbar-toggler:focus {
+  outline: none;
+}
+
+
+/* ======================================================
+   MOBILE
+====================================================== */
+
+@media (max-width: 700px) {
+
+  .custom-navbar {
+    padding: 10px 15px;
+  }
+
+
+  .custom-navbar .nav-container {
+    position: relative;
+    flex-wrap: wrap;
+  }
+
+
+  .custom-navbar .navbar-toggler {
+    display: flex;
+    margin-left: auto;
+  }
+
+
+  /* HIDDEN BY DEFAULT */
+
+  .custom-navbar .auth-nav {
+    display: none !important;
+    width: 100%;
+    margin-left: 0 !important;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(139, 92, 246, .20);
+  }
+
+
+  /* OPEN */
+
+  .custom-navbar .auth-nav.show {
+    display: grid !important;
+    grid-template-columns: 1fr;
+    gap: 8px !important;
+  }
+
+
+  .custom-navbar .auth-nav .nav-item {
+    width: 100%;
+    display: block;
+  }
+
+
+  .custom-navbar .auth-nav .nav-link {
+    display: block;
+    width: 100%;
+    padding: 11px 12px !important;
+    border-radius: 6px;
+    background: rgba(139, 92, 246, .06);
+  }
+
+
+  .custom-navbar .auth-nav .nav-link:hover {
+    background: rgba(139, 92, 246, .12);
+  }
+
+}
 
 /* =========================
    MOBILE

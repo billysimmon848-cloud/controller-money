@@ -6717,6 +6717,57 @@ document.addEventListener(
   }
 );
 
+/* ======================================================
+   MOBILE NAVBAR
+====================================================== */
+
+const navbarToggler =
+  document.getElementById('navbarToggler');
+
+const authNav =
+  document.getElementById('authNav');
+
+
+if (navbarToggler && authNav) {
+
+  navbarToggler.onclick = function () {
+
+    authNav.classList.toggle('show');
+
+
+    const isOpen =
+      authNav.classList.contains('show');
+
+
+    navbarToggler.setAttribute(
+      'aria-expanded',
+      isOpen
+    );
+
+  };
+
+
+  const navLinks =
+    authNav.querySelectorAll('.nav-link');
+
+
+  navLinks.forEach(function (link) {
+
+    link.onclick = function () {
+
+      authNav.classList.remove('show');
+
+      navbarToggler.setAttribute(
+        'aria-expanded',
+        'false'
+      );
+
+    };
+
+  });
+
+}
+
 /* =========================================================
    END
    ========================================================= */
