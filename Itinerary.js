@@ -668,6 +668,13 @@ function getDisplayValue(
   index
 ) {
 
+  if (!input) {
+
+    return '';
+
+  }
+
+
   if (
     index === 4 ||
     index === 7
@@ -678,64 +685,102 @@ function getDisplayValue(
   }
 
 
-  if (!input) {
-
-    return '';
-
-  }
-
-
   let value =
-    input.value.trim();
+    input.value ||
+    '';
 
 
-  if (
-    index === 3
-  ) {
+  /* =========================================================
+     DATE
+     ========================================================= */
 
-    return value
-      .slice(
-        0,
-        airportMaxLength
+  if (index === 10) {
+
+    if (!value) {
+
+      return '';
+
+    }
+
+
+    const date =
+      new Date(
+        value + 'T00:00:00'
+      );
+
+
+    if (
+      Number.isNaN(
+        date.getTime()
       )
-      .toUpperCase();
+    ) {
+
+      return value;
+
+    }
+
+
+    return date.toLocaleDateString(
+      'en-US',
+      {
+        month: '2-digit',
+        day: '2-digit',
+        year: 'numeric'
+      }
+    );
 
   }
 
 
-  if (
-    index === 6
-  ) {
+  /* =========================================================
+     AIRPORT
+     ========================================================= */
+
+  if (index === 3) {
 
     return value
-      .slice(
-        0,
-        destinationMaxLength
-      )
-      .toUpperCase();
+      .toUpperCase()
+      .slice(0, 24);
 
   }
 
 
-  if (
-    index === 1
-  ) {
+  /* =========================================================
+     DESTINATION
+     ========================================================= */
+
+  if (index === 6) {
+
+    return value
+      .toUpperCase()
+      .slice(0, 39);
+
+  }
+
+
+  /* =========================================================
+     PASSENGER NAME
+     ========================================================= */
+
+  if (index === 1) {
 
     return value.toUpperCase();
 
   }
 
 
-  if (
-    index === 15
-  ) {
+  /* =========================================================
+     CLASS
+     ========================================================= */
+
+  if (index === 15) {
 
     return value.toUpperCase();
 
   }
 
 
-  return value;
+  return value.trim();
 
 }
 
@@ -4146,6 +4191,14 @@ function updateDocumentFromFlight(
   }
 
 
+  const travelDate =
+    flight.travelDate
+      ? String(
+          flight.travelDate
+        ).split('T')[0]
+      : '';
+
+
   const values = [
 
     flight.sequenceNumber ||
@@ -4176,8 +4229,7 @@ function updateDocumentFromFlight(
     flight.seat ||
     '',
 
-    flight.travelDate ||
-    '',
+    travelDate,
 
     flight.security ||
     '',
@@ -4232,10 +4284,6 @@ function updateDocumentFromFlight(
 
 }
 
-
-/* =========================================================
-   UPDATE FLIGHT ON SERVER
-   ========================================================= */
 
 /* =========================================================
    UPDATE FLIGHT ON SERVER
@@ -5564,79 +5612,124 @@ function removeWatermark() {
 
 
 /* =========================================================
-   ADD WATERMARK
+   ADD MULTIPLE WATERMARKS
    ========================================================= */
 
 function addWatermark() {
 
-  removeWatermark();
+  if (!pdf) {
+
+    return;
+
+  }
 
 
-  const watermark =
-    document.createElement(
-      'div'
+  /* Remove existing watermarks */
+
+  pdf
+    .querySelectorAll(
+      '.flight-document-watermark'
+    )
+    .forEach(
+      watermark => {
+
+        watermark.remove();
+
+      }
     );
 
 
-  watermark.className =
-    'flight-document-watermark';
+  /* Make PDF container the positioning parent */
+
+  pdf.style.position =
+    'relative';
 
 
-  watermark.textContent =
-    'TEST / FREE';
+  const rows = 5;
+  const columns = 3;
 
 
-  watermark.style.position =
-    'absolute';
+  for (
+    let row = 0;
+    row < rows;
+    row++
+  ) {
+
+    for (
+      let column = 0;
+      column < columns;
+      column++
+    ) {
+
+      const watermark =
+        document.createElement(
+          'div'
+        );
 
 
-  watermark.style.left =
-    '50%';
+      watermark.className =
+        'flight-document-watermark';
 
 
-  watermark.style.top =
-    '50%';
+      watermark.textContent =
+        'TEST / FREE';
 
 
-  watermark.style.transform =
-    'translate(-50%, -50%) rotate(-28deg)';
+      watermark.style.position =
+        'absolute';
 
 
-  watermark.style.fontFamily =
-    'Arial';
+      watermark.style.left =
+        `${column * 50 + 0}%`;
 
 
-  watermark.style.fontSize =
-    '58px';
+      watermark.style.top =
+        `${row * 22 + 8}%`;
 
 
-  watermark.style.fontWeight =
-    '700';
+      watermark.style.transform =
+        'translate(-50%, -50%) rotate(-35deg)';
 
 
-  watermark.style.letterSpacing =
-    '4px';
+      watermark.style.color =
+        'rgba(0, 0, 0, 0.13)';
 
 
-  watermark.style.color =
-    'rgba(0, 0, 0, 0.13)';
+      watermark.style.fontSize =
+        '42px';
 
 
-  watermark.style.whiteSpace =
-    'nowrap';
+      watermark.style.fontFamily =
+        'Arial';
 
 
-  watermark.style.pointerEvents =
-    'none';
+      watermark.style.fontWeight =
+        '700';
 
 
-  watermark.style.zIndex =
-    '999';
+      watermark.style.whiteSpace =
+        'nowrap';
 
 
-  pdf.appendChild(
-    watermark
-  );
+      watermark.style.pointerEvents =
+        'none';
+
+
+      watermark.style.userSelect =
+        'none';
+
+
+      watermark.style.zIndex =
+        '999';
+
+
+      pdf.appendChild(
+        watermark
+      );
+
+    }
+
+  }
 
 }
 
