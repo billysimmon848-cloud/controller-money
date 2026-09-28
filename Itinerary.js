@@ -8,7 +8,7 @@
    ========================================================= */
 
 const API_URL =
-"https://api.justdoks.com/api";
+  "https://api.justdoks.com/api";
 
 
 /* =========================================================
@@ -4194,8 +4194,8 @@ function updateDocumentFromFlight(
   const travelDate =
     flight.travelDate
       ? String(
-          flight.travelDate
-        ).split('T')[0]
+        flight.travelDate
+      ).split('T')[0]
       : '';
 
 
@@ -5249,13 +5249,12 @@ async function createFlight(
 
 
     /*
-      Do not automatically open
-      the profile settings.
-
-      Keep the document visible
-      after creation and make the
-      profile list available.
-    */
+          Do not automatically open
+          the document preview.
+    
+          Keep the flight profile list
+          available after creation.
+        */
 
     selectedFlightId =
       null;
@@ -5267,48 +5266,20 @@ async function createFlight(
     showFlightManagementList();
 
 
-    generatedDocument.style.display =
-      'block';
+    updateDocumentValues();
 
 
-    requestAnimationFrame(
-      function () {
+    if (
+      flightWatermarkEnabled
+    ) {
 
-        updateDocumentValues();
+      addWatermark();
 
+    } else {
 
-        if (
-          flightWatermarkEnabled
-        ) {
+      removeWatermark();
 
-          addWatermark();
-
-        } else {
-
-          removeWatermark();
-
-        }
-
-      }
-    );
-
-
-    requestAnimationFrame(
-      function () {
-
-        generatedDocument.scrollIntoView({
-
-          behavior:
-            'smooth',
-
-          block:
-            'start'
-
-        });
-
-      }
-    );
-
+    }
 
     if (
       flightType === 'test'
@@ -5420,22 +5391,7 @@ if (flightForm) {
 
       generateAutomaticValues();
 
-
       updateDocumentValues();
-
-
-      generatedDocument.style.display =
-        'block';
-
-
-      requestAnimationFrame(
-        function () {
-
-          updateDocumentValues();
-
-        }
-      );
-
 
       createFlightTypeModal();
 
