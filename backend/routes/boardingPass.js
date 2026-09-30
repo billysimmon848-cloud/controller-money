@@ -782,7 +782,7 @@ router.delete(
 
 
 /* =========================================================
-   GET MY BOARDING PASSES
+   GET MY BOARDING PASS
 ========================================================= */
 
 /*
@@ -833,6 +833,75 @@ router.get(
 
         message:
           'Unable to load boarding passes.'
+
+      });
+
+    }
+
+  }
+);
+
+/* =========================================================
+   PUBLIC BOARDING PASS TRACKING
+========================================================= */
+
+/*
+   GET /api/boardingPass/track/:trackingNumber
+*/
+
+router.get(
+  '/track/:trackingNumber',
+  async function (req, res) {
+
+    try {
+
+      const boardingPass =
+        await BoardingPass.findOne({
+
+          trackingNumber:
+            req.params.trackingNumber
+
+        }).select(
+          '-user'
+        );
+
+
+      if (!boardingPass) {
+
+        return res.status(
+          404
+        ).json({
+
+          message:
+            'Boarding pass not found.'
+
+        });
+
+      }
+
+
+      return res.json({
+
+        boardingPass
+
+      });
+
+    }
+
+    catch (error) {
+
+      console.error(
+        'BOARDING PASS TRACKING ERROR:',
+        error
+      );
+
+
+      return res.status(
+        500
+      ).json({
+
+        message:
+          'Unable to track boarding pass.'
 
       });
 

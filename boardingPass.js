@@ -2307,7 +2307,7 @@ async function createBoardingPass(
     if (generatedDocument) {
 
       generatedDocument.style.display =
-        "block";
+        "none";
 
     }
 
@@ -2909,7 +2909,7 @@ function loadPassIntoGenerator(
   if (generatedDocument) {
 
     generatedDocument.style.display =
-      "block";
+      "none";
 
   }
 
@@ -3683,14 +3683,13 @@ function openTrackingPage() {
 
 
   window.open(
-    `https://travellnest.com/flight-tracking.html?tracking=${encodeURIComponent(
+    `https://travellnest.com/boarding-pass-tracking.html?tracking=${encodeURIComponent(
       tracking
     )}`,
     "_blank"
   );
 
 }
-
 
 /* =========================================================
    EDIT BUTTON
