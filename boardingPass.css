@@ -1689,6 +1689,47 @@ select {
 
 
 /* =====================================================
+   BOARDING PASS DOCUMENT ACTIONS
+===================================================== */
+
+.boarding-pass-document-actions {
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 12px;
+
+  width: 100%;
+
+}
+
+
+.boarding-pass-document-actions
+#profileDownloadBtn {
+
+  flex: 1;
+
+}
+
+
+.boarding-pass-document-actions
+.flight-watermark-action {
+
+  flex: 1;
+
+}
+
+
+.boarding-pass-document-actions
+.flight-watermark-action button {
+
+  width: 100%;
+
+}
+
+
+/* =====================================================
    BOARDING PASS TRACKING
 ===================================================== */
 
@@ -1877,6 +1918,44 @@ select {
     width: 100%;
 
     text-align: center;
+
+  }
+
+}
+
+
+
+@media (max-width: 700px) {
+
+  .boarding-pass-document-actions {
+
+    flex-direction: column;
+
+    align-items: stretch;
+
+  }
+
+
+  .boarding-pass-document-actions
+  #profileDownloadBtn {
+
+    width: 100%;
+
+  }
+
+
+  .boarding-pass-document-actions
+  .flight-watermark-action {
+
+    width: 100%;
+
+  }
+
+
+  .boarding-pass-document-actions
+  .flight-watermark-action button {
+
+    width: 100%;
 
   }
 

@@ -12,7 +12,7 @@ const API_URL =
 
 
 /* =========================================================
-   DOCUMENT TEXT STYLING
+   DOCUMENT STYLING
 ========================================================= */
 
 const documentTextColor =
@@ -26,6 +26,18 @@ const documentLineHeight =
 
 const documentPaddingTop =
   1;
+
+
+/*
+  Base font size for generated/downloaded
+  boarding pass text.
+
+  This is intentionally smaller than
+  the old preview font.
+*/
+
+const DOCUMENT_BASE_FONT_SIZE =
+  11;
 
 
 /* =========================================================
@@ -59,7 +71,7 @@ const downloadButton =
 
 
 /* =========================================================
-   DOWNLOAD MODAL
+   OLD DOWNLOAD MODAL
 ========================================================= */
 
 const downloadModal =
@@ -119,7 +131,7 @@ const authNav =
 
 
 /* =========================================================
-   BOARDING PASS MANAGEMENT
+   MANAGEMENT
 ========================================================= */
 
 const flightManagement =
@@ -254,12 +266,17 @@ const trackFlightBtn =
 
 
 /* =========================================================
-   WATERMARK ACTION
+   WATERMARK / DOWNLOAD
 ========================================================= */
 
 const flightWatermarkAction =
   document.getElementById(
     "flightWatermarkAction"
+  );
+
+const profileDownloadBtn =
+  document.getElementById(
+    "profileDownloadBtn"
   );
 
 
@@ -270,29 +287,28 @@ const flightWatermarkAction =
 const formInputs =
   bedspreadForm
     ? bedspreadForm.querySelectorAll(
-        "input, select"
-      )
+      "input, select"
+    )
     : [];
+
+const classInput =
+  document.getElementById(
+    "class"
+  );
 
 
 /*
-   INPUT ORDER
+  INPUT ORDER
 
-   0  name
-   1  class
-   2  from
-   3  to
-   4  date
-   5  time
-   6  gate
-   7  seat
-   8  price
-   9  taxes
-   10 sequence
-   11 total
-   12 tracking
-   13 duration
-   14 currency
+  0 = passenger name
+  1 = class
+  2 = from
+  3 = to
+  4 = date
+  5 = time
+  6 = duration
+  7 = currency
+  8 = price
 */
 
 
@@ -313,10 +329,10 @@ let generatedTrackingNumber =
   "";
 
 let generatedTaxes =
-  "";
+  0;
 
 let generatedTotal =
-  "";
+  0;
 
 let generatedDuration =
   "";
@@ -324,10 +340,8 @@ let generatedDuration =
 let selectedCurrency =
   "USD";
 
-
 let bedspreadWatermarkEnabled =
   false;
-
 
 let savedBoardingPasses =
   [];
@@ -337,28 +351,21 @@ let selectedBoardingPass =
 
 
 /* =========================================================
-   CURRENCY SYMBOLS
+   CURRENCY
 ========================================================= */
 
 const currencySymbols = {
-
   USD: "$",
-
   EUR: "€",
-
   GBP: "£",
-
   NGN: "₦",
-
   CAD: "C$",
-
   AUD: "A$"
-
 };
 
 
 /* =========================================================
-   TEXT POSITIONS
+   DOCUMENT POSITIONS
 ========================================================= */
 
 const textPositions = {
@@ -376,11 +383,20 @@ const textPositions = {
   },
 
 
+  /*
+    CLASS - FIRST POSITION
+  */
+
   boardingPass: {
     left: 48.8,
     top: 19.4,
     width: 25
   },
+
+
+  /*
+    CLASS - SECOND POSITION
+  */
 
   boardingPass2: {
     left: 73.5,
@@ -401,7 +417,6 @@ const textPositions = {
     width: 16
   },
 
-
   to: {
     left: 24.9,
     top: 54.3,
@@ -413,7 +428,6 @@ const textPositions = {
     top: 55,
     width: 24
   },
-
 
   date: {
     left: 24.7,
@@ -427,7 +441,6 @@ const textPositions = {
     width: 16
   },
 
-
   time: {
     left: 36,
     top: 63.5,
@@ -440,7 +453,6 @@ const textPositions = {
     width: 15
   },
 
-
   gate: {
     left: 50.5,
     top: 63.5,
@@ -452,7 +464,6 @@ const textPositions = {
     top: 71,
     width: 12
   },
-
 
   seat: {
     left: 57,
@@ -467,9 +478,19 @@ const textPositions = {
   },
 
 
+  /*
+    CLASS / PASSENGER CATEGORY
+  */
+
   adult: {
     left: 80,
     top: 22,
+    width: 15
+  },
+
+  adult2: {
+    left: 80,
+    top: 27,
     width: 15
   },
 
@@ -480,20 +501,17 @@ const textPositions = {
     width: 17
   },
 
-
   amount: {
     left: 46,
     top: 79.6,
     width: 14
   },
 
-
   total: {
     left: 79.9,
     top: 32,
     width: 22
   },
-
 
   trackingNumber1: {
     left: 36,
@@ -516,2135 +534,36 @@ const textPositions = {
 
 function getToken() {
 
-  return localStorage.getItem(
-    "token"
+  return (
+    localStorage.getItem(
+      "token"
+    ) ||
+    localStorage.getItem(
+      "authToken"
+    )
   );
 
 }
 
-
-/* =========================================================
-   AUTH HEADERS
-========================================================= */
 
 function authHeaders() {
 
   const token =
     getToken();
 
-  return {
-
+  const headers = {
     "Content-Type":
-      "application/json",
-
-    Authorization:
-      `Bearer ${token}`
-
+      "application/json"
   };
 
-}
+  if (token) {
 
-
-/* =========================================================
-   LOAD USER
-========================================================= */
-
-async function loadUser() {
-
-  const token =
-    getToken();
-
-  if (!token) {
-
-    window.location.href =
-      "login.html";
-
-    return null;
+    headers.Authorization =
+      `Bearer ${token}`;
 
   }
 
-
-  try {
-
-    const response =
-      await fetch(
-        `${API_URL}/auth/me`,
-        {
-          headers:
-            authHeaders()
-        }
-      );
-
-
-    if (!response.ok) {
-
-      throw new Error(
-        "Authentication failed"
-      );
-
-    }
-
-
-    const result =
-      await response.json();
-
-
-    const user =
-      result.user ||
-      result;
-
-
-    if (navbarUserName) {
-
-      navbarUserName.textContent =
-        user.username ||
-        user.name ||
-        user.email ||
-        "User";
-
-    }
-
-
-    return user;
-
-  }
-
-  catch (error) {
-
-    localStorage.removeItem(
-      "token"
-    );
-
-    window.location.href =
-      "login.html";
-
-    return null;
-
-  }
-
-}
-
-
-/* =========================================================
-   LOAD WALLET
-========================================================= */
-
-async function loadWallet() {
-
-  try {
-
-    const response =
-      await fetch(
-        `${API_URL}/wallet`,
-        {
-          headers:
-            authHeaders()
-        }
-      );
-
-
-    if (!response.ok) {
-
-      return;
-
-    }
-
-
-    const wallet =
-      await response.json();
-
-
-    const balance =
-      Number(
-        wallet.balance || 0
-      );
-
-
-    if (navbarWalletBalance) {
-
-      navbarWalletBalance.textContent =
-        `$${balance.toFixed(2)}`;
-
-    }
-
-  }
-
-  catch (error) {
-
-    console.error(
-      "Wallet loading failed:",
-      error
-    );
-
-  }
-
-}
-
-
-/* =========================================================
-   RANDOM GATE
-========================================================= */
-
-function generateGate() {
-
-  const letters =
-    "ABCDEF";
-
-  const letter =
-    letters[
-      Math.floor(
-        Math.random() *
-        letters.length
-      )
-    ];
-
-
-  const number =
-    Math.floor(
-      1 +
-      Math.random() *
-      30
-    );
-
-
-  return `${letter}${number}`;
-
-}
-
-
-/* =========================================================
-   RANDOM SEAT
-========================================================= */
-
-function generateSeat() {
-
-  const letters =
-    "ABCDEF";
-
-  const row =
-    Math.floor(
-      1 +
-      Math.random() *
-      35
-    );
-
-
-  const letter =
-    letters[
-      Math.floor(
-        Math.random() *
-        letters.length
-      )
-    ];
-
-
-  return `${row}${letter}`;
-
-}
-
-
-/* =========================================================
-   SEQUENCE
-========================================================= */
-
-function generateSequence() {
-
-  return `SEQ. ${
-    Math.floor(
-      1000 +
-      Math.random() * 9000
-    )
-  }`;
-
-}
-
-
-/* =========================================================
-   DURATION
-========================================================= */
-
-function generateDuration() {
-
-  const hours =
-    Math.floor(
-      1 +
-      Math.random() * 8
-    );
-
-
-  const minutesOptions = [
-    0,
-    10,
-    15,
-    20,
-    30,
-    45,
-    50
-  ];
-
-
-  const minutes =
-    minutesOptions[
-      Math.floor(
-        Math.random() *
-        minutesOptions.length
-      )
-    ];
-
-
-  return `${hours}h ${minutes}m`;
-
-}
-
-
-/* =========================================================
-   GET SELECTED CURRENCY
-========================================================= */
-
-function getCurrency() {
-
-  const currencyInput =
-    formInputs[14];
-
-
-  if (
-    currencyInput &&
-    currencyInput.value
-  ) {
-
-    return currencyInput.value;
-
-  }
-
-
-  return "USD";
-
-}
-
-
-/* =========================================================
-   CALCULATE PRICE
-========================================================= */
-
-function calculateAmounts() {
-
-  const priceInput =
-    formInputs[8];
-
-
-  const price =
-    Number(
-      priceInput?.value || 0
-    );
-
-
-  const taxes =
-    price * 0.08;
-
-
-  const total =
-    price + taxes;
-
-
-  generatedTaxes =
-    taxes.toFixed(2);
-
-
-  generatedTotal =
-    total.toFixed(2);
-
-
-  selectedCurrency =
-    getCurrency();
-
-}
-
-
-/* =========================================================
-   GENERATE AUTOMATIC VALUES
-========================================================= */
-
-function generateAutomaticValues() {
-
-  generatedGate =
-    generateGate();
-
-
-  generatedSeat =
-    generateSeat();
-
-
-  generatedSequence =
-    generateSequence();
-
-
-  generatedTrackingNumber =
-    "";
-
-
-  generatedDuration =
-    generateDuration();
-
-
-  calculateAmounts();
-
-}
-
-
-/* =========================================================
-   WRAPPING FIELDS
-========================================================= */
-
-function isWrappingField(index) {
-
-  return (
-
-    index === 0 ||
-
-    index === 1 ||
-
-    index === 2 ||
-
-    index === 3
-
-  );
-
-}
-
-
-/* =========================================================
-   DISPLAY VALUE
-========================================================= */
-
-function getDisplayValue(
-  index
-) {
-
-  const input =
-    formInputs[index];
-
-
-  if (!input) {
-
-    return "";
-
-  }
-
-
-  let value =
-    input.value || "";
-
-
-  if (
-    index === 0 ||
-    index === 2 ||
-    index === 3
-  ) {
-
-    value =
-      value.toUpperCase();
-
-  }
-
-
-  if (index === 8) {
-
-    const symbol =
-      currencySymbols[
-        selectedCurrency
-      ] || "$";
-
-
-    value =
-      `${symbol}${Number(
-        value || 0
-      ).toFixed(2)}`;
-
-  }
-
-
-  return value;
-
-}
-
-
-/* =========================================================
-   AUTOMATIC VALUE
-========================================================= */
-
-function getAutomaticValue(
-  index
-) {
-
-  if (index === 6) {
-
-    return generatedGate;
-
-  }
-
-
-  if (index === 7) {
-
-    return generatedSeat;
-
-  }
-
-
-  if (index === 9) {
-
-    return generatedTaxes;
-
-  }
-
-
-  if (index === 10) {
-
-    return generatedSequence;
-
-  }
-
-
-  if (index === 11) {
-
-    return generatedTotal;
-
-  }
-
-
-  if (index === 12) {
-
-    return generatedTrackingNumber;
-
-  }
-
-
-  if (index === 13) {
-
-    return generatedDuration;
-
-  }
-
-
-  return "";
-
-}
-
-
-/* =========================================================
-   CREATE TEXT ELEMENT
-========================================================= */
-
-function createTextElement(
-  key,
-  value
-) {
-
-  const position =
-    textPositions[key];
-
-
-  if (!position) {
-
-    return null;
-
-  }
-
-
-  const element =
-    document.createElement(
-      "div"
-    );
-
-
-  element.className =
-    "pdf-value";
-
-
-  element.dataset.key =
-    key;
-
-
-  element.textContent =
-    value || "";
-
-
-  element.style.position =
-    "absolute";
-
-
-  element.style.left =
-    `${position.left}%`;
-
-
-  element.style.top =
-    `${position.top}%`;
-
-
-  element.style.width =
-    `${position.width}%`;
-
-
-  element.style.color =
-    documentTextColor;
-
-
-  element.style.fontFamily =
-    documentFont;
-
-
-  element.style.lineHeight =
-    documentLineHeight;
-
-
-  element.style.paddingTop =
-    `${documentPaddingTop}px`;
-
-
-  element.style.boxSizing =
-    "border-box";
-
-
-  return element;
-
-}
-
-
-/* =========================================================
-   UPDATE DOCUMENT VALUES
-========================================================= */
-
-function updateDocumentValues() {
-
-  if (!pdf) {
-
-    return;
-
-  }
-
-
-  const values =
-    pdf.querySelectorAll(
-      ".pdf-value"
-    );
-
-
-  values.forEach(
-    element => {
-
-      const key =
-        element.dataset.key;
-
-
-      if (!key) {
-
-        return;
-
-      }
-
-
-      let value =
-        "";
-
-
-      const mapping = {
-
-        name:
-          getDisplayValue(0),
-
-        name2:
-          getDisplayValue(0),
-
-        boardingPass:
-          "BOARDING PASS",
-
-        boardingPass2:
-          "BOARDING PASS",
-
-        from:
-          getDisplayValue(2),
-
-        from2:
-          getDisplayValue(2),
-
-        to:
-          getDisplayValue(3),
-
-        to2:
-          getDisplayValue(3),
-
-        date:
-          getDisplayValue(4),
-
-        date2:
-          getDisplayValue(4),
-
-        time:
-          getDisplayValue(5),
-
-        time2:
-          getDisplayValue(5),
-
-        gate:
-          generatedGate,
-
-        gate2:
-          generatedGate,
-
-        seat:
-          generatedSeat,
-
-        seat2:
-          generatedSeat,
-
-        adult:
-          getDisplayValue(1),
-
-        taxes:
-          `${currencySymbols[selectedCurrency] || "$"}${generatedTaxes}`,
-
-        amount:
-          getDisplayValue(8),
-
-        total:
-          `${currencySymbols[selectedCurrency] || "$"}${generatedTotal}`,
-
-        trackingNumber1:
-          generatedTrackingNumber,
-
-        trackingNumber2:
-          generatedTrackingNumber
-
-      };
-
-
-      value =
-        mapping[key] || "";
-
-
-      element.textContent =
-        value;
-
-    }
-  );
-
-}
-
-
-/* =========================================================
-   BUILD DOCUMENT
-========================================================= */
-
-function buildDocument() {
-
-  if (!pdf) {
-
-    return;
-
-  }
-
-
-  pdf
-    .querySelectorAll(
-      ".pdf-value"
-    )
-    .forEach(
-      element =>
-        element.remove()
-    );
-
-
-  Object.keys(
-    textPositions
-  ).forEach(
-    key => {
-
-      let value =
-        "";
-
-
-      if (
-        key === "boardingPass" ||
-        key === "boardingPass2"
-      ) {
-
-        value =
-          "BOARDING PASS";
-
-      }
-
-
-      const element =
-        createTextElement(
-          key,
-          value
-        );
-
-
-      if (element) {
-
-        pdf.appendChild(
-          element
-        );
-
-      }
-
-    }
-  );
-
-
-  updateDocumentValues();
-
-}
-
-
-/* =========================================================
-   UPPERCASE INPUTS
-========================================================= */
-
-function setupUppercaseInputs() {
-
-  [0, 2, 3]
-    .forEach(
-      index => {
-
-        const input =
-          formInputs[index];
-
-
-        if (!input) {
-
-          return;
-
-        }
-
-
-        input.addEventListener(
-          "input",
-          () => {
-
-            input.value =
-              input.value.toUpperCase();
-
-
-            updateDocumentValues();
-
-          }
-        );
-
-      }
-    );
-
-}
-
-
-/* =========================================================
-   WATERMARK
-========================================================= */
-
-function removeWatermark() {
-
-  if (!pdf) {
-
-    return;
-
-  }
-
-
-  pdf
-    .querySelectorAll(
-      ".bedspread-document-watermark"
-    )
-    .forEach(
-      element =>
-        element.remove()
-    );
-
-}
-
-
-/* =========================================================
-   ADD WATERMARK
-========================================================= */
-
-function addWatermark() {
-
-  if (!pdf) {
-
-    return;
-
-  }
-
-
-  removeWatermark();
-
-
-  for (
-    let row = 0;
-    row < 5;
-    row++
-  ) {
-
-    for (
-      let column = 0;
-      column < 3;
-      column++
-    ) {
-
-      const watermark =
-        document.createElement(
-          "div"
-        );
-
-
-      watermark.className =
-        "bedspread-document-watermark";
-
-
-      watermark.textContent =
-        "TEST / FREE";
-
-
-      watermark.style.position =
-        "absolute";
-
-
-      watermark.style.left =
-        `${10 + column * 34}%`;
-
-
-      watermark.style.top =
-        `${8 + row * 21}%`;
-
-
-      watermark.style.transform =
-        "rotate(-30deg)";
-
-
-      watermark.style.pointerEvents =
-        "none";
-
-
-      pdf.appendChild(
-        watermark
-      );
-
-    }
-
-  }
-
-}
-
-
-/* =========================================================
-   WATERMARK STATE
-========================================================= */
-
-function updateWatermark() {
-
-  removeWatermark();
-
-
-  if (
-    bedspreadWatermarkEnabled
-  ) {
-
-    addWatermark();
-
-  }
-
-}
-
-
-/* =========================================================
-   CREATE BOARDING PASS
-========================================================= */
-
-async function createBoardingPass() {
-
-  if (!bedspreadForm) {
-
-    return;
-
-  }
-
-
-  generateAutomaticValues();
-
-  updateDocumentValues();
-
-
-  const data = {
-
-    name:
-      formInputs[0]?.value || "",
-
-    class:
-      formInputs[1]?.value || "",
-
-    from:
-      formInputs[2]?.value || "",
-
-    to:
-      formInputs[3]?.value || "",
-
-    date:
-      formInputs[4]?.value || "",
-
-    time:
-      formInputs[5]?.value || "",
-
-    gate:
-      generatedGate,
-
-    seat:
-      generatedSeat,
-
-    price:
-      Number(
-        formInputs[8]?.value || 0
-      ),
-
-    taxes:
-      Number(
-        generatedTaxes
-      ),
-
-    sequence:
-      generatedSequence,
-
-    total:
-      Number(
-        generatedTotal
-      ),
-
-    duration:
-      generatedDuration,
-
-    currency:
-      selectedCurrency
-
-  };
-
-
-  try {
-
-    const response =
-      await fetch(
-        `${API_URL}/boardingPass`,
-        {
-
-          method:
-            "POST",
-
-          headers:
-            authHeaders(),
-
-          body:
-            JSON.stringify(
-              data
-            )
-
-        }
-      );
-
-
-    const result =
-      await response.json();
-
-
-    if (!response.ok) {
-
-      throw new Error(
-        result.message ||
-        "Unable to create boarding pass"
-      );
-
-    }
-
-
-    if (
-      result.boardingPass
-    ) {
-
-      generatedTrackingNumber =
-        result.boardingPass.trackingNumber;
-
-    }
-
-
-    bedspreadWatermarkEnabled =
-      true;
-
-
-    updateDocumentValues();
-
-    updateWatermark();
-
-
-    if (
-      generatedDocument
-    ) {
-
-      generatedDocument.style.display =
-        "";
-
-    }
-
-
-    await loadBoardingPasses();
-
-
-    const createdPass =
-      savedBoardingPasses.find(
-        pass =>
-          pass.trackingNumber ===
-          generatedTrackingNumber
-      );
-
-
-    if (createdPass) {
-
-      selectBoardingPass(
-        createdPass
-      );
-
-    }
-
-
-    await loadWallet();
-
-
-    if (
-      generatedDocument
-    ) {
-
-      generatedDocument.scrollIntoView({
-        behavior: "smooth",
-        block: "start"
-      });
-
-    }
-
-  }
-
-  catch (error) {
-
-    alert(
-      error.message ||
-      "Unable to create boarding pass."
-    );
-
-  }
-
-}
-
-
-/* =========================================================
-   FORM SUBMIT
-========================================================= */
-
-if (bedspreadForm) {
-
-  bedspreadForm.addEventListener(
-    "submit",
-    async event => {
-
-      event.preventDefault();
-
-      await createBoardingPass();
-
-    }
-  );
-
-}
-
-
-/* =========================================================
-   EDIT BUTTON
-========================================================= */
-
-if (editButton) {
-
-  editButton.addEventListener(
-    "click",
-    () => {
-
-      if (
-        generatedDocument
-      ) {
-
-        generatedDocument.style.display =
-          "none";
-
-      }
-
-
-      if (bedspreadForm) {
-
-        bedspreadForm.scrollIntoView({
-          behavior: "smooth",
-          block: "start"
-        });
-
-      }
-
-    }
-  );
-
-}
-
-
-/* =========================================================
-   OPEN DOWNLOAD MODAL
-========================================================= */
-
-if (downloadButton) {
-
-  downloadButton.addEventListener(
-    "click",
-    () => {
-
-      if (!generatedTrackingNumber) {
-
-        return;
-
-      }
-
-
-      if (downloadModal) {
-
-        downloadModal.style.display =
-          "flex";
-
-      }
-
-    }
-  );
-
-}
-
-
-/* =========================================================
-   CLOSE DOWNLOAD MODAL
-========================================================= */
-
-function closeDownloadModal() {
-
-  if (downloadModal) {
-
-    downloadModal.style.display =
-      "none";
-
-  }
-
-}
-
-
-if (closeModal) {
-
-  closeModal.addEventListener(
-    "click",
-    closeDownloadModal
-  );
-
-}
-
-
-if (modalOverlay) {
-
-  modalOverlay.addEventListener(
-    "click",
-    closeDownloadModal
-  );
-
-}
-
-
-/* =========================================================
-   FORMAT MODAL
-========================================================= */
-
-function createFormatModal(
-  downloadFunction
-) {
-
-  const existing =
-    document.getElementById(
-      "formatModal"
-    );
-
-
-  if (existing) {
-
-    existing.remove();
-
-  }
-
-
-  const overlay =
-    document.createElement(
-      "div"
-    );
-
-
-  overlay.id =
-    "formatModal";
-
-
-  overlay.style.position =
-    "fixed";
-
-
-  overlay.style.inset =
-    "0";
-
-
-  overlay.style.background =
-    "rgba(0,0,0,0.5)";
-
-
-  overlay.style.display =
-    "flex";
-
-
-  overlay.style.alignItems =
-    "center";
-
-
-  overlay.style.justifyContent =
-    "center";
-
-
-  overlay.style.zIndex =
-    "99999";
-
-
-  const box =
-    document.createElement(
-      "div"
-    );
-
-
-  box.style.background =
-    "#fff";
-
-
-  box.style.padding =
-    "25px";
-
-
-  box.style.borderRadius =
-    "10px";
-
-
-  box.style.textAlign =
-    "center";
-
-
-  const title =
-    document.createElement(
-      "h3"
-    );
-
-
-  title.textContent =
-    "Choose Format";
-
-
-  const jpgButton =
-    document.createElement(
-      "button"
-    );
-
-
-  jpgButton.textContent =
-    "JPG";
-
-
-  const pdfButton =
-    document.createElement(
-      "button"
-    );
-
-
-  pdfButton.textContent =
-    "PDF";
-
-
-  const closeButton =
-    document.createElement(
-      "button"
-    );
-
-
-  closeButton.textContent =
-    "Cancel";
-
-
-  box.appendChild(
-    title
-  );
-
-
-  box.appendChild(
-    jpgButton
-  );
-
-
-  box.appendChild(
-    pdfButton
-  );
-
-
-  box.appendChild(
-    closeButton
-  );
-
-
-  overlay.appendChild(
-    box
-  );
-
-
-  document.body.appendChild(
-    overlay
-  );
-
-
-  closeButton.onclick =
-    () => overlay.remove();
-
-
-  jpgButton.onclick =
-    async () => {
-
-      overlay.remove();
-
-      await downloadFunction(
-        "jpg"
-      );
-
-    };
-
-
-  pdfButton.onclick =
-    async () => {
-
-      overlay.remove();
-
-      await downloadFunction(
-        "pdf"
-      );
-
-    };
-
-}
-
-
-/* =========================================================
-   CREATE DOCUMENT CANVAS
-========================================================= */
-
-async function createDocumentCanvas(
-  includeWatermark
-) {
-
-  if (!pdf) {
-
-    return null;
-
-  }
-
-
-  const image =
-    pdf.querySelector(
-      "img"
-    );
-
-
-  if (!image) {
-
-    return null;
-
-  }
-
-
-  const canvas =
-    document.createElement(
-      "canvas"
-    );
-
-
-  const width =
-    image.naturalWidth ||
-    image.width;
-
-
-  const height =
-    image.naturalHeight ||
-    image.height;
-
-
-  canvas.width =
-    width;
-
-
-  canvas.height =
-    height;
-
-
-  const context =
-    canvas.getContext(
-      "2d"
-    );
-
-
-  context.drawImage(
-    image,
-    0,
-    0,
-    width,
-    height
-  );
-
-
-  const values =
-    pdf.querySelectorAll(
-      ".pdf-value"
-    );
-
-
-  const pdfRect =
-    pdf.getBoundingClientRect();
-
-
-  values.forEach(
-    element => {
-
-      const rect =
-        element.getBoundingClientRect();
-
-
-      const left =
-        (
-          rect.left -
-          pdfRect.left
-        ) *
-        (
-          width /
-          pdfRect.width
-        );
-
-
-      const top =
-        (
-          rect.top -
-          pdfRect.top
-        ) *
-        (
-          height /
-          pdfRect.height
-        );
-
-
-      const elementWidth =
-        rect.width *
-        (
-          width /
-          pdfRect.width
-        );
-
-
-      const elementHeight =
-        rect.height *
-        (
-          height /
-          pdfRect.height
-        );
-
-
-      const computed =
-        window.getComputedStyle(
-          element
-        );
-
-
-      let fontSize =
-        parseFloat(
-          computed.fontSize
-        );
-
-
-      fontSize *=
-        width /
-        pdfRect.width;
-
-
-      context.fillStyle =
-        computed.color ||
-        documentTextColor;
-
-
-      context.font =
-        `${computed.fontWeight} ${fontSize}px ${documentFont}`;
-
-
-      context.textBaseline =
-        "top";
-
-
-      context.fillText(
-        element.textContent,
-        left,
-        top,
-        elementWidth
-      );
-
-    }
-  );
-
-
-  if (includeWatermark) {
-
-    context.save();
-
-
-    context.globalAlpha =
-      0.22;
-
-
-    context.fillStyle =
-      "#555";
-
-
-    context.font =
-      `bold ${Math.max(
-        18,
-        width * 0.025
-      )}px Arial`;
-
-
-    context.textAlign =
-      "center";
-
-
-    context.textBaseline =
-      "middle";
-
-
-    for (
-      let row = 0;
-      row < 5;
-      row++
-    ) {
-
-      for (
-        let column = 0;
-        column < 3;
-        column++
-      ) {
-
-        const x =
-          width *
-          (
-            0.15 +
-            column * 0.35
-          );
-
-
-        const y =
-          height *
-          (
-            0.12 +
-            row * 0.2
-          );
-
-
-        context.save();
-
-
-        context.translate(
-          x,
-          y
-        );
-
-
-        context.rotate(
-          -30 *
-          Math.PI /
-          180
-        );
-
-
-        context.fillText(
-          "TEST / FREE",
-          0,
-          0
-        );
-
-
-        context.restore();
-
-      }
-
-    }
-
-
-    context.restore();
-
-  }
-
-
-  return canvas;
-
-}
-
-
-/* =========================================================
-   DOWNLOAD IMAGE
-========================================================= */
-
-async function downloadJPG(
-  includeWatermark
-) {
-
-  const canvas =
-    await createDocumentCanvas(
-      includeWatermark
-    );
-
-
-  if (!canvas) {
-
-    return;
-
-  }
-
-
-  const link =
-    document.createElement(
-      "a"
-    );
-
-
-  link.download =
-    "bedspread-boarding-pass.jpg";
-
-
-  link.href =
-    canvas.toDataURL(
-      "image/jpeg",
-      0.95
-    );
-
-
-  link.click();
-
-}
-
-
-/* =========================================================
-   DOWNLOAD PDF
-========================================================= */
-
-async function downloadPDF(
-  includeWatermark
-) {
-
-  const canvas =
-    await createDocumentCanvas(
-      includeWatermark
-    );
-
-
-  if (!canvas) {
-
-    return;
-
-  }
-
-
-  const imageData =
-    canvas.toDataURL(
-      "image/jpeg",
-      0.95
-    );
-
-
-  const {
-    jsPDF
-  } =
-    window.jspdf;
-
-
-  const orientation =
-    canvas.width >=
-    canvas.height
-      ? "landscape"
-      : "portrait";
-
-
-  const pdfDocument =
-    new jsPDF({
-      orientation,
-      unit: "px",
-      format: [
-        canvas.width,
-        canvas.height
-      ]
-    });
-
-
-  pdfDocument.addImage(
-    imageData,
-    "JPEG",
-    0,
-    0,
-    canvas.width,
-    canvas.height
-  );
-
-
-  pdfDocument.save(
-    "bedspread-boarding-pass.pdf"
-  );
-
-}
-
-
-/* =========================================================
-   DOWNLOAD
-========================================================= */
-
-async function downloadBoardingPass(
-  format,
-  includeWatermark
-) {
-
-  if (
-    format === "jpg"
-  ) {
-
-    await downloadJPG(
-      includeWatermark
-    );
-
-    return;
-
-  }
-
-
-  if (
-    format === "pdf"
-  ) {
-
-    await downloadPDF(
-      includeWatermark
-    );
-
-  }
-
-}
-
-
-/* =========================================================
-   FREE DOWNLOAD
-========================================================= */
-
-if (downloadFree) {
-
-  downloadFree.addEventListener(
-    "click",
-    () => {
-
-      closeDownloadModal();
-
-
-      bedspreadWatermarkEnabled =
-        true;
-
-
-      updateWatermark();
-
-
-      createFormatModal(
-        format =>
-          downloadBoardingPass(
-            format,
-            true
-          )
-      );
-
-    }
-  );
-
-}
-
-
-/* =========================================================
-   CLEAN DOWNLOAD
-========================================================= */
-
-if (downloadClean) {
-
-  downloadClean.addEventListener(
-    "click",
-    async () => {
-
-      closeDownloadModal();
-
-
-      if (
-        !generatedTrackingNumber
-      ) {
-
-        return;
-
-      }
-
-
-      try {
-
-        const response =
-          await fetch(
-            `${API_URL}/boardingPass/${encodeURIComponent(
-              generatedTrackingNumber
-            )}/upgrade`,
-            {
-
-              method:
-                "PATCH",
-
-              headers:
-                authHeaders()
-
-            }
-          );
-
-
-        const result =
-          await response.json();
-
-
-        if (!response.ok) {
-
-          throw new Error(
-            result.message ||
-            "Unable to upgrade boarding pass."
-          );
-
-        }
-
-
-        bedspreadWatermarkEnabled =
-          false;
-
-
-        updateWatermark();
-
-
-        await loadWallet();
-
-        await loadBoardingPasses();
-
-
-        createFormatModal(
-          format =>
-            downloadBoardingPass(
-              format,
-              false
-            )
-        );
-
-      }
-
-      catch (error) {
-
-        alert(
-          error.message ||
-          "Unable to upgrade boarding pass."
-        );
-
-      }
-
-    }
-  );
-
-}
-
-
-/* =========================================================
-   LOAD SAVED BOARDING PASSES
-========================================================= */
-
-async function loadBoardingPasses() {
-
-  if (!createdFlights) {
-
-    return;
-
-  }
-
-
-  try {
-
-    const response =
-      await fetch(
-        `${API_URL}/boardingPass/mine`,
-        {
-          headers:
-            authHeaders()
-        }
-      );
-
-
-    if (!response.ok) {
-
-      throw new Error(
-        "Unable to load boarding passes."
-      );
-
-    }
-
-
-    const result =
-      await response.json();
-
-
-    savedBoardingPasses =
-      result.boardingPasses ||
-      result ||
-      [];
-
-
-    renderBoardingPasses();
-
-  }
-
-  catch (error) {
-
-    console.error(
-      "Boarding pass loading failed:",
-      error
-    );
-
-  }
-
-}
-
-
-/* =========================================================
-   RENDER SAVED BOARDING PASSES
-========================================================= */
-
-function renderBoardingPasses() {
-
-  if (!createdFlights) {
-
-    return;
-
-  }
-
-
-  createdFlights.innerHTML =
-    "";
-
-
-  if (
-    savedBoardingPasses.length === 0
-  ) {
-
-    const empty =
-      document.createElement(
-        "div"
-      );
-
-
-    empty.textContent =
-      "No boarding passes created yet.";
-
-
-    createdFlights.appendChild(
-      empty
-    );
-
-
-    return;
-
-  }
-
-
-  savedBoardingPasses.forEach(
-    pass => {
-
-      const item =
-        document.createElement(
-          "button"
-        );
-
-
-      item.type =
-        "button";
-
-
-      item.className =
-        "created-flight-item";
-
-
-      const name =
-        pass.name ||
-        "Unnamed Passenger";
-
-
-      const tracking =
-        pass.trackingNumber ||
-        "";
-
-
-      const status =
-        pass.currentStatus ||
-        "Processing";
-
-
-      item.innerHTML = `
-
-        <div>
-
-          <strong>
-            ${escapeHTML(name)}
-          </strong>
-
-          <small>
-            ${escapeHTML(tracking)}
-          </small>
-
-        </div>
-
-        <span>
-          ${escapeHTML(status)}
-        </span>
-
-      `;
-
-
-      item.addEventListener(
-        "click",
-        () => {
-
-          selectBoardingPass(
-            pass
-          );
-
-        }
-      );
-
-
-      createdFlights.appendChild(
-        item
-      );
-
-    }
-  );
+  return headers;
 
 }
 
@@ -2685,23 +604,1155 @@ function escapeHTML(
 
 
 /* =========================================================
-   SHOW CREATE VIEW
+   RANDOM VALUES
 ========================================================= */
 
-function showCreateBoardingPassView() {
+function generateGate() {
 
-  if (createFlightView) {
+  const gates = [
+    "A01",
+    "A02",
+    "A03",
+    "B01",
+    "B02",
+    "B03",
+    "C01",
+    "C02",
+    "C03",
+    "D01",
+    "D02",
+    "D03"
+  ];
 
-    createFlightView.style.display =
-      "";
+  return (
+    gates[
+    Math.floor(
+      Math.random() *
+      gates.length
+    )
+    ]
+  );
+
+}
+
+
+function generateSeat() {
+
+  const number =
+    Math.floor(
+      1 +
+      Math.random() *
+      30
+    );
+
+  const letters = [
+    "A",
+    "B",
+    "C",
+    "D",
+    "E",
+    "F"
+  ];
+
+  const letter =
+    letters[
+    Math.floor(
+      Math.random() *
+      letters.length
+    )
+    ];
+
+  return `${number}${letter}`;
+
+}
+
+
+function generateSequence() {
+
+  return `SEQ. ${Math.floor(
+    1000 +
+    Math.random() *
+    9000
+  )
+    }`;
+
+}
+
+
+/* =========================================================
+   FORM VALUES
+========================================================= */
+
+function getClassValue() {
+
+  if (!classInput) {
+    return "";
+  }
+
+  return String(
+    classInput.value || ""
+  ).trim();
+
+}
+
+
+function getCurrency() {
+
+  if (!formInputs[7]) {
+    return "USD";
+  }
+
+  return (
+    formInputs[7].value ||
+    "USD"
+  );
+
+}
+
+
+/* =========================================================
+   DISPLAY VALUE
+========================================================= */
+
+function getDisplayValue(
+  value
+) {
+
+  return String(
+    value ?? ""
+  )
+    .trim()
+    .toUpperCase();
+
+}
+
+
+/* =========================================================
+   CURRENCY FORMATTING
+========================================================= */
+
+function formatMoney(
+  amount,
+  currency
+) {
+
+  const symbol =
+    currencySymbols[
+    currency
+    ] ||
+    currency;
+
+  const number =
+    Number(amount) || 0;
+
+  return `${symbol}${number.toFixed(2)}`;
+
+}
+
+
+/* =========================================================
+   CALCULATE AMOUNTS
+========================================================= */
+
+function calculateAmounts() {
+
+  const price =
+    Number(
+      formInputs[8]?.value
+    ) || 0;
+
+  const taxes =
+    price * 0.08;
+
+  const total =
+    price + taxes;
+
+  generatedTaxes =
+    taxes;
+
+  generatedTotal =
+    total;
+
+  return {
+    price,
+    taxes,
+    total
+  };
+
+}
+
+
+/* =========================================================
+   AUTOMATIC VALUES
+========================================================= */
+
+function getAutomaticValue(
+  index
+) {
+
+  if (index === 0) {
+
+    return getDisplayValue(
+      formInputs[0]?.value
+    );
+
+  }
+
+  if (index === 1) {
+
+    return getClassValue();
+
+  }
+
+  if (index === 2) {
+
+    return getDisplayValue(
+      formInputs[2]?.value
+    );
+
+  }
+
+  if (index === 3) {
+
+    return getDisplayValue(
+      formInputs[3]?.value
+    );
+
+  }
+
+  if (index === 4) {
+
+    return formInputs[4]?.value || "";
+
+  }
+
+  if (index === 5) {
+
+    return formInputs[5]?.value || "";
+
+  }
+
+  if (index === 6) {
+
+    return formInputs[6]?.value || "";
+
+  }
+
+  return "";
+
+}
+
+
+/* =========================================================
+   UPDATE DOCUMENT VALUES
+========================================================= */
+
+function updateDocumentValues() {
+
+  if (!pdf) {
+    return;
+  }
+
+
+  const name =
+    getDisplayValue(
+      formInputs[0]?.value
+    );
+
+
+  const selectedClass =
+    getClassValue();
+
+
+  const from =
+    getDisplayValue(
+      formInputs[2]?.value
+    );
+
+
+  const to =
+    getDisplayValue(
+      formInputs[3]?.value
+    );
+
+
+  const date =
+    formInputs[4]?.value ||
+    "";
+
+
+  const time =
+    formInputs[5]?.value ||
+    "";
+
+
+  const price =
+    Number(
+      formInputs[8]?.value
+    ) || 0;
+
+
+  const currency =
+    getCurrency();
+
+
+  const values = {
+
+    name:
+      name,
+
+    name2:
+      name,
+
+
+    /*
+      IMPORTANT:
+      These are now the selected class,
+      not "BOARDING PASS".
+    */
+
+    boardingPass:
+      selectedClass,
+
+    boardingPass2:
+      selectedClass,
+
+
+    from:
+      from,
+
+    from2:
+      from,
+
+    to:
+      to,
+
+    to2:
+      to,
+
+    date:
+      date,
+
+    date2:
+      date,
+
+    time:
+      time,
+
+    time2:
+      time,
+
+    gate:
+      generatedGate,
+
+    gate2:
+      generatedGate,
+
+    seat:
+      generatedSeat,
+
+    seat2:
+      generatedSeat,
+
+
+    /*
+      Passenger category.
+    */
+
+    adult:
+      selectedClass,
+
+    adult2:
+      selectedClass,
+
+
+    taxes:
+      formatMoney(
+        generatedTaxes,
+        currency
+      ),
+
+    amount:
+      formatMoney(
+        price,
+        currency
+      ),
+
+    total:
+      formatMoney(
+        generatedTotal,
+        currency
+      ),
+
+    trackingNumber1:
+      generatedTrackingNumber,
+
+    trackingNumber2:
+      generatedTrackingNumber
+
+  };
+
+
+  Object.keys(
+    textPositions
+  ).forEach(
+    function (key) {
+
+      const element =
+        pdf.querySelector(
+          `.pdf-value[data-field="${key}"]`
+        );
+
+      if (!element) {
+        return;
+      }
+
+      element.textContent =
+        values[key] ?? "";
+
+    }
+  );
+
+}
+
+
+/* =========================================================
+   BUILD DOCUMENT
+========================================================= */
+
+function buildDocument() {
+
+  if (!pdf) {
+    return;
+  }
+
+
+  pdf.innerHTML = "";
+
+
+  Object.keys(
+    textPositions
+  ).forEach(
+    function (key) {
+
+      const position =
+        textPositions[key];
+
+
+      const element =
+        document.createElement(
+          "div"
+        );
+
+
+      element.className =
+        "pdf-value";
+
+
+      element.dataset.field =
+        key;
+
+
+      element.style.position =
+        "absolute";
+
+
+      element.style.left =
+        `${position.left}%`;
+
+
+      element.style.top =
+        `${position.top}%`;
+
+
+      element.style.width =
+        `${position.width}%`;
+
+
+      element.style.color =
+        documentTextColor;
+
+
+      element.style.fontFamily =
+        documentFont;
+
+
+      element.style.fontSize =
+        `${DOCUMENT_BASE_FONT_SIZE}px`;
+
+
+      element.style.lineHeight =
+        documentLineHeight;
+
+
+      element.style.fontWeight =
+        "600";
+
+
+      element.style.whiteSpace =
+        "nowrap";
+
+
+      element.style.overflow =
+        "hidden";
+
+
+      element.style.textOverflow =
+        "clip";
+
+
+      element.style.paddingTop =
+        `${documentPaddingTop}px`;
+
+
+      element.style.boxSizing =
+        "border-box";
+
+
+      element.style.pointerEvents =
+        "none";
+
+
+      pdf.appendChild(
+        element
+      );
+
+    }
+  );
+
+
+  updateDocumentValues();
+
+}
+
+
+/* =========================================================
+   WATERMARK
+========================================================= */
+
+function createWatermark() {
+
+  const existing =
+    pdf?.querySelector(
+      ".boarding-pass-watermark"
+    );
+
+  if (existing) {
+    existing.remove();
+  }
+
+
+  if (
+    !pdf ||
+    !bedspreadWatermarkEnabled
+  ) {
+    return;
+  }
+
+
+  const watermark =
+    document.createElement(
+      "div"
+    );
+
+
+  watermark.className =
+    "boarding-pass-watermark";
+
+
+  watermark.style.position =
+    "absolute";
+
+
+  watermark.style.inset =
+    "0";
+
+
+  watermark.style.display =
+    "grid";
+
+
+  watermark.style.gridTemplateColumns =
+    "repeat(5, 1fr)";
+
+
+  watermark.style.gridTemplateRows =
+    "repeat(3, 1fr)";
+
+
+  watermark.style.pointerEvents =
+    "none";
+
+
+  watermark.style.zIndex =
+    "20";
+
+
+  for (
+    let i = 0;
+    i < 15;
+    i++
+  ) {
+
+    const item =
+      document.createElement(
+        "div"
+      );
+
+
+    item.textContent =
+      "TEST / FREE";
+
+
+    item.style.display =
+      "flex";
+
+
+    item.style.alignItems =
+      "center";
+
+
+    item.style.justifyContent =
+      "center";
+
+
+    item.style.fontFamily =
+      "Arial";
+
+
+    item.style.fontSize =
+      "16px";
+
+
+    item.style.fontWeight =
+      "700";
+
+
+    item.style.transform =
+      "rotate(-25deg)";
+
+
+    item.style.opacity =
+      "0.16";
+
+
+    item.style.whiteSpace =
+      "nowrap";
+
+
+    watermark.appendChild(
+      item
+    );
 
   }
 
 
-  if (selectedFlightView) {
+  pdf.appendChild(
+    watermark
+  );
 
-    selectedFlightView.style.display =
-      "none";
+}
+
+
+/* =========================================================
+   CREATE DOCUMENT
+========================================================= */
+
+function createDocument() {
+
+  buildDocument();
+
+  createWatermark();
+
+}
+
+
+/* =========================================================
+   CANVAS DOCUMENT
+========================================================= */
+
+function createDocumentCanvas(
+  includeWatermark
+) {
+
+  return new Promise(
+    function (resolve, reject) {
+
+      if (!pdf) {
+        reject(
+          new Error(
+            "Boarding pass document not found."
+          )
+        );
+
+        return;
+      }
+
+
+      const background =
+        pdf.querySelector(
+          "img"
+        );
+
+
+      if (!background) {
+
+        reject(
+          new Error(
+            "Boarding pass background image not found."
+          )
+        );
+
+        return;
+
+      }
+
+
+      if (
+        !background.complete ||
+        !background.naturalWidth
+      ) {
+
+        background.onload =
+          function () {
+
+            createDocumentCanvas(
+              includeWatermark
+            )
+              .then(resolve)
+              .catch(reject);
+
+          };
+
+        return;
+
+      }
+
+
+      const canvas =
+        document.createElement(
+          "canvas"
+        );
+
+
+      const width =
+        background.naturalWidth;
+
+
+      const height =
+        background.naturalHeight;
+
+
+      canvas.width =
+        width;
+
+
+      canvas.height =
+        height;
+
+
+      const ctx =
+        canvas.getContext(
+          "2d"
+        );
+
+
+      ctx.drawImage(
+        background,
+        0,
+        0,
+        width,
+        height
+      );
+
+
+      const scaleX =
+        width /
+        pdf.clientWidth;
+
+
+      const scaleY =
+        height /
+        pdf.clientHeight;
+
+
+      const elements =
+        pdf.querySelectorAll(
+          ".pdf-value"
+        );
+
+
+      elements.forEach(
+        function (element) {
+
+          const field =
+            element.dataset.field;
+
+
+          const position =
+            textPositions[field];
+
+
+          if (!position) {
+            return;
+          }
+
+
+          const text =
+            element.textContent || "";
+
+
+          if (!text) {
+            return;
+          }
+
+
+          const computed =
+            window.getComputedStyle(
+              element
+            );
+
+
+          /*
+            Use a fixed document font size
+            instead of taking the browser's
+            scaled preview font size.
+
+            This prevents the downloaded
+            text from becoming huge.
+          */
+
+          const fontSize =
+            DOCUMENT_BASE_FONT_SIZE *
+            scaleY;
+
+
+          const fontWeight =
+            computed.fontWeight ||
+            "600";
+
+
+          ctx.font =
+            `${fontWeight} ${fontSize}px ${documentFont}`;
+
+
+          ctx.fillStyle =
+            documentTextColor;
+
+
+          ctx.textBaseline =
+            "top";
+
+
+          const x =
+            (
+              position.left /
+              100
+            ) *
+            width;
+
+
+          const y =
+            (
+              position.top /
+              100
+            ) *
+            height;
+
+
+          ctx.fillText(
+            text,
+            x,
+            y
+          );
+
+        }
+      );
+
+
+      if (
+        includeWatermark
+      ) {
+
+        drawCanvasWatermark(
+          ctx,
+          width,
+          height
+        );
+
+      }
+
+
+      resolve(
+        canvas
+      );
+
+    }
+  );
+
+}
+
+
+/* =========================================================
+   CANVAS WATERMARK
+========================================================= */
+
+function drawCanvasWatermark(
+  ctx,
+  width,
+  height
+) {
+
+  ctx.save();
+
+
+  ctx.globalAlpha =
+    0.16;
+
+
+  ctx.fillStyle =
+    "#000000";
+
+
+  ctx.font =
+    "700 24px Arial";
+
+
+  ctx.textAlign =
+    "center";
+
+
+  ctx.textBaseline =
+    "middle";
+
+
+  for (
+    let row = 0;
+    row < 3;
+    row++
+  ) {
+
+    for (
+      let col = 0;
+      col < 5;
+      col++
+    ) {
+
+      const x =
+        (
+          col +
+          0.5
+        ) *
+        (
+          width /
+          5
+        );
+
+
+      const y =
+        (
+          row +
+          0.5
+        ) *
+        (
+          height /
+          3
+        );
+
+
+      ctx.save();
+
+
+      ctx.translate(
+        x,
+        y
+      );
+
+
+      ctx.rotate(
+        -25 *
+        Math.PI /
+        180
+      );
+
+
+      ctx.fillText(
+        "TEST / FREE",
+        0,
+        0
+      );
+
+
+      ctx.restore();
+
+    }
+
+  }
+
+
+  ctx.restore();
+
+}
+
+
+/* =========================================================
+   DOWNLOAD JPG
+========================================================= */
+
+async function downloadJPG(
+  includeWatermark
+) {
+
+  const canvas =
+    await createDocumentCanvas(
+      includeWatermark
+    );
+
+
+  const link =
+    document.createElement(
+      "a"
+    );
+
+
+  link.download =
+    `boarding-pass-${generatedTrackingNumber || "document"}.jpg`;
+
+
+  link.href =
+    canvas.toDataURL(
+      "image/jpeg",
+      0.95
+    );
+
+
+  link.click();
+
+}
+
+
+/* =========================================================
+   DOWNLOAD PDF
+========================================================= */
+
+async function downloadPDF(
+  includeWatermark
+) {
+
+  const canvas =
+    await createDocumentCanvas(
+      includeWatermark
+    );
+
+
+  if (
+    typeof window.jspdf ===
+    "undefined"
+  ) {
+
+    alert(
+      "PDF library is not available."
+    );
+
+    return;
+
+  }
+
+
+  const {
+    jsPDF
+  } =
+    window.jspdf;
+
+
+  const imageData =
+    canvas.toDataURL(
+      "image/jpeg",
+      0.95
+    );
+
+
+  const orientation =
+    canvas.width >=
+      canvas.height
+      ? "landscape"
+      : "portrait";
+
+
+  const pdfDocument =
+    new jsPDF({
+      orientation,
+      unit: "px",
+      format: [
+        canvas.width,
+        canvas.height
+      ]
+    });
+
+
+  pdfDocument.addImage(
+    imageData,
+    "JPEG",
+    0,
+    0,
+    canvas.width,
+    canvas.height
+  );
+
+
+  pdfDocument.save(
+    `boarding-pass-${generatedTrackingNumber || "document"}.pdf`
+  );
+
+}
+
+
+/* =========================================================
+   DOWNLOAD BOARDING PASS
+========================================================= */
+
+async function downloadBoardingPass(
+  format,
+  includeWatermark
+) {
+
+  try {
+
+    if (
+      format === "jpg"
+    ) {
+
+      await downloadJPG(
+        includeWatermark
+      );
+
+      return;
+
+    }
+
+
+    if (
+      format === "pdf"
+    ) {
+
+      await downloadPDF(
+        includeWatermark
+      );
+
+      return;
+
+    }
+
+  } catch (error) {
+
+    console.error(
+      "DOWNLOAD BOARDING PASS ERROR:",
+      error
+    );
+
+    alert(
+      "Unable to download boarding pass."
+    );
 
   }
 
@@ -2709,25 +1760,784 @@ function showCreateBoardingPassView() {
 
 
 /* =========================================================
-   SHOW SELECTED VIEW
+   FORMAT MODAL
 ========================================================= */
 
-function showSelectedBoardingPassView() {
+function createFormatModal(
+  includeWatermark
+) {
 
-  if (createFlightView) {
+  const existing =
+    document.getElementById(
+      "boardingPassFormatModal"
+    );
 
-    createFlightView.style.display =
-      "none";
+  if (existing) {
+    existing.remove();
+  }
+
+
+  const overlay =
+    document.createElement(
+      "div"
+    );
+
+
+  overlay.id =
+    "boardingPassFormatModal";
+
+
+  overlay.style.position =
+    "fixed";
+
+
+  overlay.style.inset =
+    "0";
+
+
+  overlay.style.background =
+    "rgba(0,0,0,0.65)";
+
+
+  overlay.style.display =
+    "flex";
+
+
+  overlay.style.alignItems =
+    "center";
+
+
+  overlay.style.justifyContent =
+    "center";
+
+
+  overlay.style.zIndex =
+    "99999";
+
+
+  const modal =
+    document.createElement(
+      "div"
+    );
+
+
+  modal.style.width =
+    "min(400px, 90%)";
+
+
+  modal.style.background =
+    "#ffffff";
+
+
+  modal.style.borderRadius =
+    "12px";
+
+
+  modal.style.padding =
+    "24px";
+
+
+  modal.style.boxSizing =
+    "border-box";
+
+
+  modal.innerHTML = `
+
+    <h3 style="
+      margin:0 0 8px;
+      color:#111827;
+    ">
+      Download Boarding Pass
+    </h3>
+
+    <p style="
+      margin:0 0 20px;
+      color:#6b7280;
+    ">
+      Choose your file format.
+    </p>
+
+    <div style="
+      display:flex;
+      gap:10px;
+    ">
+
+      <button
+        type="button"
+        id="boardingPassDownloadJPG"
+        style="
+          flex:1;
+          padding:12px;
+          border:1px solid #d1d5db;
+          border-radius:8px;
+          cursor:pointer;
+        "
+      >
+        JPG
+      </button>
+
+      <button
+        type="button"
+        id="boardingPassDownloadPDF"
+        style="
+          flex:1;
+          padding:12px;
+          border:1px solid #d1d5db;
+          border-radius:8px;
+          cursor:pointer;
+        "
+      >
+        PDF
+      </button>
+
+    </div>
+
+    <button
+      type="button"
+      id="boardingPassCloseFormat"
+      style="
+        width:100%;
+        margin-top:10px;
+        padding:10px;
+        border:0;
+        background:transparent;
+        cursor:pointer;
+      "
+    >
+      Cancel
+    </button>
+
+  `;
+
+
+  overlay.appendChild(
+    modal
+  );
+
+
+  document.body.appendChild(
+    overlay
+  );
+
+
+  document
+    .getElementById(
+      "boardingPassDownloadJPG"
+    )
+    ?.addEventListener(
+      "click",
+      async function () {
+
+        await downloadBoardingPass(
+          "jpg",
+          includeWatermark
+        );
+
+        overlay.remove();
+
+      }
+    );
+
+
+  document
+    .getElementById(
+      "boardingPassDownloadPDF"
+    )
+    ?.addEventListener(
+      "click",
+      async function () {
+
+        await downloadBoardingPass(
+          "pdf",
+          includeWatermark
+        );
+
+        overlay.remove();
+
+      }
+    );
+
+
+  document
+    .getElementById(
+      "boardingPassCloseFormat"
+    )
+    ?.addEventListener(
+      "click",
+      function () {
+
+        overlay.remove();
+
+      }
+    );
+
+
+  overlay.addEventListener(
+    "click",
+    function (event) {
+
+      if (
+        event.target ===
+        overlay
+      ) {
+
+        overlay.remove();
+
+      }
+
+    }
+  );
+
+}
+
+
+/* =========================================================
+   CREATE BOARDING PASS
+========================================================= */
+
+async function createBoardingPass(
+  event
+) {
+
+  if (event) {
+    event.preventDefault();
+  }
+
+
+  if (!bedspreadForm) {
+    return;
+  }
+
+
+  const name =
+    formInputs[0]?.value
+      ?.trim() || "";
+
+
+  const boardingPassType =
+    getClassValue();
+
+  const from =
+    formInputs[2]?.value
+      ?.trim() || "";
+
+
+  const to =
+    formInputs[3]?.value
+      ?.trim() || "";
+
+
+  const date =
+    formInputs[4]?.value
+      ?.trim() || "";
+
+
+  const time =
+    formInputs[5]?.value
+      ?.trim() || "";
+
+
+  const duration =
+    formInputs[6]?.value
+      ?.trim() || "";
+
+
+  const currency =
+    getCurrency();
+
+
+  const price =
+    Number(
+      formInputs[8]?.value
+    ) || 0;
+
+
+  if (
+    !name ||
+    !boardingPassType ||
+    !from ||
+    !to ||
+    !date ||
+    !time ||
+    !duration
+  ) {
+
+    alert(
+      "Please complete all required fields."
+    );
+
+    return;
 
   }
 
 
-  if (selectedFlightView) {
+  generatedGate =
+    generateGate();
 
-    selectedFlightView.style.display =
+
+  generatedSeat =
+    generateSeat();
+
+
+  generatedSequence =
+    generateSequence();
+
+
+  generatedDuration =
+    duration;
+
+
+  selectedCurrency =
+    currency;
+
+
+  const amounts =
+    calculateAmounts();
+
+
+  try {
+
+    const response =
+      await fetch(
+        `${API_URL}/boardingPass`,
+        {
+          method: "POST",
+          headers:
+            authHeaders(),
+
+          body:
+            JSON.stringify({
+
+              name,
+
+              boardingPassType,
+
+              from,
+
+              to,
+
+              date,
+
+              time,
+
+              duration,
+
+              currency,
+
+              price:
+                amounts.price,
+
+              taxes:
+                amounts.taxes,
+
+              total:
+                amounts.total,
+
+              gate:
+                generatedGate,
+
+              seat:
+                generatedSeat,
+
+              sequence:
+                generatedSequence
+
+            })
+        }
+      );
+
+
+    const data =
+      await response.json();
+
+
+    if (!response.ok) {
+
+      throw new Error(
+        data.message ||
+        "Unable to create boarding pass."
+      );
+
+    }
+
+
+    generatedTrackingNumber =
+      data.trackingNumber ||
+      data.boardingPass
+        ?.trackingNumber ||
       "";
 
+
+    bedspreadWatermarkEnabled =
+      true;
+
+
+    createDocument();
+
+
+    if (generatedDocument) {
+
+      generatedDocument.style.display =
+        "block";
+
+    }
+
+
+    await loadBoardingPasses();
+
+
+    const createdPass =
+      savedBoardingPasses.find(
+        function (pass) {
+
+          return (
+            pass.trackingNumber ===
+            generatedTrackingNumber
+          );
+
+        }
+      );
+
+
+    if (createdPass) {
+
+      selectBoardingPass(
+        createdPass
+      );
+
+    }
+
+
+    await loadWallet();
+
+
+    if (generatedDocument) {
+
+      generatedDocument.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
+
+    }
+
+  } catch (error) {
+
+    console.error(
+      "CREATE BOARDING PASS ERROR:",
+      error
+    );
+
+    alert(
+      error.message ||
+      "Unable to create boarding pass."
+    );
+
   }
+
+}
+
+
+/* =========================================================
+   LOAD BOARDING PASSES
+========================================================= */
+
+async function loadBoardingPasses() {
+
+  try {
+
+    const response =
+      await fetch(
+        `${API_URL}/boardingPass/mine`,
+        {
+          headers:
+            authHeaders()
+        }
+      );
+
+
+    const data =
+      await response.json();
+
+
+    if (!response.ok) {
+
+      throw new Error(
+        data.message ||
+        "Unable to load boarding passes."
+      );
+
+    }
+
+
+    savedBoardingPasses =
+      Array.isArray(data)
+        ? data
+        : (
+          Array.isArray(
+            data.boardingPasses
+          )
+            ? data.boardingPasses
+            : []
+        );
+
+
+    renderBoardingPasses();
+
+  } catch (error) {
+
+    console.error(
+      "LOAD BOARDING PASSES ERROR:",
+      error
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   RENDER BOARDING PASSES
+========================================================= */
+
+function renderBoardingPasses() {
+
+  if (!createdFlights) {
+    return;
+  }
+
+
+  createdFlights.innerHTML =
+    "";
+
+
+  if (
+    savedBoardingPasses.length ===
+    0
+  ) {
+
+    const empty =
+      document.createElement(
+        "div"
+      );
+
+
+    empty.textContent =
+      "No boarding passes created yet.";
+
+
+    createdFlights.appendChild(
+      empty
+    );
+
+
+    return;
+
+  }
+
+
+  savedBoardingPasses.forEach(
+    function (pass) {
+
+      const item =
+        document.createElement(
+          "div"
+        );
+
+
+      item.className =
+        "created-flight-item";
+
+
+      const profileButton =
+        document.createElement(
+          "button"
+        );
+
+
+      profileButton.type =
+        "button";
+
+
+      profileButton.className =
+        "created-flight-profile";
+
+
+      const name =
+        pass.name ||
+        "Unnamed Passenger";
+
+
+      const tracking =
+        pass.trackingNumber ||
+        "";
+
+
+      const status =
+        pass.currentStatus ||
+        "Processing";
+
+
+      profileButton.innerHTML = `
+
+        <div>
+
+          <strong>
+            ${escapeHTML(name)}
+          </strong>
+
+          <small>
+            ${escapeHTML(tracking)}
+          </small>
+
+        </div>
+
+        <span>
+          ${escapeHTML(status)}
+        </span>
+
+      `;
+
+
+      profileButton.addEventListener(
+        "click",
+        function () {
+
+          selectBoardingPass(
+            pass
+          );
+
+        }
+      );
+
+
+      const deleteButton =
+        document.createElement(
+          "button"
+        );
+
+
+      deleteButton.type =
+        "button";
+
+
+      deleteButton.className =
+        "delete-flight-btn";
+
+
+      deleteButton.textContent =
+        "Delete";
+
+
+      deleteButton.addEventListener(
+        "click",
+        async function (event) {
+
+          event.stopPropagation();
+
+
+          const confirmed =
+            confirm(
+              `Delete boarding pass for ${name}?`
+            );
+
+
+          if (!confirmed) {
+            return;
+          }
+
+
+          try {
+
+            const response =
+              await fetch(
+                `${API_URL}/boardingPass/${encodeURIComponent(
+                  tracking
+                )}`,
+                {
+                  method:
+                    "DELETE",
+
+                  headers:
+                    authHeaders()
+                }
+              );
+
+
+            const data =
+              await response.json();
+
+
+            if (!response.ok) {
+
+              throw new Error(
+                data.message ||
+                "Unable to delete boarding pass."
+              );
+
+            }
+
+
+            if (
+              selectedBoardingPass &&
+              selectedBoardingPass.trackingNumber ===
+              tracking
+            ) {
+
+              selectedBoardingPass =
+                null;
+
+
+              if (
+                generatedDocument
+              ) {
+
+                generatedDocument.style.display =
+                  "none";
+
+              }
+
+
+              showCreateBoardingPassView();
+
+            }
+
+
+            await loadBoardingPasses();
+
+          } catch (error) {
+
+            console.error(
+              "DELETE BOARDING PASS ERROR:",
+              error
+            );
+
+            alert(
+              error.message ||
+              "Unable to delete boarding pass."
+            );
+
+          }
+
+        }
+      );
+
+
+      item.appendChild(
+        profileButton
+      );
+
+
+      item.appendChild(
+        deleteButton
+      );
+
+
+      createdFlights.appendChild(
+        item
+      );
+
+    }
+  );
 
 }
 
@@ -2741,9 +2551,7 @@ function selectBoardingPass(
 ) {
 
   if (!pass) {
-
     return;
-
   }
 
 
@@ -2751,145 +2559,9 @@ function selectBoardingPass(
     pass;
 
 
-  selectedFlightName &&
-    (
-      selectedFlightName.textContent =
-        pass.name ||
-        "Unnamed Passenger"
-    );
-
-
-  selectedFlightTracking &&
-    (
-      selectedFlightTracking.textContent =
-        pass.trackingNumber ||
-        ""
-    );
-
-
-  profileClass &&
-    (
-      profileClass.value =
-        pass.class ||
-        ""
-    );
-
-
-  profileFrom &&
-    (
-      profileFrom.value =
-        pass.from ||
-        ""
-    );
-
-
-  profileTo &&
-    (
-      profileTo.value =
-        pass.to ||
-        ""
-    );
-
-
-  profileDate &&
-    (
-      profileDate.value =
-        pass.date ||
-        ""
-    );
-
-
-  profileTime &&
-    (
-      profileTime.value =
-        pass.time ||
-        ""
-    );
-
-
-  profileDuration &&
-    (
-      profileDuration.value =
-        pass.duration ||
-        ""
-    );
-
-
-  profileGate &&
-    (
-      profileGate.value =
-        pass.gate ||
-        ""
-    );
-
-
-  profileSeat &&
-    (
-      profileSeat.value =
-        pass.seat ||
-        ""
-    );
-
-
-  profileSequence &&
-    (
-      profileSequence.value =
-        pass.sequence ||
-        ""
-    );
-
-
-  profilePrice &&
-    (
-      profilePrice.value =
-        pass.price ??
-        ""
-    );
-
-
-  profileTaxes &&
-    (
-      profileTaxes.value =
-        pass.taxes ??
-        ""
-    );
-
-
-  profileTotal &&
-    (
-      profileTotal.value =
-        pass.total ??
-        ""
-    );
-
-
-  profileTrackingNumber &&
-    (
-      profileTrackingNumber.value =
-        pass.trackingNumber ||
-        ""
-    );
-
-
-  if (flightStatusSelect) {
-
-    flightStatusSelect.value =
-      pass.currentStatus ||
-      "Processing";
-
-  }
-
-
-  bedspreadWatermarkEnabled =
-    pass.watermarkEnabled !== false;
-
-
   loadPassIntoGenerator(
     pass
   );
-
-
-  updateWatermark();
 
 
   showSelectedBoardingPassView();
@@ -2906,13 +2578,13 @@ function loadPassIntoGenerator(
 ) {
 
   if (!pass) {
-
     return;
-
   }
 
 
-  if (formInputs[0]) {
+  if (
+    formInputs[0]
+  ) {
 
     formInputs[0].value =
       pass.name ||
@@ -2921,16 +2593,21 @@ function loadPassIntoGenerator(
   }
 
 
-  if (formInputs[1]) {
+  if (
+    classInput
+  ) {
 
-    formInputs[1].value =
+    classInput.value =
+      pass.boardingPassType ||
       pass.class ||
       "";
 
   }
 
 
-  if (formInputs[2]) {
+  if (
+    formInputs[2]
+  ) {
 
     formInputs[2].value =
       pass.from ||
@@ -2939,7 +2616,9 @@ function loadPassIntoGenerator(
   }
 
 
-  if (formInputs[3]) {
+  if (
+    formInputs[3]
+  ) {
 
     formInputs[3].value =
       pass.to ||
@@ -2948,7 +2627,9 @@ function loadPassIntoGenerator(
   }
 
 
-  if (formInputs[4]) {
+  if (
+    formInputs[4]
+  ) {
 
     formInputs[4].value =
       pass.date ||
@@ -2957,7 +2638,9 @@ function loadPassIntoGenerator(
   }
 
 
-  if (formInputs[5]) {
+  if (
+    formInputs[5]
+  ) {
 
     formInputs[5].value =
       pass.time ||
@@ -2966,37 +2649,52 @@ function loadPassIntoGenerator(
   }
 
 
-  if (formInputs[8]) {
+  if (
+    formInputs[6]
+  ) {
 
-    formInputs[8].value =
-      pass.price ??
+    formInputs[6].value =
+      pass.duration ||
       "";
 
   }
 
 
-  if (formInputs[14]) {
+  if (
+    formInputs[7]
+  ) {
 
-    formInputs[14].value =
+    formInputs[7].value =
       pass.currency ||
       "USD";
 
   }
 
 
+  if (
+    formInputs[8]
+  ) {
+
+    formInputs[8].value =
+      pass.price ??
+      0;
+
+  }
+
+
   generatedGate =
     pass.gate ||
-    "";
+    generateGate();
 
 
   generatedSeat =
     pass.seat ||
-    "";
+    generateSeat();
 
 
   generatedSequence =
     pass.sequence ||
-    "";
+    generateSequence();
 
 
   generatedTrackingNumber =
@@ -3006,14 +2704,14 @@ function loadPassIntoGenerator(
 
   generatedTaxes =
     Number(
-      pass.taxes || 0
-    ).toFixed(2);
+      pass.taxes
+    ) || 0;
 
 
   generatedTotal =
     Number(
-      pass.total || 0
-    ).toFixed(2);
+      pass.total
+    ) || 0;
 
 
   generatedDuration =
@@ -3026,7 +2724,12 @@ function loadPassIntoGenerator(
     "USD";
 
 
-  updateDocumentValues();
+  bedspreadWatermarkEnabled =
+    pass.watermarkEnabled !==
+    false;
+
+
+  createDocument();
 
 
   if (
@@ -3034,7 +2737,277 @@ function loadPassIntoGenerator(
   ) {
 
     generatedDocument.style.display =
+      "block";
+
+  }
+
+
+  updateSelectedProfile(
+    pass
+  );
+
+}
+
+
+/* =========================================================
+   UPDATE SELECTED PROFILE
+========================================================= */
+
+function updateSelectedProfile(
+  pass
+) {
+
+  if (!pass) {
+    return;
+  }
+
+
+  if (
+    selectedFlightName
+  ) {
+
+    selectedFlightName.textContent =
+      pass.name ||
+      "Unnamed Passenger";
+
+  }
+
+
+  if (
+    selectedFlightTracking
+  ) {
+
+    selectedFlightTracking.textContent =
+      pass.trackingNumber ||
       "";
+
+  }
+
+
+  if (
+    profileClass
+  ) {
+
+    profileClass.textContent =
+      pass.boardingPassType ||
+      pass.class ||
+      "";
+
+  }
+
+
+  if (
+    profileFrom
+  ) {
+
+    profileFrom.textContent =
+      pass.from ||
+      "";
+
+  }
+
+
+  if (
+    profileTo
+  ) {
+
+    profileTo.textContent =
+      pass.to ||
+      "";
+
+  }
+
+
+  if (
+    profileDate
+  ) {
+
+    profileDate.textContent =
+      pass.date ||
+      "";
+
+  }
+
+
+  if (
+    profileTime
+  ) {
+
+    profileTime.textContent =
+      pass.time ||
+      "";
+
+  }
+
+
+  if (
+    profileDuration
+  ) {
+
+    profileDuration.textContent =
+      pass.duration ||
+      "";
+
+  }
+
+
+  if (
+    profileGate
+  ) {
+
+    profileGate.textContent =
+      pass.gate ||
+      generatedGate ||
+      "";
+
+  }
+
+
+  if (
+    profileSeat
+  ) {
+
+    profileSeat.textContent =
+      pass.seat ||
+      generatedSeat ||
+      "";
+
+  }
+
+
+  if (
+    profileSequence
+  ) {
+
+    profileSequence.textContent =
+      pass.sequence ||
+      generatedSequence ||
+      "";
+
+  }
+
+
+  if (
+    profilePrice
+  ) {
+
+    profilePrice.textContent =
+      formatMoney(
+        pass.price,
+        pass.currency ||
+        "USD"
+      );
+
+  }
+
+
+  if (
+    profileTaxes
+  ) {
+
+    profileTaxes.textContent =
+      formatMoney(
+        pass.taxes,
+        pass.currency ||
+        "USD"
+      );
+
+  }
+
+
+  if (
+    profileTotal
+  ) {
+
+    profileTotal.textContent =
+      formatMoney(
+        pass.total,
+        pass.currency ||
+        "USD"
+      );
+
+  }
+
+
+  if (
+    profileTrackingNumber
+  ) {
+
+    profileTrackingNumber.textContent =
+      pass.trackingNumber ||
+      "";
+
+  }
+
+
+  if (
+    flightStatusSelect
+  ) {
+
+    flightStatusSelect.value =
+      pass.currentStatus ||
+      "Processing";
+
+  }
+
+
+  updateWatermarkAction(
+    pass
+  );
+
+}
+
+
+/* =========================================================
+   CREATE VIEW
+========================================================= */
+
+function showCreateBoardingPassView() {
+
+  if (
+    createFlightView
+  ) {
+
+    createFlightView.style.display =
+      "block";
+
+  }
+
+
+  if (
+    selectedFlightView
+  ) {
+
+    selectedFlightView.style.display =
+      "none";
+
+  }
+
+}
+
+
+/* =========================================================
+   SELECTED VIEW
+========================================================= */
+
+function showSelectedBoardingPassView() {
+
+  if (
+    createFlightView
+  ) {
+
+    createFlightView.style.display =
+      "none";
+
+  }
+
+
+  if (
+    selectedFlightView
+  ) {
+
+    selectedFlightView.style.display =
+      "block";
 
   }
 
@@ -3045,217 +3018,745 @@ function loadPassIntoGenerator(
    NEW BOARDING PASS
 ========================================================= */
 
-if (newFlightBtn) {
+function startNewBoardingPass() {
 
-  newFlightBtn.addEventListener(
-    "click",
-    () => {
+  selectedBoardingPass =
+    null;
+
+
+  if (bedspreadForm) {
+
+    bedspreadForm.reset();
+
+  }
+
+
+  generatedGate =
+    "";
+
+  generatedSeat =
+    "";
+
+  generatedSequence =
+    "";
+
+  generatedTrackingNumber =
+    "";
+
+  generatedTaxes =
+    0;
+
+  generatedTotal =
+    0;
+
+  generatedDuration =
+    "";
+
+  selectedCurrency =
+    "USD";
+
+  bedspreadWatermarkEnabled =
+    false;
+
+
+  if (
+    generatedDocument
+  ) {
+
+    generatedDocument.style.display =
+      "none";
+
+  }
+
+
+  showCreateBoardingPassView();
+
+}
+
+
+/* =========================================================
+   UPDATE WATERMARK ACTION
+========================================================= */
+
+function updateWatermarkAction(
+  pass
+) {
+
+  if (!flightWatermarkAction) {
+    return;
+  }
+
+
+  const isClean =
+    pass &&
+    pass.watermarkEnabled ===
+    false;
+
+
+  if (isClean) {
+
+    flightWatermarkAction.innerHTML = `
+
+      <div>
+        <strong>
+          Clean Boarding Pass
+        </strong>
+
+        <span>
+          Watermark removed
+        </span>
+      </div>
+
+    `;
+
+    return;
+
+  }
+
+
+  flightWatermarkAction.innerHTML = `
+
+    <div>
+      <strong>
+        Remove Watermark
+      </strong>
+
+      <span>
+        Upgrade for $5
+      </span>
+    </div>
+
+  `;
+
+}
+
+
+/* =========================================================
+   UPGRADE BOARDING PASS
+========================================================= */
+
+async function upgradeBoardingPass() {
+
+  if (!selectedBoardingPass) {
+
+    alert(
+      "Please select a boarding pass first."
+    );
+
+    return;
+
+  }
+
+
+  if (
+    selectedBoardingPass.watermarkEnabled ===
+    false
+  ) {
+
+    alert(
+      "This boarding pass is already clean."
+    );
+
+    return;
+
+  }
+
+
+  const confirmed =
+    confirm(
+      "Remove the TEST / FREE watermark for $5?"
+    );
+
+
+  if (!confirmed) {
+    return;
+  }
+
+
+  try {
+
+    const response =
+      await fetch(
+        `${API_URL}/boardingPass/${encodeURIComponent(
+          selectedBoardingPass.trackingNumber
+        )}/upgrade`,
+        {
+          method:
+            "PATCH",
+
+          headers:
+            authHeaders()
+        }
+      );
+
+
+    const data =
+      await response.json();
+
+
+    if (!response.ok) {
+
+      throw new Error(
+        data.message ||
+        "Unable to upgrade boarding pass."
+      );
+
+    }
+
+
+    bedspreadWatermarkEnabled =
+      false;
+
+
+    await loadBoardingPasses();
+
+
+    const updated =
+      savedBoardingPasses.find(
+        function (pass) {
+
+          return (
+            pass.trackingNumber ===
+            selectedBoardingPass.trackingNumber
+          );
+
+        }
+      );
+
+
+    if (updated) {
 
       selectedBoardingPass =
-        null;
+        updated;
+
+      loadPassIntoGenerator(
+        updated
+      );
+
+    }
 
 
-      bedspreadWatermarkEnabled =
-        false;
+    await loadWallet();
 
 
-      if (bedspreadForm) {
+  } catch (error) {
 
-        bedspreadForm.reset();
+    console.error(
+      "UPGRADE BOARDING PASS ERROR:",
+      error
+    );
+
+    alert(
+      error.message ||
+      "Unable to upgrade boarding pass."
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   STATUS UPDATE
+========================================================= */
+
+async function updateBoardingPassStatus() {
+
+  if (
+    !selectedBoardingPass
+  ) {
+
+    alert(
+      "Please select a boarding pass first."
+    );
+
+    return;
+
+  }
+
+
+  const status =
+    flightStatusSelect?.value;
+
+
+  if (!status) {
+    return;
+  }
+
+
+  try {
+
+    const response =
+      await fetch(
+        `${API_URL}/boardingPass/${encodeURIComponent(
+          selectedBoardingPass.trackingNumber
+        )}/status`,
+        {
+          method:
+            "PATCH",
+
+          headers:
+            authHeaders(),
+
+          body:
+            JSON.stringify({
+              status
+            })
+        }
+      );
+
+
+    const data =
+      await response.json();
+
+
+    if (!response.ok) {
+
+      throw new Error(
+        data.message ||
+        "Unable to update status."
+      );
+
+    }
+
+
+    await loadBoardingPasses();
+
+
+    const updated =
+      savedBoardingPasses.find(
+        function (pass) {
+
+          return (
+            pass.trackingNumber ===
+            selectedBoardingPass.trackingNumber
+          );
+
+        }
+      );
+
+
+    if (updated) {
+
+      selectedBoardingPass =
+        updated;
+
+      updateSelectedProfile(
+        updated
+      );
+
+    }
+
+  } catch (error) {
+
+    console.error(
+      "STATUS UPDATE ERROR:",
+      error
+    );
+
+    alert(
+      error.message ||
+      "Unable to update status."
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   WALLET
+========================================================= */
+
+async function loadWallet() {
+
+  try {
+
+    const response =
+      await fetch(
+        `${API_URL}/wallet`,
+        {
+          headers:
+            authHeaders()
+        }
+      );
+
+
+    const data =
+      await response.json();
+
+
+    if (!response.ok) {
+      return;
+    }
+
+
+    const balance =
+      Number(
+        data.balance ??
+        data.wallet?.balance ??
+        0
+      );
+
+
+    if (
+      navbarWalletBalance
+    ) {
+
+      navbarWalletBalance.textContent =
+        `$${balance.toFixed(2)}`;
+
+    }
+
+  } catch (error) {
+
+    console.error(
+      "LOAD WALLET ERROR:",
+      error
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   TRACKING
+========================================================= */
+
+function openTrackingPage() {
+
+  if (
+    !selectedBoardingPass
+  ) {
+
+    alert(
+      "Please select a boarding pass first."
+    );
+
+    return;
+
+  }
+
+
+  const tracking =
+    selectedBoardingPass.trackingNumber;
+
+
+  if (!tracking) {
+    return;
+  }
+
+
+  window.open(
+    `https://travellnest.com/flight-tracking.html?tracking=${encodeURIComponent(
+      tracking
+    )}`,
+    "_blank"
+  );
+
+}
+
+
+/* =========================================================
+   EDIT BUTTON
+========================================================= */
+
+if (
+  editButton
+) {
+
+  editButton.addEventListener(
+    "click",
+    function () {
+
+      showCreateBoardingPassView();
+
+    }
+  );
+
+}
+
+
+/* =========================================================
+   DOWNLOAD BUTTON
+========================================================= */
+
+if (
+  downloadButton
+) {
+
+  downloadButton.addEventListener(
+    "click",
+    function () {
+
+      const includeWatermark =
+        selectedBoardingPass
+          ? selectedBoardingPass.watermarkEnabled !== false
+          : bedspreadWatermarkEnabled;
+
+
+      createFormatModal(
+        includeWatermark
+      );
+
+    }
+  );
+
+}
+
+
+/* =========================================================
+   PROFILE DOWNLOAD BUTTON
+========================================================= */
+
+if (
+  profileDownloadBtn
+) {
+
+  profileDownloadBtn.addEventListener(
+    "click",
+    function () {
+
+      if (
+        !selectedBoardingPass
+      ) {
+
+        alert(
+          "Please select a boarding pass first."
+        );
+
+        return;
 
       }
 
 
-      generatedGate =
-        "";
+      createFormatModal(
+        selectedBoardingPass.watermarkEnabled !== false
+      );
 
-      generatedSeat =
-        "";
+    }
+  );
 
-      generatedSequence =
-        "";
-
-      generatedTrackingNumber =
-        "";
-
-      generatedTaxes =
-        "";
-
-      generatedTotal =
-        "";
-
-      generatedDuration =
-        "";
-
-      selectedCurrency =
-        "USD";
+}
 
 
-      updateDocumentValues();
+/* =========================================================
+   WATERMARK ACTION
+========================================================= */
 
-      removeWatermark();
+if (
+  flightWatermarkAction
+) {
+
+  flightWatermarkAction.addEventListener(
+    "click",
+    function () {
+
+      upgradeBoardingPass();
+
+    }
+  );
+
+}
 
 
-      if (
-        generatedDocument
-      ) {
+/* =========================================================
+   TRACK BUTTON
+========================================================= */
 
-        generatedDocument.style.display =
+if (
+  trackFlightBtn
+) {
+
+  trackFlightBtn.addEventListener(
+    "click",
+    function () {
+
+      openTrackingPage();
+
+    }
+  );
+
+}
+
+
+/* =========================================================
+   STATUS BUTTON
+========================================================= */
+
+if (
+  changeFlightStatusBtn
+) {
+
+  changeFlightStatusBtn.addEventListener(
+    "click",
+    function () {
+
+      updateBoardingPassStatus();
+
+    }
+  );
+
+}
+
+
+/* =========================================================
+   NEW BOARDING PASS BUTTON
+========================================================= */
+
+if (
+  newFlightBtn
+) {
+
+  newFlightBtn.addEventListener(
+    "click",
+    function () {
+
+      startNewBoardingPass();
+
+    }
+  );
+
+}
+
+
+/* =========================================================
+   FORM SUBMIT
+========================================================= */
+
+if (
+  bedspreadForm
+) {
+
+  bedspreadForm.addEventListener(
+    "submit",
+    function (event) {
+
+      createBoardingPass(
+        event
+      );
+
+    }
+  );
+
+}
+
+
+/* =========================================================
+   LIVE FORM PREVIEW
+========================================================= */
+
+formInputs.forEach(
+  function (input) {
+
+    input.addEventListener(
+      "input",
+      function () {
+
+        if (
+          input ===
+          formInputs[7]
+        ) {
+
+          selectedCurrency =
+            getCurrency();
+
+        }
+
+
+        calculateAmounts();
+
+        updateDocumentValues();
+
+      }
+    );
+
+
+    input.addEventListener(
+      "change",
+      function () {
+
+        if (
+          input ===
+          formInputs[7]
+        ) {
+
+          selectedCurrency =
+            getCurrency();
+
+        }
+
+
+        calculateAmounts();
+
+        updateDocumentValues();
+
+      }
+    );
+
+  }
+);
+
+
+/* =========================================================
+   OLD MODAL
+========================================================= */
+
+if (
+  closeModal &&
+  downloadModal
+) {
+
+  closeModal.addEventListener(
+    "click",
+    function () {
+
+      downloadModal.style.display =
+        "none";
+
+    }
+  );
+
+}
+
+
+if (
+  modalOverlay &&
+  downloadModal
+) {
+
+  modalOverlay.addEventListener(
+    "click",
+    function () {
+
+      downloadModal.style.display =
+        "none";
+
+    }
+  );
+
+}
+
+
+if (
+  downloadFree
+) {
+
+  downloadFree.addEventListener(
+    "click",
+    async function () {
+
+      if (downloadModal) {
+
+        downloadModal.style.display =
           "none";
 
       }
 
 
-      showCreateBoardingPassView();
-
-
-      if (bedspreadForm) {
-
-        bedspreadForm.scrollIntoView({
-          behavior: "smooth",
-          block: "start"
-        });
-
-      }
-
-    }
-  );
-
-}
-
-
-/* =========================================================
-   CHANGE STATUS
-========================================================= */
-
-if (changeFlightStatusBtn) {
-
-  changeFlightStatusBtn.addEventListener(
-    "click",
-    async () => {
-
-      if (
-        !selectedBoardingPass
-      ) {
-
-        return;
-
-      }
-
-
-      const status =
-        flightStatusSelect?.value ||
-        "Processing";
-
-
-      try {
-
-        const response =
-          await fetch(
-            `${API_URL}/boardingPass/${encodeURIComponent(
-              selectedBoardingPass.trackingNumber
-            )}/status`,
-            {
-
-              method:
-                "PATCH",
-
-              headers:
-                authHeaders(),
-
-              body:
-                JSON.stringify({
-                  status
-                })
-
-            }
-          );
-
-
-        const result =
-          await response.json();
-
-
-        if (!response.ok) {
-
-          throw new Error(
-            result.message ||
-            "Unable to change status."
-          );
-
-        }
-
-
-        await loadBoardingPasses();
-
-
-        const updatedPass =
-          savedBoardingPasses.find(
-            pass =>
-              pass.trackingNumber ===
-              selectedBoardingPass.trackingNumber
-          );
-
-
-        if (updatedPass) {
-
-          selectBoardingPass(
-            updatedPass
-          );
-
-        }
-
-
-        alert(
-          "Boarding pass status updated."
-        );
-
-      }
-
-      catch (error) {
-
-        alert(
-          error.message ||
-          "Unable to change status."
-        );
-
-      }
-
-    }
-  );
-
-}
-
-
-/* =========================================================
-   TRACK BOARDING PASS
-========================================================= */
-
-if (trackFlightBtn) {
-
-  trackFlightBtn.addEventListener(
-    "click",
-    () => {
-
-      if (
-        !selectedBoardingPass ||
-        !selectedBoardingPass.trackingNumber
-      ) {
-
-        return;
-
-      }
-
-
-      const trackingNumber =
-        encodeURIComponent(
-          selectedBoardingPass.trackingNumber
-        );
-
-
-      window.open(
-        `https://travellnest.com/?tracking=${trackingNumber}`,
-        "_blank"
+      createFormatModal(
+        true
       );
 
     }
@@ -3264,169 +3765,24 @@ if (trackFlightBtn) {
 }
 
 
-/* =========================================================
-   SELECTED PASS WATERMARK / CLEAN ACTION
-========================================================= */
+if (
+  downloadClean
+) {
 
-if (flightWatermarkAction) {
-
-  flightWatermarkAction.addEventListener(
+  downloadClean.addEventListener(
     "click",
-    async () => {
+    async function () {
 
-      if (
-        !selectedBoardingPass
-      ) {
+      if (downloadModal) {
 
-        return;
-
-      }
-
-
-      if (
-        selectedBoardingPass.watermarkEnabled ===
-        false
-      ) {
-
-        createFormatModal(
-          format =>
-            downloadBoardingPass(
-              format,
-              false
-            )
-        );
-
-
-        return;
+        downloadModal.style.display =
+          "none";
 
       }
-
-
-      try {
-
-        const response =
-          await fetch(
-            `${API_URL}/boardingPass/${encodeURIComponent(
-              selectedBoardingPass.trackingNumber
-            )}/upgrade`,
-            {
-
-              method:
-                "PATCH",
-
-              headers:
-                authHeaders()
-
-            }
-          );
-
-
-        const result =
-          await response.json();
-
-
-        if (!response.ok) {
-
-          throw new Error(
-            result.message ||
-            "Unable to upgrade boarding pass."
-          );
-
-        }
-
-
-        await loadWallet();
-
-        await loadBoardingPasses();
-
-
-        const updatedPass =
-          savedBoardingPasses.find(
-            pass =>
-              pass.trackingNumber ===
-              selectedBoardingPass.trackingNumber
-          );
-
-
-        if (updatedPass) {
-
-          selectBoardingPass(
-            updatedPass
-          );
-
-        }
-
-
-        createFormatModal(
-          format =>
-            downloadBoardingPass(
-              format,
-              false
-            )
-        );
-
-      }
-
-      catch (error) {
-
-        alert(
-          error.message ||
-          "Unable to upgrade boarding pass."
-        );
-
-      }
-
-    }
-  );
-
-}
-
-
-/* =========================================================
-   PROFILE DOWNLOAD
-========================================================= */
-
-if (selectedFlightView) {
-
-  selectedFlightView.addEventListener(
-    "click",
-    event => {
-
-      const target =
-        event.target;
-
-
-      if (
-        target.dataset?.downloadBoardingPass !==
-        "true"
-      ) {
-
-        return;
-
-      }
-
-
-      if (
-        !selectedBoardingPass
-      ) {
-
-        return;
-
-      }
-
-
-      loadPassIntoGenerator(
-        selectedBoardingPass
-      );
 
 
       createFormatModal(
-        format =>
-          downloadBoardingPass(
-            format,
-            selectedBoardingPass.watermarkEnabled !==
-              false
-          )
+        false
       );
 
     }
@@ -3439,16 +3795,25 @@ if (selectedFlightView) {
    NAVBAR LOGOUT
 ========================================================= */
 
-if (navbarLogout) {
+if (
+  navbarLogout
+) {
 
   navbarLogout.addEventListener(
     "click",
-    () => {
+    function () {
 
       localStorage.removeItem(
         "token"
       );
 
+      localStorage.removeItem(
+        "authToken"
+      );
+
+      localStorage.removeItem(
+        "user"
+      );
 
       window.location.href =
         "login.html";
@@ -3463,19 +3828,18 @@ if (navbarLogout) {
    NAVBAR TOGGLER
 ========================================================= */
 
-if (navbarToggler) {
+if (
+  navbarToggler &&
+  authNav
+) {
 
   navbarToggler.addEventListener(
     "click",
-    () => {
+    function () {
 
-      if (authNav) {
-
-        authNav.classList.toggle(
-          "show"
-        );
-
-      }
+      authNav.classList.toggle(
+        "active"
+      );
 
     }
   );
@@ -3484,36 +3848,60 @@ if (navbarToggler) {
 
 
 /* =========================================================
-   ESCAPE MODALS
+   LOAD USER
 ========================================================= */
 
-document.addEventListener(
-  "keydown",
-  event => {
+async function loadUser() {
+
+  try {
+
+    const response =
+      await fetch(
+        `${API_URL}/auth/me`,
+        {
+          headers:
+            authHeaders()
+        }
+      );
+
+
+    if (!response.ok) {
+      return;
+    }
+
+
+    const data =
+      await response.json();
+
+
+    const user =
+      data.user ||
+      data;
+
 
     if (
-      event.key === "Escape"
+      navbarUserName &&
+      user
     ) {
 
-      closeDownloadModal();
-
-
-      const formatModal =
-        document.getElementById(
-          "formatModal"
-        );
-
-
-      if (formatModal) {
-
-        formatModal.remove();
-
-      }
+      navbarUserName.textContent =
+        user.name ||
+        user.username ||
+        user.email ||
+        "";
 
     }
 
+  } catch (error) {
+
+    console.error(
+      "LOAD USER ERROR:",
+      error
+    );
+
   }
-);
+
+}
 
 
 /* =========================================================
@@ -3522,28 +3910,7 @@ document.addEventListener(
 
 async function initializeBoardingPass() {
 
-  const user =
-    await loadUser();
-
-
-  if (!user) {
-
-    return;
-
-  }
-
-
-  await loadWallet();
-
-  await loadBoardingPasses();
-
-
-  buildDocument();
-
-  setupUppercaseInputs();
-
-
-  showCreateBoardingPassView();
+  createDocument();
 
 
   if (
@@ -3555,6 +3922,16 @@ async function initializeBoardingPass() {
 
   }
 
+
+  showCreateBoardingPassView();
+
+
+  await loadUser();
+
+  await loadWallet();
+
+  await loadBoardingPasses();
+
 }
 
 
@@ -3562,4 +3939,11 @@ async function initializeBoardingPass() {
    START
 ========================================================= */
 
-initializeBoardingPass();
+document.addEventListener(
+  "DOMContentLoaded",
+  function () {
+
+    initializeBoardingPass();
+
+  }
+);
