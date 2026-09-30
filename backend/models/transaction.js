@@ -137,6 +137,8 @@ const transactionSchema = new mongoose.Schema(
 
         "flight",
 
+        "boardingPass",
+
         "graphics",
 
         "admin",

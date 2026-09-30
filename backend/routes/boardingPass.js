@@ -104,10 +104,10 @@ async function generateTrackingNumber() {
 
       randomPart +=
         chars[
-          Math.floor(
-            Math.random() *
-            chars.length
-          )
+        Math.floor(
+          Math.random() *
+          chars.length
+        )
         ];
 
     }
@@ -1216,7 +1216,7 @@ router.patch(
               CLEAN_BOARDING_PASS_PRICE,
 
             type:
-              'debit',
+              'charge',
 
             source:
               'boardingPass',
@@ -1330,12 +1330,7 @@ router.patch(
       ).json({
 
         message:
-          error.message ||
-          'Unable to upgrade boarding pass.',
-
-        error:
-          error.name ||
-          'UnknownError'
+          'Unable to upgrade boarding pass.'
 
       });
 
