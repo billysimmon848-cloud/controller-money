@@ -87,32 +87,48 @@ async function generateTrackingNumber() {
     "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 
   let trackingNumber;
+
   let exists = true;
+
 
   while (exists) {
 
     let randomPart = "";
 
-    for (let i = 0; i < 8; i++) {
+
+    for (
+      let i = 0;
+      i < 8;
+      i++
+    ) {
 
       randomPart +=
         chars[
-        Math.floor(
-          Math.random() * chars.length
-        )
+          Math.floor(
+            Math.random() *
+            chars.length
+          )
         ];
+
     }
+
 
     trackingNumber =
       `FLT-${randomPart}`;
 
+
     exists =
       await BoardingPass.exists({
+
         trackingNumber
+
       });
+
   }
 
+
   return trackingNumber;
+
 }
 
 
@@ -332,8 +348,10 @@ router.post(
         field =>
           field.value ===
           undefined ||
+
           field.value ===
           null ||
+
           String(
             field.value
           ).trim() === ''
@@ -658,6 +676,87 @@ router.post(
 
         message:
           'Unable to create boarding pass.'
+
+      });
+
+    }
+
+  }
+);
+
+
+/* =========================================================
+   DELETE BOARDING PASS
+========================================================= */
+
+/*
+   DELETE /api/boardingPass/:trackingNumber
+*/
+
+router.delete(
+  '/:trackingNumber',
+  auth,
+  async function (req, res) {
+
+    try {
+
+      const boardingPass =
+        await BoardingPass.findOne({
+
+          trackingNumber:
+            req.params.trackingNumber,
+
+          user:
+            req.userId
+
+        });
+
+
+      if (!boardingPass) {
+
+        return res.status(
+          404
+        ).json({
+
+          message:
+            'Boarding pass not found.'
+
+        });
+
+      }
+
+
+      await BoardingPass.deleteOne({
+
+        _id:
+          boardingPass._id
+
+      });
+
+
+      return res.json({
+
+        message:
+          'Boarding pass deleted successfully.'
+
+      });
+
+    }
+
+    catch (error) {
+
+      console.error(
+        'DELETE BOARDING PASS ERROR:',
+        error
+      );
+
+
+      return res.status(
+        500
+      ).json({
+
+        message:
+          'Unable to delete boarding pass.'
 
       });
 
@@ -1123,7 +1222,7 @@ router.patch(
 
       /* ===================================================
          ACTIVITY
-      =================================================== */
+      ================================================= */
 
       await createActivity({
 
