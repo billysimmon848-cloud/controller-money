@@ -11,6 +11,7 @@ const walletRoutes = require("./routes/wallet");
 const bankingRoutes = require("./routes/banking");
 const adminRoutes = require("./routes/admin");
 const flightRoutes = require("./routes/flight");
+const boardingPassRoutes = require("./routes/boardingPass");
 const bnbRoutes = require("./routes/bnb");
 
 const startBnbMonitor =
@@ -94,6 +95,11 @@ app.use(
 );
 
 app.use(
+  "/api/boardingPass",
+  boardingPassRoutes
+);
+
+app.use(
   "/api/bnb",
   bnbRoutes
 );
@@ -137,11 +143,6 @@ mongoose
 
   .then(() => {
 
-     (
-      "MongoDB connected"
-    );
-
-
     // ==================================================
     // START SERVER ONLY AFTER MONGODB CONNECTS
     // ==================================================
@@ -149,11 +150,6 @@ mongoose
     app.listen(
       PORT,
       () => {
-
-         (
-          `Server running on port ${PORT}`
-        );
-
 
         // ==============================================
         // START BNB BLOCKCHAIN MONITOR
