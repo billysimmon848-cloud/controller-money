@@ -1330,7 +1330,12 @@ router.patch(
       ).json({
 
         message:
-          'Unable to upgrade boarding pass.'
+          error.message ||
+          'Unable to upgrade boarding pass.',
+
+        error:
+          error.name ||
+          'UnknownError'
 
       });
 
@@ -1344,6 +1349,7 @@ router.patch(
 
   }
 );
+
 
 
 /* =========================================================

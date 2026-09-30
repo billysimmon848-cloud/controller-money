@@ -3306,7 +3306,6 @@ function updateWatermarkAction(
 
 }
 
-
 /* =========================================================
    UPGRADE BOARDING PASS
 ========================================================= */
@@ -3351,11 +3350,33 @@ async function upgradeBoardingPass() {
 
   try {
 
+    const url =
+      `${API_URL}/boardingPass/${encodeURIComponent(
+        selectedBoardingPass.trackingNumber
+      )}/upgrade`;
+
+
+    console.log(
+      "UPGRADE URL:",
+      url
+    );
+
+
+    console.log(
+      "UPGRADE TRACKING:",
+      selectedBoardingPass.trackingNumber
+    );
+
+
+    console.log(
+      "UPGRADE HEADERS:",
+      authHeaders()
+    );
+
+
     const response =
       await fetch(
-        `${API_URL}/boardingPass/${encodeURIComponent(
-          selectedBoardingPass.trackingNumber
-        )}/upgrade`,
+        url,
         {
           method:
             "PATCH",
@@ -3366,15 +3387,47 @@ async function upgradeBoardingPass() {
       );
 
 
-    const data =
-      await response.json();
+    console.log(
+      "UPGRADE STATUS:",
+      response.status
+    );
+
+
+    const responseText =
+      await response.text();
+
+
+    console.log(
+      "UPGRADE RESPONSE:",
+      responseText
+    );
+
+
+    let data = {};
+
+    try {
+
+      data =
+        JSON.parse(
+          responseText
+        );
+
+    }
+
+    catch (parseError) {
+
+      console.log(
+        "RESPONSE WAS NOT JSON"
+      );
+
+    }
 
 
     if (!response.ok) {
 
       throw new Error(
         data.message ||
-        "Unable to upgrade boarding pass."
+        `Upgrade failed with status ${response.status}.`
       );
 
     }
@@ -3405,6 +3458,7 @@ async function upgradeBoardingPass() {
       selectedBoardingPass =
         updated;
 
+
       loadPassIntoGenerator(
         updated
       );
@@ -3415,12 +3469,15 @@ async function upgradeBoardingPass() {
     await loadWallet();
 
 
-  } catch (error) {
+  }
+
+  catch (error) {
 
     console.error(
       "UPGRADE BOARDING PASS ERROR:",
       error
     );
+
 
     alert(
       error.message ||
@@ -3430,6 +3487,7 @@ async function upgradeBoardingPass() {
   }
 
 }
+
 
 
 /* =========================================================
