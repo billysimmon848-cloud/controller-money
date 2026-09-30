@@ -16,7 +16,7 @@ const API_URL =
 ========================================================= */
 
 const documentTextColor =
-  "#2f5f77";
+  "#222";
 
 const documentFont =
   "Arial";
@@ -37,7 +37,7 @@ const documentPaddingTop =
 */
 
 const DOCUMENT_BASE_FONT_SIZE =
-  11;
+  40;
 
 
 /* =========================================================
@@ -482,34 +482,21 @@ const textPositions = {
     CLASS / PASSENGER CATEGORY
   */
 
-  adult: {
-    left: 80,
-    top: 22,
-    width: 15
+  taxes: {
+    left: 80.5,
+    top: 30.5,
+    width: 17
   },
 
-  adult2: {
+  amount: {
     left: 80,
     top: 27,
     width: 15
   },
 
-
-  taxes: {
-    left: 80.5,
-    top: 25.5,
-    width: 17
-  },
-
-  amount: {
-    left: 46,
-    top: 79.6,
-    width: 14
-  },
-
   total: {
     left: 79.9,
-    top: 32,
+    top: 33,
     width: 22
   },
 
@@ -522,6 +509,12 @@ const textPositions = {
   trackingNumber2: {
     left: 72,
     top: 81,
+    width: 14
+  },
+
+  sequence: {
+    left: 46,
+    top: 79.6,
     width: 14
   }
 
@@ -886,14 +879,34 @@ function updateDocumentValues() {
     "";
 
 
+  const currency =
+    getCurrency();
+
+
   const price =
     Number(
       formInputs[8]?.value
     ) || 0;
 
 
-  const currency =
-    getCurrency();
+  /*
+    Make sure the amount values are
+    current before drawing them.
+  */
+
+  const taxes =
+    Number(
+      generatedTaxes
+    ) || 0;
+
+
+  const total =
+    Number(
+      generatedTotal
+    ) || (
+      price +
+      taxes
+    );
 
 
   const values = {
@@ -906,9 +919,7 @@ function updateDocumentValues() {
 
 
     /*
-      IMPORTANT:
-      These are now the selected class,
-      not "BOARDING PASS".
+      CLASS
     */
 
     boardingPass:
@@ -924,11 +935,13 @@ function updateDocumentValues() {
     from2:
       from,
 
+
     to:
       to,
 
     to2:
       to,
+
 
     date:
       date,
@@ -936,11 +949,13 @@ function updateDocumentValues() {
     date2:
       date,
 
+
     time:
       time,
 
     time2:
       time,
+
 
     gate:
       generatedGate,
@@ -948,29 +963,16 @@ function updateDocumentValues() {
     gate2:
       generatedGate,
 
+
     seat:
       generatedSeat,
 
     seat2:
       generatedSeat,
 
-
     /*
-      Passenger category.
+      PRICE
     */
-
-    adult:
-      selectedClass,
-
-    adult2:
-      selectedClass,
-
-
-    taxes:
-      formatMoney(
-        generatedTaxes,
-        currency
-      ),
 
     amount:
       formatMoney(
@@ -978,17 +980,41 @@ function updateDocumentValues() {
         currency
       ),
 
-    total:
+
+    /*
+      TAX
+    */
+
+    taxes:
       formatMoney(
-        generatedTotal,
+        taxes,
         currency
       ),
+
+
+    /*
+      TOTAL
+    */
+
+    total:
+      formatMoney(
+        total,
+        currency
+      ),
+
+
+    /*
+      TRACKING NUMBER
+    */
 
     trackingNumber1:
       generatedTrackingNumber,
 
     trackingNumber2:
-      generatedTrackingNumber
+      generatedTrackingNumber,
+
+    sequence:
+      generatedSequence,
 
   };
 
@@ -1003,9 +1029,11 @@ function updateDocumentValues() {
           `.pdf-value[data-field="${key}"]`
         );
 
+
       if (!element) {
         return;
       }
+
 
       element.textContent =
         values[key] ?? "";
@@ -1014,7 +1042,6 @@ function updateDocumentValues() {
   );
 
 }
-
 
 /* =========================================================
    BUILD DOCUMENT
@@ -1027,8 +1054,72 @@ function buildDocument() {
   }
 
 
-  pdf.innerHTML = "";
+  /*
+    IMPORTANT:
 
+    DO NOT use:
+      pdf.innerHTML = "";
+
+    The original boarding-pass image
+    already exists inside #pdf.
+
+    We only remove the text elements
+    that this script previously created.
+  */
+
+  pdf
+    .querySelectorAll(
+      ".pdf-value"
+    )
+    .forEach(
+      function (element) {
+
+        element.remove();
+
+      }
+    );
+
+
+  /*
+    Make sure the original card image
+    stays behind everything.
+  */
+
+  const background =
+    pdf.querySelector(
+      "img"
+    );
+
+
+  if (background) {
+
+    background.style.position =
+      "absolute";
+
+    background.style.left =
+      "0";
+
+    background.style.top =
+      "0";
+
+    background.style.width =
+      "100%";
+
+    background.style.height =
+      "100%";
+
+    background.style.objectFit =
+      "fill";
+
+    background.style.zIndex =
+      "0";
+
+  }
+
+
+  /*
+    Add document text.
+  */
 
   Object.keys(
     textPositions
@@ -1111,6 +1202,10 @@ function buildDocument() {
 
       element.style.pointerEvents =
         "none";
+
+
+      element.style.zIndex =
+        "5";
 
 
       pdf.appendChild(
@@ -1266,7 +1361,6 @@ function createDocument() {
 
 }
 
-
 /* =========================================================
    CANVAS DOCUMENT
 ========================================================= */
@@ -1279,6 +1373,7 @@ function createDocumentCanvas(
     function (resolve, reject) {
 
       if (!pdf) {
+
         reject(
           new Error(
             "Boarding pass document not found."
@@ -1286,8 +1381,13 @@ function createDocumentCanvas(
         );
 
         return;
+
       }
 
+
+      /*
+        Get the ORIGINAL boarding-pass image.
+      */
 
       const background =
         pdf.querySelector(
@@ -1308,184 +1408,213 @@ function createDocumentCanvas(
       }
 
 
+      /*
+        Wait for the image if necessary.
+      */
+
+      function drawDocument() {
+
+        if (
+          !background.naturalWidth ||
+          !background.naturalHeight
+        ) {
+
+          reject(
+            new Error(
+              "Boarding pass background image has no dimensions."
+            )
+          );
+
+          return;
+
+        }
+
+
+        const canvas =
+          document.createElement(
+            "canvas"
+          );
+
+
+        const width =
+          background.naturalWidth;
+
+
+        const height =
+          background.naturalHeight;
+
+
+        canvas.width =
+          width;
+
+
+        canvas.height =
+          height;
+
+
+        const ctx =
+          canvas.getContext(
+            "2d"
+          );
+
+
+        /*
+          1. DRAW ORIGINAL CARD
+        */
+
+        ctx.drawImage(
+          background,
+          0,
+          0,
+          width,
+          height
+        );
+
+
+        /*
+          2. DRAW TEXT
+        */
+
+        const elements =
+          pdf.querySelectorAll(
+            ".pdf-value"
+          );
+
+
+        elements.forEach(
+          function (element) {
+
+            const field =
+              element.dataset.field;
+
+
+            const position =
+              textPositions[field];
+
+
+            if (!position) {
+              return;
+            }
+
+
+            const text =
+              element.textContent ||
+              "";
+
+
+            if (!text) {
+              return;
+            }
+
+
+            /*
+              Use the exact same 14px
+              base size used by the document.
+            */
+
+            const fontSize = 14;
+
+
+            ctx.font =
+              `600 ${fontSize}px ${documentFont}`;
+
+
+            ctx.fillStyle =
+              documentTextColor;
+
+
+            ctx.textBaseline =
+              "top";
+
+
+            const x =
+              (
+                position.left /
+                100
+              ) *
+              width;
+
+
+            const y =
+              (
+                position.top /
+                100
+              ) *
+              height;
+
+
+            ctx.fillText(
+              text,
+              x,
+              y
+            );
+
+          }
+        );
+
+
+        /*
+          3. WATERMARK
+        */
+
+        if (
+          includeWatermark
+        ) {
+
+          drawCanvasWatermark(
+            ctx,
+            width,
+            height
+          );
+
+        }
+
+
+        resolve(
+          canvas
+        );
+
+      }
+
+
+      /*
+        IMAGE ALREADY LOADED
+      */
+
       if (
-        !background.complete ||
-        !background.naturalWidth
+        background.complete &&
+        background.naturalWidth
       ) {
 
-        background.onload =
-          function () {
-
-            createDocumentCanvas(
-              includeWatermark
-            )
-              .then(resolve)
-              .catch(reject);
-
-          };
+        drawDocument();
 
         return;
 
       }
 
 
-      const canvas =
-        document.createElement(
-          "canvas"
-        );
+      /*
+        IMAGE NOT LOADED YET
+      */
+
+      background.onload =
+        function () {
+
+          drawDocument();
+
+        };
 
 
-      const width =
-        background.naturalWidth;
+      background.onerror =
+        function () {
 
-
-      const height =
-        background.naturalHeight;
-
-
-      canvas.width =
-        width;
-
-
-      canvas.height =
-        height;
-
-
-      const ctx =
-        canvas.getContext(
-          "2d"
-        );
-
-
-      ctx.drawImage(
-        background,
-        0,
-        0,
-        width,
-        height
-      );
-
-
-      const scaleX =
-        width /
-        pdf.clientWidth;
-
-
-      const scaleY =
-        height /
-        pdf.clientHeight;
-
-
-      const elements =
-        pdf.querySelectorAll(
-          ".pdf-value"
-        );
-
-
-      elements.forEach(
-        function (element) {
-
-          const field =
-            element.dataset.field;
-
-
-          const position =
-            textPositions[field];
-
-
-          if (!position) {
-            return;
-          }
-
-
-          const text =
-            element.textContent || "";
-
-
-          if (!text) {
-            return;
-          }
-
-
-          const computed =
-            window.getComputedStyle(
-              element
-            );
-
-
-          /*
-            Use a fixed document font size
-            instead of taking the browser's
-            scaled preview font size.
-
-            This prevents the downloaded
-            text from becoming huge.
-          */
-
-          const fontSize =
-            DOCUMENT_BASE_FONT_SIZE *
-            scaleY;
-
-
-          const fontWeight =
-            computed.fontWeight ||
-            "600";
-
-
-          ctx.font =
-            `${fontWeight} ${fontSize}px ${documentFont}`;
-
-
-          ctx.fillStyle =
-            documentTextColor;
-
-
-          ctx.textBaseline =
-            "top";
-
-
-          const x =
-            (
-              position.left /
-              100
-            ) *
-            width;
-
-
-          const y =
-            (
-              position.top /
-              100
-            ) *
-            height;
-
-
-          ctx.fillText(
-            text,
-            x,
-            y
+          reject(
+            new Error(
+              "Unable to load boarding pass background image."
+            )
           );
 
-        }
-      );
-
-
-      if (
-        includeWatermark
-      ) {
-
-        drawCanvasWatermark(
-          ctx,
-          width,
-          height
-        );
-
-      }
-
-
-      resolve(
-        canvas
-      );
+        };
 
     }
   );
@@ -2582,9 +2711,11 @@ function loadPassIntoGenerator(
   }
 
 
-  if (
-    formInputs[0]
-  ) {
+  /*
+    PASSENGER
+  */
+
+  if (formInputs[0]) {
 
     formInputs[0].value =
       pass.name ||
@@ -2593,21 +2724,35 @@ function loadPassIntoGenerator(
   }
 
 
-  if (
-    classInput
-  ) {
+  /*
+    CLASS
+
+    Backend currently stores this as:
+      class
+
+    Older records may contain:
+      boardingPassType
+  */
+
+  const savedClass =
+    pass.class ||
+    pass.boardingPassType ||
+    "";
+
+
+  if (classInput) {
 
     classInput.value =
-      pass.boardingPassType ||
-      pass.class ||
-      "";
+      savedClass;
 
   }
 
 
-  if (
-    formInputs[2]
-  ) {
+  /*
+    FROM
+  */
+
+  if (formInputs[2]) {
 
     formInputs[2].value =
       pass.from ||
@@ -2616,9 +2761,11 @@ function loadPassIntoGenerator(
   }
 
 
-  if (
-    formInputs[3]
-  ) {
+  /*
+    TO
+  */
+
+  if (formInputs[3]) {
 
     formInputs[3].value =
       pass.to ||
@@ -2627,9 +2774,11 @@ function loadPassIntoGenerator(
   }
 
 
-  if (
-    formInputs[4]
-  ) {
+  /*
+    DATE
+  */
+
+  if (formInputs[4]) {
 
     formInputs[4].value =
       pass.date ||
@@ -2638,9 +2787,11 @@ function loadPassIntoGenerator(
   }
 
 
-  if (
-    formInputs[5]
-  ) {
+  /*
+    TIME
+  */
+
+  if (formInputs[5]) {
 
     formInputs[5].value =
       pass.time ||
@@ -2649,9 +2800,11 @@ function loadPassIntoGenerator(
   }
 
 
-  if (
-    formInputs[6]
-  ) {
+  /*
+    DURATION
+  */
+
+  if (formInputs[6]) {
 
     formInputs[6].value =
       pass.duration ||
@@ -2660,9 +2813,11 @@ function loadPassIntoGenerator(
   }
 
 
-  if (
-    formInputs[7]
-  ) {
+  /*
+    CURRENCY
+  */
+
+  if (formInputs[7]) {
 
     formInputs[7].value =
       pass.currency ||
@@ -2671,16 +2826,26 @@ function loadPassIntoGenerator(
   }
 
 
-  if (
-    formInputs[8]
-  ) {
+  /*
+    PRICE
+
+    This is the important part for
+    profile downloads.
+  */
+
+  if (formInputs[8]) {
 
     formInputs[8].value =
-      pass.price ??
-      0;
+      Number(
+        pass.price
+      ) || 0;
 
   }
 
+
+  /*
+    GENERATED VALUES
+  */
 
   generatedGate =
     pass.gate ||
@@ -2724,23 +2889,34 @@ function loadPassIntoGenerator(
     "USD";
 
 
+  /*
+    WATERMARK
+  */
+
   bedspreadWatermarkEnabled =
     pass.watermarkEnabled !==
     false;
 
 
+  /*
+    Rebuild the document using
+    the saved profile values.
+  */
+
   createDocument();
 
 
-  if (
-    generatedDocument
-  ) {
+  if (generatedDocument) {
 
     generatedDocument.style.display =
       "block";
 
   }
 
+
+  /*
+    Update the right-side profile.
+  */
 
   updateSelectedProfile(
     pass
