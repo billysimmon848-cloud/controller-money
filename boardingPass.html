@@ -1,0 +1,1008 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>
+    JustDoks BoardingPass Generator
+  </title>
+
+  <link rel="icon" href="images/fav-ico.png" type="image/png">
+
+  <link rel="stylesheet" href="boardingPass.css">
+
+</head>
+
+
+<body>
+
+
+  <!-- ======================================================
+     NAVBAR
+====================================================== -->
+
+  <nav class="navbar custom-navbar">
+
+    <div class="container nav-container">
+
+      <a class="navbar-brand" href="index.html">
+        JustDoks
+      </a>
+
+
+      <!-- MOBILE HAMBURGER -->
+
+      <button type="button" class="navbar-toggler" id="navbarToggler" aria-label="Open navigation"
+        aria-expanded="false">
+
+        <span></span>
+        <span></span>
+        <span></span>
+
+      </button>
+
+
+      <!-- NAVIGATION -->
+
+      <div class="auth-nav" id="authNav">
+
+        <div class="nav-item">
+
+          <a href="#" class="nav-link username-link" id="navbarUserName">
+            User
+          </a>
+
+        </div>
+
+
+        <div class="nav-item">
+
+          <span class="nav-link wallet-balance" id="navbarWalletBalance">
+            $0.00
+          </span>
+
+        </div>
+
+
+        <div class="nav-item">
+
+          <a href="#" class="nav-link" id="navbarLogout">
+            Logout
+          </a>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </nav>
+
+
+  <!-- =========================================================
+      MAIN PAGE
+  ========================================================= -->
+
+  <main class="page">
+
+
+    <!-- =========================
+     HERO
+========================== -->
+
+    <section class="hero">
+
+      <p class="hero-tag">
+        BOARDING PASS
+      </p>
+
+
+      <h1>
+        Create your flight document
+      </h1>
+
+
+      <p class="hero-text">
+        Enter the details below and generate your flight document.
+      </p>
+
+    </section>
+
+
+
+    <!-- =======================================================
+         FORM
+    ======================================================= -->
+
+    <section class="form-card">
+
+      <form id="bedspreadForm" autocomplete="off">
+
+
+        <!-- ===================================================
+             PASSENGER INFORMATION
+        =================================================== -->
+
+        <div class="form-section">
+
+          <div class="section-heading">
+
+            <span class="section-number">
+              01
+            </span>
+
+            <div>
+
+              <h2>
+                Passenger Information
+              </h2>
+
+              <p>
+                Enter the passenger details.
+              </p>
+
+            </div>
+
+          </div>
+
+
+          <div class="form-grid">
+
+            <div class="field">
+
+              <label for="name">
+                Passenger Name
+              </label>
+
+              <input type="text" id="name" name="name" placeholder="Enter passenger name" maxlength="21" required>
+
+            </div>
+
+
+            <div class="field">
+
+              <label for="class">
+                Class
+              </label>
+
+              <select id="class" name="class" required>
+
+                <option value="" selected disabled>
+                  Select class
+                </option>
+
+                <option value="Economy">
+                  Economy
+                </option>
+
+                <option value="First Class">
+                  First Class
+                </option>
+
+              </select>
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+
+        <!-- ===================================================
+             ROUTE INFORMATION
+        =================================================== -->
+
+        <div class="form-section">
+
+          <div class="section-heading">
+
+            <span class="section-number">
+              02
+            </span>
+
+            <div>
+
+              <h2>
+                Route Information
+              </h2>
+
+              <p>
+                Enter the departure and destination details.
+              </p>
+
+            </div>
+
+          </div>
+
+
+          <div class="form-grid">
+
+            <div class="field">
+
+              <label for="from">
+                From
+              </label>
+
+              <input type="text" id="from" name="from" placeholder="Departure" required>
+
+            </div>
+
+
+            <div class="field">
+
+              <label for="to">
+                To
+              </label>
+
+              <input type="text" id="to" name="to" placeholder="Destination" required>
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+
+        <!-- ===================================================
+             BOARDING DETAILS
+        =================================================== -->
+
+        <div class="form-section">
+
+          <div class="section-heading">
+
+            <span class="section-number">
+              03
+            </span>
+
+            <div>
+
+              <h2>
+                Boarding Details
+              </h2>
+
+              <p>
+                Select the date, departure time, and flight duration.
+              </p>
+
+            </div>
+
+          </div>
+
+
+          <div class="form-grid">
+
+
+            <div class="field">
+
+              <label for="date">
+                Date
+              </label>
+
+              <input type="date" id="date" name="date" required>
+
+            </div>
+
+
+            <div class="field">
+
+              <label for="time">
+                Time
+              </label>
+
+              <input type="time" id="time" name="time" required>
+
+            </div>
+
+
+            <div class="field">
+
+              <label for="duration">
+                Flight Duration
+              </label>
+
+              <input type="text" id="duration" name="duration" placeholder="e.g. 2h 30m" required>
+
+            </div>
+
+
+          </div>
+
+        </div>
+
+
+
+        <!-- ===================================================
+             PRICE
+        =================================================== -->
+
+        <div class="form-section">
+
+          <div class="section-heading">
+
+            <span class="section-number">
+              04
+            </span>
+
+            <div>
+
+              <h2>
+                Price
+              </h2>
+
+              <p>
+                Enter the currency and price shown on the boarding pass.
+              </p>
+
+            </div>
+
+          </div>
+
+
+          <div class="form-grid">
+
+
+            <div class="field">
+
+              <label for="currency">
+                Currency
+              </label>
+
+              <select id="currency" name="currency" required>
+
+                <option value="" selected disabled>
+                  Select currency
+                </option>
+
+                <option value="USD">
+                  USD
+                </option>
+
+                <option value="EUR">
+                  EUR
+                </option>
+
+                <option value="GBP">
+                  GBP
+                </option>
+
+                <option value="NGN">
+                  NGN
+                </option>
+
+                <option value="CAD">
+                  CAD
+                </option>
+
+                <option value="AUD">
+                  AUD
+                </option>
+
+              </select>
+
+            </div>
+
+
+            <div class="field">
+
+              <label for="price">
+                Price
+              </label>
+
+              <input type="number" id="price" name="price" placeholder="Enter price" min="0" step="0.01" required>
+
+            </div>
+
+
+          </div>
+
+        </div>
+
+
+
+        <!-- ===================================================
+             GENERATE
+        =================================================== -->
+
+        <div class="generate-area">
+
+          <button type="submit" id="generate" class="generate-button">
+            Generate Document
+          </button>
+
+        </div>
+
+
+      </form>
+
+    </section>
+
+    <!-- =====================================================
+     BOARDING PASS PROFILE MANAGEMENT
+====================================================== -->
+
+    <section class="flight-management" id="flightManagement">
+
+      <!-- LEFT SIDE -->
+
+      <aside class="flight-profiles-panel">
+
+        <div id="createdFlights" class="created-flights"></div>
+
+      </aside>
+
+      <!-- RIGHT SIDE -->
+
+      <div class="flight-profile-content">
+
+        <!-- CREATE BOARDING PASS VIEW -->
+
+        <div id="createFlightView" class="flight-create-view" style="display: none;"></div>
+
+
+
+        <!-- SELECTED BOARDING PASS VIEW -->
+
+        <div id="selectedFlightView" class="selected-flight-view">
+
+
+          <!-- SELECTED BOARDING PASS HEADER -->
+
+          <div class="selected-flight-header">
+
+            <div>
+
+              <p class="eyebrow">
+                BOARDING PASS PROFILE
+              </p>
+
+
+              <h2 id="selectedFlightName">
+                Passenger Name
+              </h2>
+
+
+              <p id="selectedFlightTracking" class="selected-flight-tracking">
+                Tracking Number
+              </p>
+
+            </div>
+
+
+            <button type="button" id="newFlightBtn" class="new-flight-btn">
+              Create New Boarding Pass
+            </button>
+
+          </div>
+
+
+          <div id="flightProfileActions" class="flight-profile-actions"></div>
+
+
+
+          <!-- BOARDING PASS INFORMATION -->
+
+          <div class="flight-profile-details">
+
+
+            <div class="flight-detail-row">
+
+              <span>
+                Class
+              </span>
+
+              <strong id="profileClass">
+                —
+              </strong>
+
+            </div>
+
+
+            <div class="flight-detail-row">
+
+              <span>
+                From
+              </span>
+
+              <strong id="profileFrom">
+                —
+              </strong>
+
+            </div>
+
+
+            <div class="flight-detail-row">
+
+              <span>
+                To
+              </span>
+
+              <strong id="profileTo">
+                —
+              </strong>
+
+            </div>
+
+
+            <div class="flight-detail-row">
+
+              <span>
+                Date
+              </span>
+
+              <strong id="profileDate">
+                —
+              </strong>
+
+            </div>
+
+
+            <div class="flight-detail-row">
+
+              <span>
+                Time
+              </span>
+
+              <strong id="profileTime">
+                —
+              </strong>
+
+            </div>
+
+
+            <div class="flight-detail-row">
+
+              <span>
+                Duration
+              </span>
+
+              <strong id="profileDuration">
+                —
+              </strong>
+
+            </div>
+
+
+            <div class="flight-detail-row">
+
+              <span>
+                Gate
+              </span>
+
+              <strong id="profileGate">
+                —
+              </strong>
+
+            </div>
+
+
+            <div class="flight-detail-row">
+
+              <span>
+                Seat
+              </span>
+
+              <strong id="profileSeat">
+                —
+              </strong>
+
+            </div>
+
+
+            <div class="flight-detail-row">
+
+              <span>
+                Sequence
+              </span>
+
+              <strong id="profileSequence">
+                —
+              </strong>
+
+            </div>
+
+
+            <div class="flight-detail-row">
+
+              <span>
+                Price
+              </span>
+
+              <strong id="profilePrice">
+                —
+              </strong>
+
+            </div>
+
+
+            <div class="flight-detail-row">
+
+              <span>
+                Taxes
+              </span>
+
+              <strong id="profileTaxes">
+                —
+              </strong>
+
+            </div>
+
+
+            <div class="flight-detail-row">
+
+              <span>
+                Total
+              </span>
+
+              <strong id="profileTotal">
+                —
+              </strong>
+
+            </div>
+
+
+          </div>
+
+
+
+          <!-- BOARDING PASS STATUS -->
+
+          <div class="flight-control-section">
+
+
+            <div class="flight-control-heading">
+
+              <span class="section-number">
+                01
+              </span>
+
+
+              <div>
+
+                <h3>
+                  Boarding Pass Status
+                </h3>
+
+
+                <p>
+                  Change the current status of this boarding pass.
+                </p>
+
+              </div>
+
+            </div>
+
+
+            <div class="flight-status-control">
+
+
+              <select id="flightStatusSelect">
+
+                <option value="Processing">
+                  Processing
+                </option>
+
+
+                <option value="Confirmed">
+                  Confirmed
+                </option>
+
+
+                <option value="Checked In">
+                  Checked In
+                </option>
+
+
+                <option value="Boarding">
+                  Boarding
+                </option>
+
+
+                <option value="Departed">
+                  Departed
+                </option>
+
+
+                <option value="In Transit">
+                  In Transit
+                </option>
+
+
+                <option value="Arrived">
+                  Arrived
+                </option>
+
+
+                <option value="Completed">
+                  Completed
+                </option>
+
+
+                <option value="Delayed">
+                  Delayed
+                </option>
+
+
+                <option value="Cancelled">
+                  Cancelled
+                </option>
+
+
+                <option value="Refunded">
+                  Refunded
+                </option>
+
+              </select>
+
+
+              <button type="button" id="changeFlightStatusBtn" class="flight-action-btn">
+                Change Status
+              </button>
+
+            </div>
+
+
+          </div>
+
+
+
+          <!-- DOCUMENT CONTROL -->
+
+          <div class="flight-control-section">
+
+
+            <div class="flight-control-heading">
+
+              <span class="section-number">
+                02
+              </span>
+
+
+              <div>
+
+                <h3>
+                  Document
+                </h3>
+
+
+                <p>
+                  Manage the document version.
+                </p>
+
+              </div>
+
+            </div>
+
+
+            <div id="flightWatermarkAction" class="flight-watermark-action"></div>
+
+
+          </div>
+
+
+
+          <!-- TRACKING -->
+
+          <div class="flight-control-section">
+
+
+            <div class="flight-control-heading">
+
+              <span class="section-number">
+                03
+              </span>
+
+
+              <div>
+
+                <h3>
+                  Boarding Pass Tracking
+                </h3>
+
+
+                <p>
+                  Track this boarding pass using its tracking number.
+                </p>
+
+              </div>
+
+            </div>
+
+
+            <div class="flight-tracking-box">
+
+
+              <div>
+
+                <span>
+                  TRACKING NUMBER
+                </span>
+
+
+                <strong id="profileTrackingNumber">
+                  —
+                </strong>
+
+              </div>
+
+
+              <a href="https://travellnest.com/" id="trackFlightBtn" class="track-flight-btn" target="_blank">
+                Track This Boarding Pass
+              </a>
+
+
+            </div>
+
+
+          </div>
+
+
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =======================================================
+         GENERATED DOCUMENT
+    ======================================================= -->
+
+    <section class="generated-document" id="generatedDocument">
+
+      <div class="document-header">
+
+        <div>
+
+          <p class="eyebrow">
+            GENERATED DOCUMENT
+          </p>
+
+          <h2>
+            Boarding Pass
+          </h2>
+
+        </div>
+
+
+        <button type="button" id="editButton" class="edit-button">
+          Edit Details
+        </button>
+
+      </div>
+
+
+      <div class="pdf" id="pdf">
+
+        <img src="images/bedspread.png" alt="Generated  boarding pass">
+
+      </div>
+
+      <!-- DOWNLOAD AREA -->
+
+      <div class="download-area">
+
+        <div>
+
+          <h3>
+            Download your document
+          </h3>
+
+          <p>
+            Choose the format you want to download.
+          </p>
+
+        </div>
+
+
+        <button type="button" id="downloadButton" class="download-button">
+          Download Now
+        </button>
+
+      </div>
+
+    </section>
+
+
+  </main>
+
+  <!-- =========================
+       DOWNLOAD MODAL
+  ========================== -->
+
+  <div class="download-modal" id="downloadModal" aria-hidden="true">
+
+    <div class="modal-overlay" id="modalOverlay"></div>
+
+
+
+    <div class="modal-box" role="dialog" aria-modal="true">
+
+
+      <button type="button" class="modal-close" id="closeModal" aria-label="Close">
+        ×
+      </button>
+
+
+
+      <p class="modal-tag">
+        DOWNLOAD
+      </p>
+
+
+      <h2>
+        Choose a format
+      </h2>
+
+
+      <p class="modal-text">
+        Select how you would like to save your flight document.
+      </p>
+
+
+
+      <div class="download-options">
+
+
+        <!-- JPG -->
+
+        <button type="button" id="downloadJpg" class="format-button">
+
+          <strong>
+            JPG
+          </strong>
+
+
+          <span>
+            Download as an image
+          </span>
+
+        </button>
+
+
+
+        <!-- PDF -->
+
+        <button type="button" id="downloadPdf" class="format-button">
+
+          <strong>
+            PDF
+          </strong>
+
+
+          <span>
+            Download as a PDF document
+          </span>
+
+        </button>
+
+
+      </div>
+
+
+    </div>
+
+  </div>
+
+
+
+  <!-- =========================================================
+       LIBRARIES
+  ========================================================= -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+
+  <script src="boardingPass.js"></script>
+
+
+</body>
+
+</html>
