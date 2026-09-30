@@ -3683,7 +3683,7 @@ function openTrackingPage() {
 
 
   window.open(
-    `https://travellnest.com/boarding-pass-tracking.html?tracking=${encodeURIComponent(
+    `https://travellnest.com/index.html?tracking=${encodeURIComponent(
       tracking
     )}`,
     "_blank"
