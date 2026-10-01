@@ -104,10 +104,10 @@ async function generateTrackingNumber() {
 
       randomPart +=
         chars[
-        Math.floor(
-          Math.random() *
-          chars.length
-        )
+          Math.floor(
+            Math.random() *
+            chars.length
+          )
         ];
 
     }
@@ -128,6 +128,364 @@ async function generateTrackingNumber() {
 
 
   return trackingNumber;
+
+}
+
+
+/* =========================================================
+   CALCULATE ESTIMATED ARRIVAL
+========================================================= */
+
+function calculateEstimatedArrival(
+  date,
+  time,
+  duration
+) {
+
+  const dateString =
+    String(date).trim();
+
+
+  const timeString =
+    String(time).trim();
+
+
+  const durationString =
+    String(duration).trim();
+
+
+  /* =======================================================
+     DATE
+  ======================================================= */
+
+  const dateParts =
+    dateString.split('-');
+
+
+  /* =======================================================
+     TIME
+  ======================================================= */
+
+  const timeParts =
+    timeString.split(':');
+
+
+  if (
+
+    dateParts.length !== 3 ||
+
+    timeParts.length < 2
+
+  ) {
+
+    return null;
+
+  }
+
+
+  const year =
+    Number(
+      dateParts[0]
+    );
+
+
+  const month =
+    Number(
+      dateParts[1]
+    );
+
+
+  const day =
+    Number(
+      dateParts[2]
+    );
+
+
+  const hour =
+    Number(
+      timeParts[0]
+    );
+
+
+  const minute =
+    Number(
+      timeParts[1]
+    );
+
+
+  if (
+
+    !Number.isInteger(
+      year
+    ) ||
+
+    !Number.isInteger(
+      month
+    ) ||
+
+    !Number.isInteger(
+      day
+    ) ||
+
+    !Number.isInteger(
+      hour
+    ) ||
+
+    !Number.isInteger(
+      minute
+    )
+
+  ) {
+
+    return null;
+
+  }
+
+
+  /* =======================================================
+     VALIDATE DATE AND TIME
+  ======================================================= */
+
+  if (
+
+    month < 1 ||
+
+    month > 12 ||
+
+    day < 1 ||
+
+    day > 31 ||
+
+    hour < 0 ||
+
+    hour > 23 ||
+
+    minute < 0 ||
+
+    minute > 59
+
+  ) {
+
+    return null;
+
+  }
+
+
+  /* =======================================================
+     DEPARTURE DATE
+  ======================================================= */
+
+  const departureDate =
+    new Date(
+
+      year,
+
+      month - 1,
+
+      day,
+
+      hour,
+
+      minute,
+
+      0,
+
+      0
+
+    );
+
+
+  if (
+    Number.isNaN(
+      departureDate.getTime()
+    )
+  ) {
+
+    return null;
+
+  }
+
+
+  /* =======================================================
+     MAKE SURE JAVASCRIPT DID NOT NORMALIZE AN INVALID DATE
+  ======================================================= */
+
+  if (
+
+    departureDate.getFullYear() !==
+    year ||
+
+    departureDate.getMonth() !==
+    month - 1 ||
+
+    departureDate.getDate() !==
+    day ||
+
+    departureDate.getHours() !==
+    hour ||
+
+    departureDate.getMinutes() !==
+    minute
+
+  ) {
+
+    return null;
+
+  }
+
+
+  /* =======================================================
+     FLIGHT DURATION
+  ======================================================= */
+
+  let durationMinutes =
+    0;
+
+
+  const hoursMatch =
+    durationString.match(
+      /(\d+(?:\.\d+)?)\s*(?:hours?|hrs?|h)/i
+    );
+
+
+  const minutesMatch =
+    durationString.match(
+      /(\d+(?:\.\d+)?)\s*(?:minutes?|mins?|m)/i
+    );
+
+
+  if (hoursMatch) {
+
+    durationMinutes +=
+      Number(
+        hoursMatch[1]
+      ) * 60;
+
+  }
+
+
+  if (minutesMatch) {
+
+    durationMinutes +=
+      Number(
+        minutesMatch[1]
+      );
+
+  }
+
+
+  /* =======================================================
+     SUPPORT 4:30 FORMAT
+  ======================================================= */
+
+  if (
+
+    durationMinutes === 0 &&
+
+    /^\d{1,3}:\d{1,2}$/.test(
+      durationString
+    )
+
+  ) {
+
+    const parts =
+      durationString.split(':');
+
+
+    const durationHours =
+      Number(
+        parts[0]
+      );
+
+
+    const durationMinutesPart =
+      Number(
+        parts[1]
+      );
+
+
+    if (
+
+      !Number.isInteger(
+        durationHours
+      ) ||
+
+      !Number.isInteger(
+        durationMinutesPart
+      ) ||
+
+      durationMinutesPart < 0 ||
+
+      durationMinutesPart > 59
+
+    ) {
+
+      return null;
+
+    }
+
+
+    durationMinutes =
+      durationHours * 60 +
+      durationMinutesPart;
+
+  }
+
+
+  /* =======================================================
+     VALIDATE DURATION
+  ======================================================= */
+
+  if (
+
+    !Number.isFinite(
+      durationMinutes
+    ) ||
+
+    durationMinutes <= 0
+
+  ) {
+
+    return null;
+
+  }
+
+
+  /* =======================================================
+     ESTIMATED ARRIVAL
+  ======================================================= */
+
+  return new Date(
+
+    departureDate.getTime() +
+
+    durationMinutes *
+    60 *
+    1000
+
+  );
+
+}
+
+
+/* =========================================================
+   CALCULATE TRACKING EXPIRY
+========================================================= */
+
+function calculateTrackingExpiry(
+  estimatedArrival
+) {
+
+  return new Date(
+
+    estimatedArrival.getTime() +
+
+    24 *
+    60 *
+    60 *
+    1000
+
+  );
 
 }
 
@@ -360,6 +718,7 @@ router.post(
     const missingField =
       requiredFields.find(
         field =>
+
           field.value ===
           undefined ||
 
@@ -369,6 +728,7 @@ router.post(
           String(
             field.value
           ).trim() === ''
+
       );
 
 
@@ -458,6 +818,46 @@ router.post(
 
 
     /* =====================================================
+       CALCULATE ESTIMATED ARRIVAL
+    ===================================================== */
+
+    const estimatedArrival =
+      calculateEstimatedArrival(
+
+        date,
+
+        time,
+
+        duration
+
+      );
+
+
+    if (!estimatedArrival) {
+
+      return res.status(
+        400
+      ).json({
+
+        message:
+          'Unable to calculate estimated arrival from the date, time and duration.'
+
+      });
+
+    }
+
+
+    /* =====================================================
+       CALCULATE TRACKING EXPIRY
+    ===================================================== */
+
+    const expiresAt =
+      calculateTrackingExpiry(
+        estimatedArrival
+      );
+
+
+    /* =====================================================
        GENERATE TRACKING
     ===================================================== */
 
@@ -524,6 +924,10 @@ router.post(
               String(
                 duration
               ).trim(),
+
+            estimatedArrival,
+
+            expiresAt,
 
             currency:
               String(
@@ -636,7 +1040,11 @@ router.post(
             total:
               Number(
                 total
-              )
+              ),
+
+            estimatedArrival,
+
+            expiresAt
 
           },
 
@@ -841,12 +1249,20 @@ router.get(
   }
 );
 
+
 /* =========================================================
    PUBLIC BOARDING PASS TRACKING
 ========================================================= */
 
 /*
    GET /api/boardingPass/track/:trackingNumber
+
+   Tracking remains publicly available until:
+
+   estimatedArrival + 24 hours
+
+   After that, the tracking number behaves as
+   if it does not exist.
 */
 
 router.get(
@@ -859,7 +1275,14 @@ router.get(
         await BoardingPass.findOne({
 
           trackingNumber:
-            req.params.trackingNumber
+            req.params.trackingNumber,
+
+          expiresAt: {
+
+            $gt:
+              new Date()
+
+          }
 
         }).select(
           '-user'
@@ -1198,10 +1621,13 @@ router.patch(
       ================================================= */
 
       if (
+
         Number(
           wallet.balance
         ) <
+
         CLEAN_BOARDING_PASS_PRICE
+
       ) {
 
         await session.abortTransaction();
@@ -1233,6 +1659,7 @@ router.patch(
         Number(
           wallet.balance
         ) -
+
         CLEAN_BOARDING_PASS_PRICE;
 
 
@@ -1413,7 +1840,6 @@ router.patch(
 
   }
 );
-
 
 
 /* =========================================================

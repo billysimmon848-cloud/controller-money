@@ -371,14 +371,14 @@ const currencySymbols = {
 const textPositions = {
 
   name: {
-    left: 25,
-    top: 35.8,
+    left: 23.8,
+    top: 37,
     width: 38
   },
 
   name2: {
-    left: 70,
-    top: 41.2,
+    left: 70.2,
+    top: 41.8,
     width: 24
   },
 
@@ -399,81 +399,81 @@ const textPositions = {
   */
 
   boardingPass2: {
-    left: 73.5,
-    top: 18.5,
+    left: 74,
+    top: 19.2,
     width: 25
   },
 
 
   from: {
-    left: 24.8,
-    top: 45,
+    left: 23.7,
+    top: 46.3,
     width: 50
   },
 
   from2: {
-    left: 70,
-    top: 47.5,
+    left: 70.4,
+    top: 48.8,
     width: 16
   },
 
   to: {
-    left: 24.9,
-    top: 54.3,
+    left: 23.7,
+    top: 55.8,
     width: 50
   },
 
   to2: {
-    left: 70.1,
-    top: 55,
+    left: 70.4,
+    top: 56.1,
     width: 24
   },
 
   date: {
-    left: 24.7,
-    top: 63.5,
+    left: 23.8,
+    top: 64.5,
     width: 16
   },
 
   date2: {
-    left: 70.1,
-    top: 63,
+    left: 70.6,
+    top: 64,
     width: 16
   },
 
   time: {
     left: 36,
-    top: 63.5,
+    top: 64.5,
     width: 14
   },
 
   time2: {
-    left: 79,
-    top: 62.5,
+    left: 79.3,
+    top: 64,
     width: 15
   },
 
   gate: {
-    left: 50.5,
-    top: 63.5,
+    left: 49.7,
+    top: 64.7,
     width: 12
   },
 
   gate2: {
-    left: 71,
-    top: 71,
+    left: 70.6,
+    top: 72,
     width: 12
   },
 
   seat: {
-    left: 57,
-    top: 63.5,
+    left: 56.7,
+    top: 64.5,
     width: 12
   },
 
   seat2: {
-    left: 78,
-    top: 71,
+    left: 78.4,
+    top: 72,
     width: 12
   },
 
@@ -483,38 +483,38 @@ const textPositions = {
   */
 
   taxes: {
-    left: 80.5,
-    top: 30.5,
+    left: 80.9,
+    top: 29.5,
     width: 17
   },
 
   amount: {
-    left: 80,
-    top: 27,
+    left: 80.8,
+    top: 26,
     width: 15
   },
 
   total: {
-    left: 79.9,
+    left: 80.9,
     top: 33,
     width: 22
   },
 
   trackingNumber1: {
-    left: 36,
-    top: 80,
+    left: 32,
+    top: 81.2,
     width: 14
   },
 
   trackingNumber2: {
-    left: 72,
-    top: 81,
+    left: 75,
+    top: 82.6,
     width: 14
   },
 
   sequence: {
-    left: 46,
-    top: 79.6,
+    left: 49,
+    top: 80.8,
     width: 14
   }
 
@@ -592,6 +592,91 @@ function escapeHTML(
       /'/g,
       "&#039;"
     );
+
+}
+
+/* =========================================================
+   ACTION CONFIRMATION
+========================================================= */
+
+function showActionConfirmation(
+  message
+) {
+
+  const existing =
+    document.getElementById(
+      "actionConfirmation"
+    );
+
+  if (existing) {
+    existing.remove();
+  }
+
+
+  const popup =
+    document.createElement(
+      "div"
+    );
+
+
+  popup.id =
+    "actionConfirmation";
+
+
+  popup.textContent =
+    message;
+
+
+  popup.style.position =
+    "fixed";
+
+  popup.style.top =
+    "25px";
+
+  popup.style.left =
+    "50%";
+
+  popup.style.transform =
+    "translateX(-50%)";
+
+  popup.style.background =
+    "#111827";
+
+  popup.style.color =
+    "#ffffff";
+
+  popup.style.padding =
+    "13px 20px";
+
+  popup.style.borderRadius =
+    "8px";
+
+  popup.style.fontSize =
+    "14px";
+
+  popup.style.fontWeight =
+    "600";
+
+  popup.style.zIndex =
+    "999999";
+
+  popup.style.boxShadow =
+    "0 6px 20px rgba(0,0,0,0.2)";
+
+
+  document.body.appendChild(
+    popup
+  );
+
+
+  setTimeout(
+    function () {
+
+      popup.remove();
+
+    },
+    2500
+  );
 
 }
 
@@ -915,7 +1000,7 @@ function updateDocumentValues() {
       name,
 
     name2:
-      name,
+      to.split(/\s+/)[0],
 
 
     /*
@@ -933,14 +1018,14 @@ function updateDocumentValues() {
       from,
 
     from2:
-      from,
+      from.split(/\s+/)[0],
 
 
     to:
       to,
 
     to2:
-      to,
+      to.split(/\s+/)[0],
 
 
     date:
@@ -2336,9 +2421,11 @@ async function createBoardingPass(
 
     }
 
+    showActionConfirmation(
+      "Boarding pass created successfully."
+    );
 
     await loadWallet();
-
 
     if (generatedDocument) {
 
@@ -2348,6 +2435,7 @@ async function createBoardingPass(
       });
 
     }
+
 
   } catch (error) {
 
@@ -3580,6 +3668,10 @@ async function updateBoardingPassStatus() {
       );
 
     }
+
+    showActionConfirmation(
+      "Status updated successfully."
+    );
 
   } catch (error) {
 

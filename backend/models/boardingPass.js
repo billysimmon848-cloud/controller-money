@@ -95,6 +95,28 @@ const boardingPassSchema =
 
 
       /* =====================================================
+         ESTIMATED ARRIVAL
+      ===================================================== */
+
+      estimatedArrival: {
+        type: Date,
+        required: true
+      },
+
+
+      /* =====================================================
+         TRACKING EXPIRY
+         Tracking expires 24 hours after estimated arrival
+      ===================================================== */
+
+      expiresAt: {
+        type: Date,
+        required: true,
+        index: true
+      },
+
+
+      /* =====================================================
          CURRENCY
       ===================================================== */
 
