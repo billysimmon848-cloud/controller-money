@@ -371,7 +371,7 @@ const currencySymbols = {
 const textPositions = {
 
   name: {
-    left: 23.8,
+    left: 23.7,
     top: 37,
     width: 38
   },
@@ -508,7 +508,7 @@ const textPositions = {
 
   trackingNumber2: {
     left: 75,
-    top: 82.6,
+    top: 82.1,
     width: 14
   },
 
