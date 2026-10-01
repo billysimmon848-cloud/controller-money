@@ -1,80 +1,35 @@
-/* =========================================================
-   BOARDING PASS ROUTES
-========================================================= */
+const express = require("express");
+const mongoose = require("mongoose");
 
-const express =
-  require('express');
+const router = express.Router();
 
+const BoardingPass = require("../models/BoardingPass");
+const Activity = require("../models/Activity");
+const Wallet = require("../models/Wallet");
+const Transaction = require("../models/Transaction");
 
-const mongoose =
-  require('mongoose');
-
-
-const router =
-  express.Router();
-
-
-/* =========================================================
-   MODELS
-========================================================= */
-
-const BoardingPass =
-  require('../models/boardingPass');
-
-
-const Activity =
-  require('../models/activity');
-
-
-const Wallet =
-  require('../models/wallet');
-
-
-const Transaction =
-  require('../models/transaction');
-
-
-/* =========================================================
-   AUTH MIDDLEWARE
-========================================================= */
-
-const auth =
-  require('../middleware/auth');
+const auth = require("../middleware/auth");
 
 
 /* =========================================================
    CONSTANTS
 ========================================================= */
 
-const BOARDING_PASS_STATUSES = [
+const BOARDING_PASS_PRICE = 5;
 
-  'Processing',
-
-  'Confirmed',
-
-  'Checked In',
-
-  'Boarding',
-
-  'Departed',
-
-  'In Transit',
-
-  'Arrived',
-
-  'Completed',
-
-  'Delayed',
-
-  'Cancelled',
-
-  'Refunded'
-
+const BOARDING_STATUSES = [
+  "Processing",
+  "Confirmed",
+  "Checked In",
+  "Boarding",
+  "Departed",
+  "In Transit",
+  "Arrived",
+  "Completed",
+  "Delayed",
+  "Cancelled",
+  "Refunded"
 ];
-
-
-const CLEAN_BOARDING_PASS_PRICE =
-  5;
 
 
 /* =========================================================
@@ -83,52 +38,36 @@ const CLEAN_BOARDING_PASS_PRICE =
 
 async function generateTrackingNumber() {
 
-  const chars =
+  const characters =
     "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 
   let trackingNumber;
-
   let exists = true;
-
 
   while (exists) {
 
     let randomPart = "";
 
-
-    for (
-      let i = 0;
-      i < 8;
-      i++
-    ) {
+    for (let i = 0; i < 8; i++) {
 
       randomPart +=
-        chars[
+        characters[
           Math.floor(
-            Math.random() *
-            chars.length
+            Math.random() * characters.length
           )
         ];
 
     }
 
+    trackingNumber = `FLT-${randomPart}`;
 
-    trackingNumber =
-      `FLT-${randomPart}`;
-
-
-    exists =
-      await BoardingPass.exists({
-
-        trackingNumber
-
-      });
+    exists = await BoardingPass.exists({
+      trackingNumber
+    });
 
   }
 
-
   return trackingNumber;
-
 }
 
 
@@ -142,282 +81,22 @@ function calculateEstimatedArrival(
   duration
 ) {
 
-  const dateString =
-    String(date).trim();
+  try {
 
+    const dateString =
+      String(date || "").trim();
 
-  const timeString =
-    String(time).trim();
+    const timeString =
+      String(time || "").trim();
 
-
-  const durationString =
-    String(duration).trim();
-
-
-  /* =======================================================
-     DATE
-  ======================================================= */
-
-  const dateParts =
-    dateString.split('-');
-
-
-  /* =======================================================
-     TIME
-  ======================================================= */
-
-  const timeParts =
-    timeString.split(':');
-
-
-  if (
-
-    dateParts.length !== 3 ||
-
-    timeParts.length < 2
-
-  ) {
-
-    return null;
-
-  }
-
-
-  const year =
-    Number(
-      dateParts[0]
-    );
-
-
-  const month =
-    Number(
-      dateParts[1]
-    );
-
-
-  const day =
-    Number(
-      dateParts[2]
-    );
-
-
-  const hour =
-    Number(
-      timeParts[0]
-    );
-
-
-  const minute =
-    Number(
-      timeParts[1]
-    );
-
-
-  if (
-
-    !Number.isInteger(
-      year
-    ) ||
-
-    !Number.isInteger(
-      month
-    ) ||
-
-    !Number.isInteger(
-      day
-    ) ||
-
-    !Number.isInteger(
-      hour
-    ) ||
-
-    !Number.isInteger(
-      minute
-    )
-
-  ) {
-
-    return null;
-
-  }
-
-
-  /* =======================================================
-     VALIDATE DATE AND TIME
-  ======================================================= */
-
-  if (
-
-    month < 1 ||
-
-    month > 12 ||
-
-    day < 1 ||
-
-    day > 31 ||
-
-    hour < 0 ||
-
-    hour > 23 ||
-
-    minute < 0 ||
-
-    minute > 59
-
-  ) {
-
-    return null;
-
-  }
-
-
-  /* =======================================================
-     DEPARTURE DATE
-  ======================================================= */
-
-  const departureDate =
-    new Date(
-
-      year,
-
-      month - 1,
-
-      day,
-
-      hour,
-
-      minute,
-
-      0,
-
-      0
-
-    );
-
-
-  if (
-    Number.isNaN(
-      departureDate.getTime()
-    )
-  ) {
-
-    return null;
-
-  }
-
-
-  /* =======================================================
-     MAKE SURE JAVASCRIPT DID NOT NORMALIZE AN INVALID DATE
-  ======================================================= */
-
-  if (
-
-    departureDate.getFullYear() !==
-    year ||
-
-    departureDate.getMonth() !==
-    month - 1 ||
-
-    departureDate.getDate() !==
-    day ||
-
-    departureDate.getHours() !==
-    hour ||
-
-    departureDate.getMinutes() !==
-    minute
-
-  ) {
-
-    return null;
-
-  }
-
-
-  /* =======================================================
-     FLIGHT DURATION
-  ======================================================= */
-
-  let durationMinutes =
-    0;
-
-
-  const hoursMatch =
-    durationString.match(
-      /(\d+(?:\.\d+)?)\s*(?:hours?|hrs?|h)/i
-    );
-
-
-  const minutesMatch =
-    durationString.match(
-      /(\d+(?:\.\d+)?)\s*(?:minutes?|mins?|m)/i
-    );
-
-
-  if (hoursMatch) {
-
-    durationMinutes +=
-      Number(
-        hoursMatch[1]
-      ) * 60;
-
-  }
-
-
-  if (minutesMatch) {
-
-    durationMinutes +=
-      Number(
-        minutesMatch[1]
-      );
-
-  }
-
-
-  /* =======================================================
-     SUPPORT 4:30 FORMAT
-  ======================================================= */
-
-  if (
-
-    durationMinutes === 0 &&
-
-    /^\d{1,3}:\d{1,2}$/.test(
-      durationString
-    )
-
-  ) {
-
-    const parts =
-      durationString.split(':');
-
-
-    const durationHours =
-      Number(
-        parts[0]
-      );
-
-
-    const durationMinutesPart =
-      Number(
-        parts[1]
-      );
+    const durationString =
+      String(duration || "").trim();
 
 
     if (
-
-      !Number.isInteger(
-        durationHours
-      ) ||
-
-      !Number.isInteger(
-        durationMinutesPart
-      ) ||
-
-      durationMinutesPart < 0 ||
-
-      durationMinutesPart > 59
-
+      !dateString ||
+      !timeString ||
+      !durationString
     ) {
 
       return null;
@@ -425,25 +104,406 @@ function calculateEstimatedArrival(
     }
 
 
-    durationMinutes =
-      durationHours * 60 +
-      durationMinutesPart;
+    /* =====================================================
+       DATE
+       Expected HTML date format:
+
+       YYYY-MM-DD
+    ===================================================== */
+
+    let year;
+    let month;
+    let day;
+
+
+    if (dateString.includes("-")) {
+
+      const parts =
+        dateString.split("-");
+
+      if (parts.length !== 3) {
+        return null;
+      }
+
+      year = Number(parts[0]);
+      month = Number(parts[1]);
+      day = Number(parts[2]);
+
+    } else if (dateString.includes("/")) {
+
+      /*
+        Support:
+
+        DD/MM/YYYY
+      */
+
+      const parts =
+        dateString.split("/");
+
+      if (parts.length !== 3) {
+        return null;
+      }
+
+      day = Number(parts[0]);
+      month = Number(parts[1]);
+      year = Number(parts[2]);
+
+    } else {
+
+      return null;
+
+    }
+
+
+    if (
+      !Number.isInteger(year) ||
+      !Number.isInteger(month) ||
+      !Number.isInteger(day)
+    ) {
+
+      return null;
+
+    }
+
+
+    if (
+      year < 2000 ||
+      year > 2100 ||
+      month < 1 ||
+      month > 12 ||
+      day < 1 ||
+      day > 31
+    ) {
+
+      return null;
+
+    }
+
+
+    /* =====================================================
+       TIME
+
+       Supports:
+
+       HH:MM
+       HH:MM:SS
+       H:MM AM
+       H:MM PM
+    ===================================================== */
+
+    let hour;
+    let minute;
+
+
+    const normalizedTime =
+      timeString
+        .toUpperCase()
+        .replace(/\s+/g, " ")
+        .trim();
+
+
+    const ampmMatch =
+      normalizedTime.match(
+        /^(\d{1,2}):(\d{2})(?::(\d{2}))?\s*(AM|PM)$/
+      );
+
+
+    if (ampmMatch) {
+
+      hour = Number(ampmMatch[1]);
+      minute = Number(ampmMatch[2]);
+
+      const period =
+        ampmMatch[4];
+
+      if (
+        hour < 1 ||
+        hour > 12 ||
+        minute < 0 ||
+        minute > 59
+      ) {
+
+        return null;
+
+      }
+
+
+      if (period === "AM") {
+
+        if (hour === 12) {
+          hour = 0;
+        }
+
+      } else {
+
+        if (hour !== 12) {
+          hour += 12;
+        }
+
+      }
+
+    } else {
+
+      const timeParts =
+        normalizedTime.split(":");
+
+      if (timeParts.length < 2) {
+        return null;
+      }
+
+      hour = Number(timeParts[0]);
+      minute = Number(timeParts[1]);
+
+      if (
+        !Number.isInteger(hour) ||
+        !Number.isInteger(minute)
+      ) {
+
+        return null;
+
+      }
+
+      if (
+        hour < 0 ||
+        hour > 23 ||
+        minute < 0 ||
+        minute > 59
+      ) {
+
+        return null;
+
+      }
+
+    }
+
+
+    /* =====================================================
+       CREATE DEPARTURE DATE
+    ===================================================== */
+
+    const departure =
+      new Date(
+        year,
+        month - 1,
+        day,
+        hour,
+        minute,
+        0,
+        0
+      );
+
+
+    if (Number.isNaN(departure.getTime())) {
+      return null;
+    }
+
+
+    /*
+      JavaScript automatically normalizes invalid dates.
+
+      Example:
+      February 31 -> March
+
+      Make sure the original date actually exists.
+    */
+
+    if (
+      departure.getFullYear() !== year ||
+      departure.getMonth() !== month - 1 ||
+      departure.getDate() !== day ||
+      departure.getHours() !== hour ||
+      departure.getMinutes() !== minute
+    ) {
+
+      return null;
+
+    }
+
+
+    /* =====================================================
+       DURATION
+    ===================================================== */
+
+    let durationMinutes = 0;
+
+
+    /*
+      Examples supported:
+
+      2 hours
+      2 hour
+      2 hrs
+      2 hr
+      2h
+
+      30 minutes
+      30 mins
+      30 min
+      30m
+
+      2 hours 30 minutes
+      2h 30m
+    */
+
+    const hoursMatch =
+      durationString.match(
+        /(\d+(?:\.\d+)?)\s*(?:hours?|hrs?|hr|h)/i
+      );
+
+
+    const minutesMatch =
+      durationString.match(
+        /(\d+(?:\.\d+)?)\s*(?:minutes?|mins?|min|m)/i
+      );
+
+
+    if (hoursMatch) {
+
+      durationMinutes +=
+        Number(hoursMatch[1]) * 60;
+
+    }
+
+
+    if (minutesMatch) {
+
+      durationMinutes +=
+        Number(minutesMatch[1]);
+
+    }
+
+
+    /*
+      Support HH:MM duration.
+
+      Example:
+
+      02:30
+      = 2 hours 30 minutes
+    */
+
+    if (
+      !hoursMatch &&
+      !minutesMatch &&
+      /^\d{1,3}:\d{2}$/.test(durationString)
+    ) {
+
+      const durationParts =
+        durationString.split(":");
+
+      const durationHours =
+        Number(durationParts[0]);
+
+      const durationMins =
+        Number(durationParts[1]);
+
+
+      if (
+        Number.isInteger(durationHours) &&
+        Number.isInteger(durationMins) &&
+        durationHours >= 0 &&
+        durationMins >= 0 &&
+        durationMins < 60
+      ) {
+
+        durationMinutes =
+          durationHours * 60 +
+          durationMins;
+
+      }
+
+    }
+
+
+    /*
+      If duration is a plain number,
+      treat it as hours.
+
+      Example:
+
+      "2" = 2 hours
+      "3.5" = 3 hours 30 minutes
+    */
+
+    if (
+      !hoursMatch &&
+      !minutesMatch &&
+      !/^\d{1,3}:\d{2}$/.test(durationString)
+    ) {
+
+      const numericDuration =
+        Number(durationString);
+
+
+      if (
+        Number.isFinite(numericDuration) &&
+        numericDuration > 0
+      ) {
+
+        durationMinutes =
+          numericDuration * 60;
+
+      }
+
+    }
+
+
+    if (
+      !Number.isFinite(durationMinutes) ||
+      durationMinutes <= 0
+    ) {
+
+      return null;
+
+    }
+
+
+    /* =====================================================
+       ESTIMATED ARRIVAL
+    ===================================================== */
+
+    const estimatedArrival =
+      new Date(
+        departure.getTime() +
+        durationMinutes * 60 * 1000
+      );
+
+
+    if (
+      Number.isNaN(
+        estimatedArrival.getTime()
+      )
+    ) {
+
+      return null;
+
+    }
+
+
+    return estimatedArrival;
+
+  } catch (error) {
+
+    return null;
 
   }
 
+}
 
-  /* =======================================================
-     VALIDATE DURATION
-  ======================================================= */
+
+/* =========================================================
+   TRACKING EXPIRY
+========================================================= */
+
+function calculateTrackingExpiry(
+  estimatedArrival
+) {
 
   if (
-
-    !Number.isFinite(
-      durationMinutes
-    ) ||
-
-    durationMinutes <= 0
-
+    !estimatedArrival ||
+    Number.isNaN(
+      estimatedArrival.getTime()
+    )
   ) {
 
     return null;
@@ -451,108 +511,91 @@ function calculateEstimatedArrival(
   }
 
 
-  /* =======================================================
-     ESTIMATED ARRIVAL
-  ======================================================= */
+  /*
+    Tracking remains available for
+    24 hours after estimated arrival.
+  */
 
   return new Date(
-
-    departureDate.getTime() +
-
-    durationMinutes *
-    60 *
-    1000
-
-  );
-
-}
-
-
-/* =========================================================
-   CALCULATE TRACKING EXPIRY
-========================================================= */
-
-function calculateTrackingExpiry(
-  estimatedArrival
-) {
-
-  return new Date(
-
     estimatedArrival.getTime() +
-
-    24 *
-    60 *
-    60 *
-    1000
-
+    24 * 60 * 60 * 1000
   );
 
 }
 
 
 /* =========================================================
-   CREATE ACTIVITY
+   ACTIVITY
 ========================================================= */
 
 async function createActivity(
-  {
-    user,
-    activity,
-    amount,
-    description,
-    reference,
-    metadata,
-    session
-  }
+  userId,
+  activity,
+  service,
+  amount,
+  description,
+  reference,
+  metadata,
+  session = null
 ) {
 
-  return Activity.create(
-    [
-      {
+  const activityData = {
 
-        user,
+    user: userId,
 
-        activity,
+    activity,
 
-        service:
-          'Boarding Pass',
+    service,
 
-        amount:
-          amount || 0,
+    amount,
 
-        description,
+    description,
 
-        reference,
+    reference,
 
-        metadata
+    metadata
 
-      }
-    ],
-    {
-      session
-    }
-  );
+  };
+
+
+  if (session) {
+
+    await Activity.create(
+      [activityData],
+      { session }
+    );
+
+  } else {
+
+    await Activity.create(
+      activityData
+    );
+
+  }
 
 }
 
 
 /* =========================================================
-   GET USER WALLET
+   WALLET
 ========================================================= */
 
 async function getWallet(
   userId,
-  session
+  session = null
 ) {
 
+  if (session) {
+
+    return Wallet.findOne({
+      user: userId
+    }).session(session);
+
+  }
+
   return Wallet.findOne({
-
-    user:
-      userId
-
-  }).session(
-    session
-  );
+    user: userId
+  });
 
 }
 
@@ -561,307 +604,197 @@ async function getWallet(
    CREATE BOARDING PASS
 ========================================================= */
 
-/*
-   POST /api/boardingPass
-*/
-
 router.post(
-  '/',
+  "/",
   auth,
-  async function (req, res) {
+  async (req, res) => {
 
-    const {
+    try {
 
-      name,
+      const userId =
+        req.userId;
 
-      class: boardingClass,
 
-      boardingPassType,
+      const {
 
-      from,
+        name,
 
-      to,
+        class: boardingClass,
 
-      date,
+        boardingPassType,
 
-      time,
+        from,
 
-      duration,
-
-      currency,
-
-      price,
-
-      gate,
-
-      seat,
-
-      sequence,
-
-      taxes,
-
-      total
-
-    } =
-      req.body;
-
-
-    /* =====================================================
-       CLASS
-    ===================================================== */
-
-    const selectedClass =
-      String(
-        boardingClass ||
-        boardingPassType ||
-        ""
-      ).trim();
-
-
-    /* =====================================================
-       REQUIRED FIELDS
-    ===================================================== */
-
-    const requiredFields = [
-
-      {
-        name:
-          'name',
-
-        value:
-          name
-      },
-
-      {
-        name:
-          'class',
-
-        value:
-          selectedClass
-      },
-
-      {
-        name:
-          'from',
-
-        value:
-          from
-      },
-
-      {
-        name:
-          'to',
-
-        value:
-          to
-      },
-
-      {
-        name:
-          'date',
-
-        value:
-          date
-      },
-
-      {
-        name:
-          'time',
-
-        value:
-          time
-      },
-
-      {
-        name:
-          'duration',
-
-        value:
-          duration
-      },
-
-      {
-        name:
-          'currency',
-
-        value:
-          currency
-      },
-
-      {
-        name:
-          'gate',
-
-        value:
-          gate
-      },
-
-      {
-        name:
-          'seat',
-
-        value:
-          seat
-      },
-
-      {
-        name:
-          'sequence',
-
-        value:
-          sequence
-      }
-
-    ];
-
-
-    const missingField =
-      requiredFields.find(
-        field =>
-
-          field.value ===
-          undefined ||
-
-          field.value ===
-          null ||
-
-          String(
-            field.value
-          ).trim() === ''
-
-      );
-
-
-    if (missingField) {
-
-      return res.status(
-        400
-      ).json({
-
-        message:
-          `${missingField.name} is required.`
-
-      });
-
-    }
-
-
-    /* =====================================================
-       NUMERIC VALIDATION
-    ===================================================== */
-
-    const numericValues = [
-
-      {
-        name:
-          'price',
-
-        value:
-          price
-      },
-
-      {
-        name:
-          'taxes',
-
-        value:
-          taxes
-      },
-
-      {
-        name:
-          'total',
-
-        value:
-          total
-      }
-
-    ];
-
-
-    const invalidNumber =
-      numericValues.find(
-        item => {
-
-          const number =
-            Number(
-              item.value
-            );
-
-
-          return (
-
-            !Number.isFinite(
-              number
-            ) ||
-
-            number < 0
-
-          );
-
-        }
-      );
-
-
-    if (invalidNumber) {
-
-      return res.status(
-        400
-      ).json({
-
-        message:
-          `${invalidNumber.name} must be a valid positive number.`
-
-      });
-
-    }
-
-
-    /* =====================================================
-       CALCULATE ESTIMATED ARRIVAL
-    ===================================================== */
-
-    const estimatedArrival =
-      calculateEstimatedArrival(
+        to,
 
         date,
 
         time,
 
-        duration
+        duration,
 
-      );
+        currency,
 
+        price,
 
-    if (!estimatedArrival) {
+        taxes,
 
-      return res.status(
-        400
-      ).json({
+        total,
 
-        message:
-          'Unable to calculate estimated arrival from the date, time and duration.'
+        gate,
 
-      });
+        seat,
 
-    }
+        sequence
 
-
-    /* =====================================================
-       CALCULATE TRACKING EXPIRY
-    ===================================================== */
-
-    const expiresAt =
-      calculateTrackingExpiry(
-        estimatedArrival
-      );
+      } = req.body;
 
 
-    /* =====================================================
-       GENERATE TRACKING
-    ===================================================== */
+      /* ===================================================
+         CLASS
+      =================================================== */
 
-    try {
+      const selectedClass =
+        boardingClass ||
+        boardingPassType;
+
+
+      /* ===================================================
+         REQUIRED FIELDS
+      =================================================== */
+
+      if (
+        !name ||
+        !selectedClass ||
+        !from ||
+        !to ||
+        !date ||
+        !time ||
+        !duration ||
+        !currency ||
+        !gate ||
+        !seat ||
+        !sequence
+      ) {
+
+        return res.status(400).json({
+
+          message:
+            "Please complete all required fields."
+
+        });
+
+      }
+
+
+      /* ===================================================
+         AMOUNTS
+      =================================================== */
+
+      const numericPrice =
+        Number(price);
+
+      const numericTaxes =
+        Number(taxes);
+
+      const numericTotal =
+        Number(total);
+
+
+      if (
+        !Number.isFinite(numericPrice) ||
+        numericPrice < 0
+      ) {
+
+        return res.status(400).json({
+
+          message:
+            "Invalid price."
+
+        });
+
+      }
+
+
+      if (
+        !Number.isFinite(numericTaxes) ||
+        numericTaxes < 0
+      ) {
+
+        return res.status(400).json({
+
+          message:
+            "Invalid taxes."
+
+        });
+
+      }
+
+
+      if (
+        !Number.isFinite(numericTotal) ||
+        numericTotal < 0
+      ) {
+
+        return res.status(400).json({
+
+          message:
+            "Invalid total."
+
+        });
+
+      }
+
+
+      /* ===================================================
+         ESTIMATED ARRIVAL
+      =================================================== */
+
+      const estimatedArrival =
+        calculateEstimatedArrival(
+          date,
+          time,
+          duration
+        );
+
+
+      if (!estimatedArrival) {
+
+        return res.status(400).json({
+
+          message:
+            "Unable to calculate estimated arrival from the date, time and duration."
+
+        });
+
+      }
+
+
+      /* ===================================================
+         TRACKING EXPIRY
+      =================================================== */
+
+      const expiresAt =
+        calculateTrackingExpiry(
+          estimatedArrival
+        );
+
+
+      if (!expiresAt) {
+
+        return res.status(400).json({
+
+          message:
+            "Unable to calculate tracking expiry."
+
+        });
+
+      }
+
+
+      /* ===================================================
+         TRACKING NUMBER
+      =================================================== */
 
       const trackingNumber =
         await generateTrackingNumber();
@@ -880,95 +813,82 @@ router.post(
         session.startTransaction();
 
 
-        /* ================================================
+        /* =================================================
            CREATE BOARDING PASS
         ================================================= */
 
         const boardingPass =
           new BoardingPass({
 
-            user:
-              req.userId,
+            user: userId,
 
             trackingNumber,
 
             name:
-              String(
-                name
-              ).trim(),
+
+              String(name).trim(),
 
             class:
-              selectedClass,
+
+              String(selectedClass).trim(),
 
             from:
-              String(
-                from
-              ).trim(),
+
+              String(from).trim(),
 
             to:
-              String(
-                to
-              ).trim(),
+
+              String(to).trim(),
 
             date:
-              String(
-                date
-              ).trim(),
+
+              String(date).trim(),
 
             time:
-              String(
-                time
-              ).trim(),
+
+              String(time).trim(),
 
             duration:
-              String(
-                duration
-              ).trim(),
+
+              String(duration).trim(),
 
             estimatedArrival,
 
             expiresAt,
 
             currency:
-              String(
-                currency
-              ).trim(),
+
+              String(currency).trim(),
 
             price:
-              Number(
-                price
-              ),
 
-            gate:
-              String(
-                gate
-              ).trim(),
-
-            seat:
-              String(
-                seat
-              ).trim(),
-
-            sequence:
-              String(
-                sequence
-              ).trim(),
+              numericPrice,
 
             taxes:
-              Number(
-                taxes
-              ),
+
+              numericTaxes,
 
             total:
-              Number(
-                total
-              ),
+
+              numericTotal,
+
+            gate:
+
+              String(gate).trim(),
+
+            seat:
+
+              String(seat).trim(),
+
+            sequence:
+
+              String(sequence).trim(),
 
             currentStatus:
-              'Processing',
+              "Processing",
 
             paymentStatus:
-              'unpaid',
+              "unpaid",
 
             paymentAmount:
               0,
@@ -977,7 +897,7 @@ router.post(
               null,
 
             boardingPassType:
-              'test',
+              "test",
 
             watermarkEnabled:
               true
@@ -990,115 +910,79 @@ router.post(
         });
 
 
-        /* ================================================
+        /* =================================================
            ACTIVITY
         ================================================= */
 
-        await createActivity({
+        await createActivity(
 
-          user:
-            req.userId,
+          userId,
 
-          activity:
-            'Document Created',
+          "Document Created",
 
-          amount:
-            0,
+          "Boarding Pass",
 
-          description:
-            `Boarding Pass created: ${trackingNumber}`,
+          0,
 
-          reference:
+          `Boarding Pass created - ${trackingNumber}`,
+
+          trackingNumber,
+
+          {
             trackingNumber,
-
-          metadata: {
-
-            trackingNumber,
-
-            boardingPassType:
-              'test',
-
-            class:
-              selectedClass,
-
-            paymentStatus:
-              'unpaid',
-
-            watermarkEnabled:
-              true,
-
-            price:
-              Number(
-                price
-              ),
-
-            taxes:
-              Number(
-                taxes
-              ),
-
-            total:
-              Number(
-                total
-              ),
-
-            estimatedArrival,
-
-            expiresAt
-
+            boardingPassType: "test",
+            currentStatus: "Processing"
           },
 
           session
 
-        });
+        );
 
 
         await session.commitTransaction();
 
 
-        return res.status(
-          201
-        ).json({
+        /* =================================================
+           RESPONSE
+        ================================================= */
+
+        return res.status(201).json({
 
           message:
-            'Boarding pass created successfully.',
+            "Boarding pass created successfully.",
+
+          trackingNumber,
 
           boardingPass
 
         });
 
-      }
 
-      catch (error) {
+      } catch (transactionError) {
 
         await session.abortTransaction();
 
-        throw error;
+        throw transactionError;
+
+      } finally {
+
+        session.endSession();
 
       }
 
-      finally {
 
-        await session.endSession();
-
-      }
-
-    }
-
-    catch (error) {
+    } catch (error) {
 
       console.error(
-        'CREATE BOARDING PASS ERROR:',
+        "CREATE BOARDING PASS ERROR:",
         error
       );
 
 
-      return res.status(
-        500
-      ).json({
+      return res.status(500).json({
 
         message:
-          'Unable to create boarding pass.'
+          "Unable to create boarding pass."
 
       });
 
@@ -1112,37 +996,36 @@ router.post(
    DELETE BOARDING PASS
 ========================================================= */
 
-/*
-   DELETE /api/boardingPass/:trackingNumber
-*/
-
 router.delete(
-  '/:trackingNumber',
+  "/:trackingNumber",
   auth,
-  async function (req, res) {
+  async (req, res) => {
 
     try {
+
+      const userId =
+        req.userId;
+
+      const trackingNumber =
+        req.params.trackingNumber;
+
 
       const boardingPass =
         await BoardingPass.findOne({
 
-          trackingNumber:
-            req.params.trackingNumber,
+          trackingNumber,
 
-          user:
-            req.userId
+          user: userId
 
         });
 
 
       if (!boardingPass) {
 
-        return res.status(
-          404
-        ).json({
+        return res.status(404).json({
 
           message:
-            'Boarding pass not found.'
+            "Boarding pass not found."
 
         });
 
@@ -1160,26 +1043,23 @@ router.delete(
       return res.json({
 
         message:
-          'Boarding pass deleted successfully.'
+          "Boarding pass deleted successfully."
 
       });
 
-    }
 
-    catch (error) {
+    } catch (error) {
 
       console.error(
-        'DELETE BOARDING PASS ERROR:',
+        "DELETE BOARDING PASS ERROR:",
         error
       );
 
 
-      return res.status(
-        500
-      ).json({
+      return res.status(500).json({
 
         message:
-          'Unable to delete boarding pass.'
+          "Unable to delete boarding pass."
 
       });
 
@@ -1190,33 +1070,29 @@ router.delete(
 
 
 /* =========================================================
-   GET MY BOARDING PASS
+   GET MY BOARDING PASSES
 ========================================================= */
 
-/*
-   GET /api/boardingPass/mine
-*/
-
 router.get(
-  '/mine',
+  "/mine",
   auth,
-  async function (req, res) {
+  async (req, res) => {
 
     try {
+
+      const userId =
+        req.userId;
+
 
       const boardingPasses =
         await BoardingPass.find({
 
-          user:
-            req.userId
+          user: userId
 
         })
-          .sort({
-
-            createdAt:
-              -1
-
-          });
+        .sort({
+          createdAt: -1
+        });
 
 
       return res.json({
@@ -1225,22 +1101,19 @@ router.get(
 
       });
 
-    }
 
-    catch (error) {
+    } catch (error) {
 
       console.error(
-        'GET BOARDING PASSES ERROR:',
+        "GET MY BOARDING PASSES ERROR:",
         error
       );
 
 
-      return res.status(
-        500
-      ).json({
+      return res.status(500).json({
 
         message:
-          'Unable to load boarding passes.'
+          "Unable to load boarding passes."
 
       });
 
@@ -1251,57 +1124,135 @@ router.get(
 
 
 /* =========================================================
-   PUBLIC BOARDING PASS TRACKING
+   PUBLIC TRACKING
 ========================================================= */
 
-/*
-   GET /api/boardingPass/track/:trackingNumber
-
-   Tracking remains publicly available until:
-
-   estimatedArrival + 24 hours
-
-   After that, the tracking number behaves as
-   if it does not exist.
-*/
-
 router.get(
-  '/track/:trackingNumber',
-  async function (req, res) {
+  "/track/:trackingNumber",
+  async (req, res) => {
 
     try {
 
-      const boardingPass =
-        await BoardingPass.findOne({
-
-          trackingNumber:
-            req.params.trackingNumber,
-
-          expiresAt: {
-
-            $gt:
-              new Date()
-
-          }
-
-        }).select(
-          '-user'
-        );
+      const trackingNumber =
+        String(
+          req.params.trackingNumber || ""
+        ).trim();
 
 
-      if (!boardingPass) {
+      if (!trackingNumber) {
 
-        return res.status(
-          404
-        ).json({
+        return res.status(400).json({
 
           message:
-            'Boarding pass not found.'
+            "Tracking number is required."
 
         });
 
       }
 
+
+      /*
+        First find the document by tracking number.
+
+        We do not put expiresAt directly into the
+        MongoDB query because older Boarding Pass
+        records may not have an expiresAt value.
+      */
+
+      const boardingPass =
+        await BoardingPass.findOne({
+
+          trackingNumber
+
+        })
+        .select("-user");
+
+
+      if (!boardingPass) {
+
+        return res.status(404).json({
+
+          message:
+            "Boarding pass not found."
+
+        });
+
+      }
+
+
+      /* =================================================
+         EXPIRY CHECK
+      ================================================= */
+
+      let expiryDate =
+        boardingPass.expiresAt;
+
+
+      /*
+        For older documents that have estimatedArrival
+        but no expiresAt, calculate the expiry from the
+        existing estimatedArrival.
+      */
+
+      if (
+        !expiryDate &&
+        boardingPass.estimatedArrival
+      ) {
+
+        expiryDate =
+          calculateTrackingExpiry(
+            new Date(
+              boardingPass.estimatedArrival
+            )
+          );
+
+      }
+
+
+      /*
+        If we still cannot determine an expiry,
+        do not expose the tracking record.
+      */
+
+      if (
+        !expiryDate ||
+        Number.isNaN(
+          new Date(expiryDate).getTime()
+        )
+      ) {
+
+        return res.status(404).json({
+
+          message:
+            "Boarding pass tracking has expired."
+
+        });
+
+      }
+
+
+      /* =================================================
+         CHECK EXPIRY
+      ================================================= */
+
+      if (
+        new Date(expiryDate).getTime() <=
+        Date.now()
+      ) {
+
+        return res.status(404).json({
+
+          message:
+            "Boarding pass tracking has expired."
+
+        });
+
+      }
+
+
+      /* =================================================
+         RESPONSE
+      ================================================= */
 
       return res.json({
 
@@ -1309,22 +1260,19 @@ router.get(
 
       });
 
-    }
 
-    catch (error) {
+    } catch (error) {
 
       console.error(
-        'BOARDING PASS TRACKING ERROR:',
+        "TRACK BOARDING PASS ERROR:",
         error
       );
 
 
-      return res.status(
-        500
-      ).json({
+      return res.status(500).json({
 
         message:
-          'Unable to track boarding pass.'
+          "Unable to track boarding pass."
 
       });
 
@@ -1338,65 +1286,62 @@ router.get(
    UPDATE BOARDING PASS STATUS
 ========================================================= */
 
-/*
-   PATCH /api/boardingPass/:trackingNumber/status
-*/
-
 router.patch(
-  '/:trackingNumber/status',
+  "/:trackingNumber/status",
   auth,
-  async function (req, res) {
-
-    const {
-      status
-    } =
-      req.body;
-
-
-    /* =====================================================
-       VALIDATE STATUS
-    ===================================================== */
-
-    if (
-      !BOARDING_PASS_STATUSES.includes(
-        status
-      )
-    ) {
-
-      return res.status(
-        400
-      ).json({
-
-        message:
-          'Invalid boarding pass status.'
-
-      });
-
-    }
-
+  async (req, res) => {
 
     try {
 
-      const boardingPass =
+      const userId =
+        req.userId;
+
+      const trackingNumber =
+        req.params.trackingNumber;
+
+      const {
+        status
+      } = req.body;
+
+
+      /* ===================================================
+         VALIDATE STATUS
+      =================================================== */
+
+      if (
+        !BOARDING_STATUSES.includes(status)
+      ) {
+
+        return res.status(400).json({
+
+          message:
+            "Invalid boarding pass status."
+
+        });
+
+      }
+
+
+      /* ===================================================
+         FIND EXISTING BOARDING PASS
+      =================================================== */
+
+      const existingBoardingPass =
         await BoardingPass.findOne({
 
-          trackingNumber:
-            req.params.trackingNumber,
+          trackingNumber,
 
-          user:
-            req.userId
+          user: userId
 
         });
 
 
-      if (!boardingPass) {
+      if (!existingBoardingPass) {
 
-        return res.status(
-          404
-        ).json({
+        return res.status(404).json({
 
           message:
-            'Boarding pass not found.'
+            "Boarding pass not found."
 
         });
 
@@ -1404,80 +1349,111 @@ router.patch(
 
 
       const previousStatus =
-        boardingPass.currentStatus;
+        existingBoardingPass.currentStatus;
 
 
-      boardingPass.currentStatus =
-        status;
+      /* ===================================================
+         UPDATE ONLY STATUS
+      =================================================== */
+
+      const updatedBoardingPass =
+        await BoardingPass.findOneAndUpdate(
+
+          {
+            trackingNumber,
+            user: userId
+          },
+
+          {
+            $set: {
+              currentStatus: status
+            }
+
+          },
+
+          {
+            new: true,
+
+            /*
+              Important:
+              This prevents older Boarding Pass
+              documents from failing because of other
+              required fields that may not exist on
+              older records.
+            */
+
+            runValidators: false
+          }
+
+        );
 
 
-      await boardingPass.save();
+      if (!updatedBoardingPass) {
+
+        return res.status(404).json({
+
+          message:
+            "Boarding pass not found."
+
+        });
+
+      }
 
 
       /* ===================================================
          ACTIVITY
-      ================================================= */
+      =================================================== */
 
-      await Activity.create({
+      await createActivity(
 
-        user:
-          req.userId,
+        userId,
 
-        activity:
-          'Status Updated',
+        "Status Updated",
 
-        service:
-          'Boarding Pass',
+        "Boarding Pass",
 
-        amount:
-          0,
+        0,
 
-        description:
-          `Boarding Pass ${boardingPass.trackingNumber} status changed from ${previousStatus} to ${status}.`,
+        `Boarding Pass status changed from ${previousStatus} to ${status}`,
 
-        reference:
-          boardingPass.trackingNumber,
+        trackingNumber,
 
-        metadata: {
-
-          trackingNumber:
-            boardingPass.trackingNumber,
-
+        {
+          trackingNumber,
           previousStatus,
-
-          currentStatus:
-            status
-
+          currentStatus: status
         }
 
-      });
+      );
 
+
+      /* ===================================================
+         RESPONSE
+      =================================================== */
 
       return res.json({
 
         message:
-          'Boarding pass status updated.',
+          "Boarding pass status updated.",
 
-        boardingPass
+        boardingPass:
+          updatedBoardingPass
 
       });
 
-    }
 
-    catch (error) {
+    } catch (error) {
 
       console.error(
-        'UPDATE BOARDING PASS STATUS ERROR:',
+        "UPDATE BOARDING PASS STATUS ERROR:",
         error
       );
 
 
-      return res.status(
-        500
-      ).json({
+      return res.status(500).json({
 
         message:
-          'Unable to update boarding pass status.'
+          "Unable to update boarding pass status."
 
       });
 
@@ -1488,17 +1464,13 @@ router.patch(
 
 
 /* =========================================================
-   UPGRADE TO CLEAN
+   UPGRADE BOARDING PASS
 ========================================================= */
 
-/*
-   PATCH /api/boardingPass/:trackingNumber/upgrade
-*/
-
 router.patch(
-  '/:trackingNumber/upgrade',
+  "/:trackingNumber/upgrade",
   auth,
-  async function (req, res) {
+  async (req, res) => {
 
     const session =
       await mongoose.startSession();
@@ -1506,38 +1478,38 @@ router.patch(
 
     try {
 
+      const userId =
+        req.userId;
+
+      const trackingNumber =
+        req.params.trackingNumber;
+
+
       session.startTransaction();
 
 
       /* ===================================================
          FIND BOARDING PASS
-      ================================================= */
+      =================================================== */
 
       const boardingPass =
         await BoardingPass.findOne({
 
-          trackingNumber:
-            req.params.trackingNumber,
+          trackingNumber,
 
-          user:
-            req.userId
+          user: userId
 
-        }).session(
-          session
-        );
+        }).session(session);
 
 
       if (!boardingPass) {
 
         await session.abortTransaction();
 
-
-        return res.status(
-          404
-        ).json({
+        return res.status(404).json({
 
           message:
-            'Boarding pass not found.'
+            "Boarding pass not found."
 
         });
 
@@ -1546,24 +1518,16 @@ router.patch(
 
       /* ===================================================
          ALREADY CLEAN
-      ================================================= */
+      =================================================== */
 
       if (
-
-        boardingPass.paymentStatus ===
-        'paid' &&
-
         boardingPass.boardingPassType ===
-        'clean' &&
-
-        boardingPass.watermarkEnabled ===
-        false
-
+        "clean"
       ) {
 
         const wallet =
           await getWallet(
-            req.userId,
+            userId,
             session
           );
 
@@ -1574,13 +1538,13 @@ router.patch(
         return res.json({
 
           message:
-            'Boarding pass is already clean.',
+            "Boarding pass is already clean.",
 
           boardingPass,
 
           walletBalance:
             wallet
-              ? wallet.balance
+              ? Number(wallet.balance || 0)
               : 0
 
         });
@@ -1589,12 +1553,12 @@ router.patch(
 
 
       /* ===================================================
-         GET WALLET
-      ================================================= */
+         WALLET
+      =================================================== */
 
       const wallet =
         await getWallet(
-          req.userId,
+          userId,
           session
         );
 
@@ -1603,48 +1567,37 @@ router.patch(
 
         await session.abortTransaction();
 
-
-        return res.status(
-          404
-        ).json({
+        return res.status(400).json({
 
           message:
-            'Wallet not found.'
+            "Wallet not found."
 
         });
 
       }
 
 
+      const walletBalance =
+        Number(
+          wallet.balance || 0
+        );
+
+
       /* ===================================================
-         CHECK BALANCE
-      ================================================= */
+         BALANCE CHECK
+      =================================================== */
 
       if (
-
-        Number(
-          wallet.balance
-        ) <
-
-        CLEAN_BOARDING_PASS_PRICE
-
+        walletBalance <
+        BOARDING_PASS_PRICE
       ) {
 
         await session.abortTransaction();
 
-
-        return res.status(
-          400
-        ).json({
+        return res.status(400).json({
 
           message:
-            'Insufficient wallet balance.',
-
-          walletBalance:
-            wallet.balance,
-
-          required:
-            CLEAN_BOARDING_PASS_PRICE
+            "Insufficient wallet balance."
 
         });
 
@@ -1653,14 +1606,11 @@ router.patch(
 
       /* ===================================================
          DEDUCT WALLET
-      ================================================= */
+      =================================================== */
 
       wallet.balance =
-        Number(
-          wallet.balance
-        ) -
-
-        CLEAN_BOARDING_PASS_PRICE;
+        walletBalance -
+        BOARDING_PASS_PRICE;
 
 
       await wallet.save({
@@ -1670,23 +1620,19 @@ router.patch(
 
       /* ===================================================
          UPDATE BOARDING PASS
-      ================================================= */
+      =================================================== */
 
       boardingPass.paymentStatus =
-        'paid';
-
+        "paid";
 
       boardingPass.paymentAmount =
-        CLEAN_BOARDING_PASS_PRICE;
-
+        BOARDING_PASS_PRICE;
 
       boardingPass.paidAt =
         new Date();
 
-
       boardingPass.boardingPassType =
-        'clean';
-
+        "clean";
 
       boardingPass.watermarkEnabled =
         false;
@@ -1698,143 +1644,116 @@ router.patch(
 
 
       /* ===================================================
-         TRANSACTION LEDGER
-      ================================================= */
+         TRANSACTION
+      =================================================== */
 
       await Transaction.create(
+
         [
+
           {
 
-            user:
-              req.userId,
+            user: userId,
+
+            type: "debit",
 
             amount:
-              CLEAN_BOARDING_PASS_PRICE,
-
-            type:
-              'charge',
+              BOARDING_PASS_PRICE,
 
             source:
-              'boardingPass',
-
-            reference:
-              boardingPass.trackingNumber,
+              "boardingPass",
 
             description:
-              'Boarding Pass clean download'
+              `Boarding Pass upgrade - ${trackingNumber}`,
+
+            reference:
+              trackingNumber
 
           }
+
         ],
+
         {
           session
         }
+
       );
 
 
       /* ===================================================
          ACTIVITY
-      ================================================= */
+      =================================================== */
 
-      await createActivity({
+      await createActivity(
 
-        user:
-          req.userId,
+        userId,
 
-        activity:
-          'Document Upgraded',
+        "Document Upgraded",
 
-        amount:
-          -CLEAN_BOARDING_PASS_PRICE,
+        "Boarding Pass",
 
-        description:
-          `Boarding Pass ${boardingPass.trackingNumber} upgraded to clean.`,
+        -BOARDING_PASS_PRICE,
 
-        reference:
-          boardingPass.trackingNumber,
+        `Boarding Pass upgraded - ${trackingNumber}`,
 
-        metadata: {
+        trackingNumber,
 
-          trackingNumber:
-            boardingPass.trackingNumber,
-
-          boardingPassType:
-            'clean',
-
-          paymentStatus:
-            'paid',
-
-          paymentAmount:
-            CLEAN_BOARDING_PASS_PRICE,
-
-          watermarkEnabled:
-            false
-
+        {
+          trackingNumber,
+          price: BOARDING_PASS_PRICE,
+          boardingPassType: "clean"
         },
 
         session
 
-      });
+      );
 
 
       /* ===================================================
          COMMIT
-      ================================================= */
+      =================================================== */
 
       await session.commitTransaction();
 
 
+      /* ===================================================
+         RESPONSE
+      =================================================== */
+
       return res.json({
 
         message:
-          'Boarding pass upgraded successfully.',
+          "Boarding pass upgraded successfully.",
 
         boardingPass,
 
         walletBalance:
-          wallet.balance
+          Number(wallet.balance || 0)
 
       });
 
-    }
 
-    catch (error) {
+    } catch (error) {
 
-      try {
-
-        await session.abortTransaction();
-
-      }
-
-      catch (abortError) {
-
-        console.error(
-          'TRANSACTION ABORT ERROR:',
-          abortError
-        );
-
-      }
+      await session.abortTransaction();
 
 
       console.error(
-        'UPGRADE BOARDING PASS ERROR:',
+        "UPGRADE BOARDING PASS ERROR:",
         error
       );
 
 
-      return res.status(
-        500
-      ).json({
+      return res.status(500).json({
 
         message:
-          'Unable to upgrade boarding pass.'
+          "Unable to upgrade boarding pass."
 
       });
 
-    }
+    } finally {
 
-    finally {
-
-      await session.endSession();
+      session.endSession();
 
     }
 
@@ -1846,5 +1765,4 @@ router.patch(
    EXPORT
 ========================================================= */
 
-module.exports =
-  router;
+module.exports = router;
