@@ -3,10 +3,10 @@ const mongoose = require("mongoose");
 
 const router = express.Router();
 
-const BoardingPass = require("../models/BoardingPass");
-const Activity = require("../models/Activity");
-const Wallet = require("../models/Wallet");
-const Transaction = require("../models/Transaction");
+const BoardingPass = require("../models/boardingPass");
+const Activity = require("../models/activity");
+const Wallet = require("../models/wallet");
+const Transaction = require("../models/transaction");
 
 const auth = require("../middleware/auth");
 
