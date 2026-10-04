@@ -36,18 +36,6 @@ const continueShipping =
 const shippingTypeModal =
   document.getElementById("shippingTypeModal");
 
-const shippingDocument =
-  document.getElementById("shippingDocument");
-
-const documentStatus =
-  document.getElementById("documentStatus");
-
-const downloadDocument =
-  document.getElementById("downloadDocument");
-
-const removeWatermark =
-  document.getElementById("removeWatermark");
-
 const shipmentsList =
   document.getElementById("shipmentsList");
 
@@ -60,8 +48,28 @@ const newShipmentButton =
 const cancelEditButton =
   document.getElementById("cancelEditButton");
 
-const watermarkLayer =
-  document.getElementById("watermarkLayer");
+
+// ======================================================
+// REMOVE OLD DOCUMENT PREVIEW
+// ======================================================
+//
+// The controller no longer uses a document preview.
+//
+// If the old HTML preview still exists, remove it from
+// the page automatically.
+//
+// This does NOT affect shipment tracking.
+//
+// ======================================================
+
+const oldShippingDocument =
+  document.getElementById("shippingDocument");
+
+if (oldShippingDocument) {
+
+  oldShippingDocument.remove();
+
+}
 
 
 // ======================================================
@@ -154,8 +162,13 @@ function getToken() {
 
 function escapeHTML(value) {
 
-  if (value === null || value === undefined) {
+  if (
+    value === null ||
+    value === undefined
+  ) {
+
     return "";
+
   }
 
   return String(value)
@@ -185,13 +198,19 @@ function escapeAttribute(value) {
 
 function formatMoney(value) {
 
-  const amount = Number(value);
+  const amount =
+    Number(value);
 
-  if (Number.isNaN(amount)) {
+  if (
+    Number.isNaN(amount)
+  ) {
+
     return "$0.00";
+
   }
 
-  return "$" + amount.toFixed(2);
+  return "$" +
+    amount.toFixed(2);
 
 }
 
@@ -206,11 +225,15 @@ function buildDateTime(
 ) {
 
   if (!dateValue) {
+
     return "";
+
   }
 
   if (!timeValue) {
+
     return dateValue;
+
   }
 
   return `${dateValue}T${timeValue}`;
@@ -224,10 +247,13 @@ function buildDateTime(
 
 async function getCurrentUser() {
 
-  const token = getToken();
+  const token =
+    getToken();
 
   if (!token) {
+
     return null;
+
   }
 
   try {
@@ -244,7 +270,9 @@ async function getCurrentUser() {
       );
 
     if (!response.ok) {
+
       return null;
+
     }
 
     const data =
@@ -273,7 +301,9 @@ async function getCurrentUser() {
 function updateCargoNavbar() {
 
   if (!authNav) {
+
     return;
+
   }
 
   if (!currentUser) {
@@ -311,8 +341,8 @@ function updateCargoNavbar() {
 
         <strong id="cargoNavbarWallet">
           ${formatMoney(
-    currentWalletBalance
-  )}
+            currentWalletBalance
+          )}
         </strong>
 
       </span>
@@ -352,10 +382,13 @@ function logoutCargo() {
 
 async function loadWalletBalance() {
 
-  const token = getToken();
+  const token =
+    getToken();
 
   if (!token) {
+
     return;
+
   }
 
   try {
@@ -424,7 +457,8 @@ async function loadWalletBalance() {
 
 async function loadUserStorage() {
 
-  const token = getToken();
+  const token =
+    getToken();
 
   if (!token) {
 
@@ -486,7 +520,9 @@ function setControllerMode(
 ) {
 
   if (!workspaceGrid) {
+
     return;
+
   }
 
   workspaceGrid.classList.remove(
@@ -604,7 +640,9 @@ if (continueShipping) {
           );
 
         if (modal) {
+
           modal.hide();
+
         }
 
       }
@@ -661,7 +699,8 @@ if (shippingForm) {
 
 async function createShipping() {
 
-  const token = getToken();
+  const token =
+    getToken();
 
   if (!token) {
 
@@ -824,15 +863,9 @@ async function createShipping() {
       shipment
     );
 
-    fillDocumentFromShipment(
-      shipment
+    setControllerMode(
+      "profile"
     );
-
-    setControllerMode("profile");
-
-    if (downloadDocument) {
-      downloadDocument.disabled = false;
-    }
 
     const paymentAmount =
       Number(
@@ -854,13 +887,16 @@ async function createShipping() {
 
         `Shipping Created Successfully\n\n` +
 
-        `Tracking Number: ${shipment.trackingNumber
+        `Tracking Number: ${
+          shipment.trackingNumber
         }\n` +
 
-        `Payment: ${formatMoney(paymentAmount)
+        `Payment: ${
+          formatMoney(paymentAmount)
         }\n` +
 
-        `Wallet Balance: ${formatMoney(currentWalletBalance)
+        `Wallet Balance: ${
+          formatMoney(currentWalletBalance)
         }`
 
       );
@@ -871,17 +907,20 @@ async function createShipping() {
 
         `Test Shipping Created Successfully\n\n` +
 
-        `Tracking Number: ${shipment.trackingNumber
+        `Tracking Number: ${
+          shipment.trackingNumber
         }\n` +
 
         `Payment: $0.00\n` +
 
-        `Wallet Balance: ${formatMoney(currentWalletBalance)
+        `Wallet Balance: ${
+          formatMoney(currentWalletBalance)
         }\n` +
 
         `Document: Watermarked\n\n` +
 
-        `You can remove the watermark for ${formatMoney(CLEAN_SHIPPING_PRICE)
+        `You can remove the watermark for ${
+          formatMoney(CLEAN_SHIPPING_PRICE)
         }.`
 
       );
@@ -922,7 +961,9 @@ function setCreateButtonLoading(
 ) {
 
   if (!createShippingButton) {
+
     return;
+
   }
 
   if (loading) {
@@ -963,7 +1004,9 @@ function showMessage(
 ) {
 
   if (!shippingMessage) {
+
     return;
+
   }
 
   shippingMessage.className =
@@ -1054,7 +1097,8 @@ function getTrackingLinkHTML(
 
 async function loadShipments() {
 
-  const token = getToken();
+  const token =
+    getToken();
 
   if (!token) {
 
@@ -1124,9 +1168,11 @@ async function loadShipments() {
       shipmentsList.innerHTML = `
 
         <div class="alert alert-danger">
+
           ${escapeHTML(
-        error.message
-      )}
+            error.message
+          )}
+
         </div>
 
       `;
@@ -1145,7 +1191,9 @@ async function loadShipments() {
 function renderShipments() {
 
   if (!shipmentsList) {
+
     return;
+
   }
 
   if (
@@ -1228,10 +1276,11 @@ function createShipmentCard(
   return `
 
     <div
-      class="shipment-card ${isSelected
-      ? "selected-shipment"
-      : ""
-    }"
+      class="shipment-card ${
+        isSelected
+          ? "selected-shipment"
+          : ""
+      }"
       onclick="selectShipment(${index})"
     >
 
@@ -1243,14 +1292,14 @@ function createShipmentCard(
 
         <strong>
           ${escapeHTML(
-      tracking
-    )}
+            tracking
+          )}
         </strong>
 
         <span>
           ${escapeHTML(
-      status
-    )}
+            status
+          )}
         </span>
 
       </div>
@@ -1270,8 +1319,8 @@ function createShipmentCard(
 
           <a
             href="${escapeAttribute(
-      trackingURL
-    )}"
+              trackingURL
+            )}"
             target="_blank"
             rel="noopener noreferrer"
             onclick="event.stopPropagation();"
@@ -1288,16 +1337,18 @@ function createShipmentCard(
             Document:
           </strong>
 
-          ${isClean
-      ? "Clean"
-      : "Watermarked"
-    }
+          ${
+            isClean
+              ? "Clean"
+              : "Watermarked"
+          }
 
         </p>
 
 
-        ${hasError
-      ? `
+        ${
+          hasError
+            ? `
 
               <p class="shipment-card-error">
 
@@ -1306,14 +1357,14 @@ function createShipmentCard(
                 </strong>
 
                 ${escapeHTML(
-        shipment.errorMessage
-      )}
+                  shipment.errorMessage
+                )}
 
               </p>
 
             `
-      : ""
-    }
+            : ""
+        }
 
       </div>
 
@@ -1323,6 +1374,17 @@ function createShipmentCard(
       ========================= -->
 
       <div class="shipment-card-actions">
+
+
+        <!-- DOWNLOAD -->
+
+        <button
+          type="button"
+          class="btn btn-sm btn-primary"
+          onclick="event.stopPropagation(); downloadCargoDocument(${index})"
+        >
+          Download
+        </button>
 
 
         <!-- EDIT -->
@@ -1338,8 +1400,9 @@ function createShipmentCard(
 
         <!-- REMOVE WATERMARK -->
 
-        ${!isClean
-      ? `
+        ${
+          !isClean
+            ? `
 
               <button
                 type="button"
@@ -1350,8 +1413,8 @@ function createShipmentCard(
               </button>
 
             `
-      : ""
-    }
+            : ""
+        }
 
 
         <!-- DELETE -->
@@ -1408,65 +1471,6 @@ function addOrReplaceShipment(
 
 
 // ======================================================
-// VIEW SHIPMENT
-// ======================================================
-
-function viewShipment(
-  index
-) {
-
-  const shipment =
-    userShipments[index];
-
-  if (!shipment) {
-
-    showMessage(
-      "Shipment not found.",
-      "danger"
-    );
-
-    return;
-
-  }
-
-  currentShipment =
-    shipment;
-
-  generatedTrackingNumber =
-    shipment.trackingNumber;
-
-  setControllerMode(
-    "profile"
-  );
-
-  fillDocumentFromShipment(
-    shipment
-  );
-
-  showDocument();
-
-  if (downloadDocument) {
-
-    downloadDocument.disabled =
-      false;
-
-  }
-
-  renderShipments();
-
-  if (shippingDocument) {
-
-    shippingDocument.scrollIntoView({
-      behavior: "smooth",
-      block: "start"
-    });
-
-  }
-
-}
-
-
-// ======================================================
 // EDIT SHIPMENT
 // ======================================================
 
@@ -1511,7 +1515,7 @@ function editShipment(
 
 
   // ====================================================
-  // LOAD ALL EXISTING VALUES
+  // LOAD EXISTING VALUES
   // ====================================================
 
   if (invoiceNumber) {
@@ -1660,17 +1664,6 @@ function editShipment(
 
 
   // ====================================================
-  // SHOW EXISTING DOCUMENT
-  // ====================================================
-
-  fillDocumentFromShipment(
-    shipment
-  );
-
-  showDocument();
-
-
-  // ====================================================
   // REFRESH SELECTED CARD
   // ====================================================
 
@@ -1707,7 +1700,8 @@ function editShipment(
 
 async function updateShipment() {
 
-  const token = getToken();
+  const token =
+    getToken();
 
   if (!token) {
 
@@ -1768,7 +1762,7 @@ async function updateShipment() {
 
 
   // ====================================================
-  // SEND UPDATE TO BACKEND
+  // UPDATE DATA
   // ====================================================
 
   const updateData = {
@@ -1944,17 +1938,6 @@ async function updateShipment() {
 
 
     // ==================================================
-    // UPDATE DOCUMENT
-    // ==================================================
-
-    fillDocumentFromShipment(
-      shipment
-    );
-
-    showDocument();
-
-
-    // ==================================================
     // EXIT EDIT MODE
     // ==================================================
 
@@ -1986,12 +1969,14 @@ async function updateShipment() {
 
       `Shipment Updated Successfully\n\n` +
 
-      `Tracking Number: ${shipment.trackingNumber
+      `Tracking Number: ${
+        shipment.trackingNumber
       }\n` +
 
-      `Status: ${shipment.status ||
-      shipment.currentStatus ||
-      "Pending"
+      `Status: ${
+        shipment.status ||
+        shipment.currentStatus ||
+        "Pending"
       }`
 
     );
@@ -2004,12 +1989,10 @@ async function updateShipment() {
       error
     );
 
-
     showCargoPopup(
       error.message ||
       "Unable to update shipment."
     );
-
 
   } finally {
 
@@ -2042,7 +2025,8 @@ async function deleteShipment(
   index
 ) {
 
-  const token = getToken();
+  const token =
+    getToken();
 
   if (!token) {
 
@@ -2078,7 +2062,9 @@ async function deleteShipment(
     );
 
   if (!confirmed) {
+
     return;
+
   }
 
   try {
@@ -2128,11 +2114,11 @@ async function deleteShipment(
       trackingNumber
     ) {
 
-      currentShipment = null;
+      currentShipment =
+        null;
 
-      generatedTrackingNumber = "";
-
-      clearDocument();
+      generatedTrackingNumber =
+        "";
 
     }
 
@@ -2141,7 +2127,8 @@ async function deleteShipment(
       currentShipment === null
     ) {
 
-      editingShipment = false;
+      editingShipment =
+        false;
 
       setFormMode(false);
 
@@ -2160,7 +2147,8 @@ async function deleteShipment(
 
       `Shipment Deleted Successfully\n\n` +
 
-      `Tracking Number: ${trackingNumber
+      `Tracking Number: ${
+        trackingNumber
       }`
 
     );
@@ -2191,7 +2179,8 @@ async function removeShipmentWatermark(
   index = null
 ) {
 
-  const token = getToken();
+  const token =
+    getToken();
 
   if (!token) {
 
@@ -2204,7 +2193,8 @@ async function removeShipmentWatermark(
 
   }
 
-  let targetShipment = null;
+  let targetShipment =
+    null;
 
   if (
     index !== null &&
@@ -2259,20 +2249,12 @@ async function removeShipmentWatermark(
     );
 
   if (!confirmed) {
+
     return;
+
   }
 
   try {
-
-    if (removeWatermark) {
-
-      removeWatermark.disabled =
-        true;
-
-      removeWatermark.textContent =
-        "Removing...";
-
-    }
 
     const response =
       await fetch(
@@ -2333,12 +2315,6 @@ async function removeShipmentWatermark(
 
     await loadWalletBalance();
 
-    fillDocumentFromShipment(
-      updatedShipment
-    );
-
-    showDocument();
-
 
     // ==================================================
     // SUCCESS POPUP
@@ -2348,13 +2324,20 @@ async function removeShipmentWatermark(
 
       `Watermark Removed Successfully\n\n` +
 
-      `Tracking Number: ${updatedShipment.trackingNumber
+      `Tracking Number: ${
+        updatedShipment.trackingNumber
       }\n` +
 
-      `Payment: ${formatMoney(CLEAN_SHIPPING_PRICE)
+      `Payment: ${
+        formatMoney(
+          CLEAN_SHIPPING_PRICE
+        )
       }\n` +
 
-      `Wallet Balance: ${formatMoney(currentWalletBalance)
+      `Wallet Balance: ${
+        formatMoney(
+          currentWalletBalance
+        )
       }`
 
     );
@@ -2374,321 +2357,6 @@ async function removeShipmentWatermark(
       error.message ||
       "Unable to remove watermark."
     );
-
-
-  } finally {
-
-    if (removeWatermark) {
-
-      removeWatermark.disabled =
-        false;
-
-      removeWatermark.textContent =
-        "Remove Watermark — $5";
-
-    }
-
-  }
-
-}
-
-
-// ======================================================
-// FILL SHIPPING DOCUMENT
-// ======================================================
-
-function fillDocumentFromShipment(
-  shipment
-) {
-
-  if (!shipment) {
-    return;
-  }
-
-  currentShipment = shipment;
-
-  if (downloadDocument) {
-    downloadDocument.disabled = false;
-  }
-
-  setText(
-    "viewInvoiceNumber",
-    shipment.invoiceNumber || ""
-  );
-
-  setText(
-    "viewTrackingNumber",
-    shipment.trackingNumber || ""
-  );
-
-  setText(
-    "viewStatus",
-    shipment.status ||
-    shipment.currentStatus ||
-    "Pending"
-  );
-
-  setText(
-    "viewShipmentDate",
-    formatDateDisplay(
-      shipment.shipmentDate
-    )
-  );
-
-  setText(
-    "viewArrival",
-    formatDateDisplay(
-      shipment.estimatedDelivery
-    )
-  );
-
-  setText(
-    "viewSender",
-    shipment.sender || ""
-  );
-
-  setText(
-    "viewSenderEmail",
-    shipment.senderEmail || ""
-  );
-
-  setText(
-    "viewOrigin",
-    shipment.origin || ""
-  );
-
-  setText(
-    "viewRecipient",
-    shipment.recipient || ""
-  );
-
-  setText(
-    "viewRecipientEmail",
-    shipment.recipientEmail || ""
-  );
-
-  setText(
-    "viewDestination",
-    shipment.recipientAddress || ""
-  );
-
-  setText(
-    "viewRecipientAddress",
-    shipment.recipientAddress || ""
-  );
-
-  setText(
-    "viewPackageContent",
-    shipment.packageContent || ""
-  );
-
-  setText(
-    "viewPackageWeight",
-    shipment.packageWeight || ""
-  );
-
-
-  const viewErrorBox =
-    document.getElementById(
-      "viewErrorBox"
-    );
-
-
-  const hasError =
-    Boolean(
-      shipment.errorMessage &&
-      String(
-        shipment.errorMessage
-      ).trim()
-    );
-
-
-  if (hasError) {
-
-    setText(
-      "viewError",
-      shipment.errorMessage
-    );
-
-    if (viewErrorBox) {
-
-      viewErrorBox.style.display =
-        "block";
-
-    }
-
-  } else {
-
-    if (viewErrorBox) {
-
-      viewErrorBox.style.display =
-        "none";
-
-    }
-
-  }
-
-
-  const isWatermarked =
-    shipment.watermarkEnabled !== false;
-
-
-  if (watermarkLayer) {
-
-    watermarkLayer.style.display =
-      isWatermarked
-        ? "flex"
-        : "none";
-
-  }
-
-
-  if (documentStatus) {
-
-    documentStatus.textContent =
-      isWatermarked
-        ? "Watermarked"
-        : "Clean";
-
-    documentStatus.classList.toggle(
-      "watermarked",
-      isWatermarked
-    );
-
-    documentStatus.classList.toggle(
-      "clean",
-      !isWatermarked
-    );
-
-  }
-
-
-  if (removeWatermark) {
-
-    removeWatermark.style.display =
-      isWatermarked
-        ? "inline-block"
-        : "none";
-
-    removeWatermark.disabled =
-      false;
-
-    removeWatermark.textContent =
-      "Remove Watermark — $5";
-
-  }
-
-
-  createDocumentTrackingLink(
-    shipment.trackingNumber
-  );
-
-
-  if (shippingDocument) {
-
-    shippingDocument.classList.toggle(
-      "watermarked-document",
-      isWatermarked
-    );
-
-    shippingDocument.classList.toggle(
-      "clean-document",
-      !isWatermarked
-    );
-
-  }
-
-}
-
-
-// ======================================================
-// SHOW DOCUMENT
-// ======================================================
-
-function showDocument() {
-
-  if (!shippingDocument) {
-    return;
-  }
-
-  shippingDocument.style.display =
-    "block";
-
-  shippingDocument.classList.remove(
-    "d-none"
-  );
-
-}
-
-
-// ======================================================
-// CREATE DOCUMENT TRACKING LINK
-// ======================================================
-
-function createDocumentTrackingLink(
-  trackingNumber
-) {
-
-  if (!shippingDocument) {
-    return;
-  }
-
-  const existing =
-    document.getElementById(
-      "documentTrackingLink"
-    );
-
-  if (existing) {
-    existing.remove();
-  }
-
-  const trackingElement =
-    document.getElementById(
-      "viewTrackingNumber"
-    );
-
-  if (!trackingElement) {
-    return;
-  }
-
-  const wrapper =
-    document.createElement(
-      "div"
-    );
-
-  wrapper.id =
-    "documentTrackingLink";
-
-  wrapper.style.marginTop =
-    "8px";
-
-  wrapper.innerHTML =
-    getTrackingLinkHTML(
-      trackingNumber
-    );
-
-  trackingElement.parentNode
-    .appendChild(wrapper);
-
-}
-
-
-// ======================================================
-// SET TEXT
-// ======================================================
-
-function setText(
-  id,
-  value
-) {
-
-  const element =
-    document.getElementById(id);
-
-  if (element) {
-
-    element.textContent =
-      value ?? "";
 
   }
 
@@ -2766,8 +2434,6 @@ if (cancelEditButton) {
 
       clearForm();
 
-      clearDocument();
-
       renderShipments();
 
       if (shippingMessage) {
@@ -2802,8 +2468,6 @@ if (newShipmentButton) {
         "";
 
       clearForm();
-
-      clearDocument();
 
       renderShipments();
 
@@ -2854,41 +2518,24 @@ function updateErrorVisibility(
 ) {
 
   if (!errorMessageGroup) {
+
     return;
+
   }
 
   const status =
     shippingStatus?.value ||
     "";
 
-
   const normalizedStatus =
     status
       .trim()
       .toLowerCase();
 
-
   const hasErrorStatus =
     normalizedStatus === "error" ||
     normalizedStatus === "failed" ||
     normalizedStatus === "exception";
-
-
-  /*
-     ERROR MESSAGE IS SHOWN ONLY WHEN
-     THE CURRENT STATUS IS AN ERROR STATUS.
-
-     The old behavior allowed an existing
-     message or forceVisible to keep the
-     field visible.
-
-     We intentionally no longer do that.
-
-     This keeps the form clean and prevents
-     users from seeing an error-message field
-     when the shipment is not actually in
-     an error state.
-  */
 
   errorMessageGroup.style.display =
     hasErrorStatus
@@ -2944,56 +2591,6 @@ function clearForm() {
   }
 
   updateErrorVisibility();
-
-}
-
-
-// ======================================================
-// CLEAR DOCUMENT
-// ======================================================
-
-function clearDocument() {
-
-  if (shippingDocument) {
-
-    shippingDocument.style.display =
-      "none";
-
-    shippingDocument.classList.add(
-      "d-none"
-    );
-
-  }
-
-  const existing =
-    document.getElementById(
-      "documentTrackingLink"
-    );
-
-  if (existing) {
-    existing.remove();
-  }
-
-  if (watermarkLayer) {
-
-    watermarkLayer.style.display =
-      "none";
-
-  }
-
-  if (downloadDocument) {
-
-    downloadDocument.disabled =
-      true;
-
-  }
-
-  if (removeWatermark) {
-
-    removeWatermark.style.display =
-      "none";
-
-  }
 
 }
 
@@ -3087,7 +2684,9 @@ function restoreFormData() {
       );
 
     if (!saved) {
+
       return;
+
     }
 
     const data =
@@ -3199,11 +2798,6 @@ function restoreFormData() {
 
     }
 
-    /*
-       Visibility is now based only
-       on the restored status.
-    */
-
     updateErrorVisibility();
 
   } catch (error) {
@@ -3227,7 +2821,9 @@ function extractDate(
 ) {
 
   if (!value) {
+
     return "";
+
   }
 
   const stringValue =
@@ -3257,7 +2853,9 @@ function extractTime(
 ) {
 
   if (!value) {
+
     return "";
+
   }
 
   const stringValue =
@@ -3288,7 +2886,9 @@ function formatDateDisplay(
 ) {
 
   if (!value) {
+
     return "";
+
   }
 
   const date =
@@ -3310,29 +2910,55 @@ function formatDateDisplay(
 
 
 // ======================================================
-// DOWNLOAD / PRINT
+// DOWNLOAD CARGO DOCUMENT
+// ======================================================
+//
+// There is NO preview.
+//
+// Clicking Download directly opens the actual
+// Cargo letterhead print document.
+//
 // ======================================================
 
-if (downloadDocument) {
+function downloadCargoDocument(
+  index
+) {
 
-  downloadDocument.addEventListener(
-    "click",
-    function () {
+  const shipment =
+    userShipments[index];
 
-      printDocument();
+  if (!shipment) {
 
-    }
+    alert(
+      "Shipment not found."
+    );
+
+    return;
+
+  }
+
+  currentShipment =
+    shipment;
+
+  generatedTrackingNumber =
+    shipment.trackingNumber || "";
+
+  printDocument(
+    shipment
   );
 
 }
 
+
 // ======================================================
-// PRINT CARGO RECEIPT
+// PRINT CARGO LETTERHEAD DOCUMENT - A4
 // ======================================================
 
-function printDocument() {
+function printDocument(
+  shipment = currentShipment
+) {
 
-  if (!currentShipment) {
+  if (!shipment) {
 
     alert(
       "No shipping document available."
@@ -3343,8 +2969,87 @@ function printDocument() {
   }
 
 
-  const shipment =
-    currentShipment;
+  // ====================================================
+  // LETTERHEAD
+  // ====================================================
+
+  const LETTERHEAD =
+    "images/cargo-letterhead.png";
+
+
+  // ====================================================
+  // ORIGINAL LETTERHEAD SIZE
+  // ====================================================
+
+  const DOCUMENT_WIDTH =
+    1414;
+
+  const DOCUMENT_HEIGHT =
+    2000;
+
+
+  // ====================================================
+  // FIELD POSITIONS
+  // ====================================================
+
+  const POSITIONS = {
+
+    invoice: {
+      left: 1100,
+      top: 326
+    },
+
+    dateCreated: {
+      left: 250,
+      top: 398
+    },
+
+    arrivalDate: {
+      left: 250,
+      top: 1567
+    },
+
+    sender: {
+      left: 250,
+      top: 705
+    },
+
+    senderEmail: {
+      left: 250,
+      top: 790
+    },
+
+    tracking: {
+      left: 250,
+      top: 1005
+    },
+
+    recipient: {
+      left: 250,
+      top: 1275
+    },
+
+    recipientEmail: {
+      left: 250,
+      top: 1410
+    },
+
+    recipientAddress: {
+      left: 250,
+      top: 1342
+    },
+
+    packageContent: {
+      left: 250,
+      top: 1651
+    },
+
+    packageWeight: {
+      left: 250,
+      top: 1765
+    }
+
+  };
 
 
   // ====================================================
@@ -3359,21 +3064,15 @@ function printDocument() {
     shipment.trackingNumber ||
     "N/A";
 
-  const status =
-    shipment.status ||
-    shipment.currentStatus ||
-    "Processing";
-
-  const shipmentDateValue =
-    formatDateDisplay(
+  const dateCreated =
+    extractDate(
       shipment.shipmentDate
     ) || "N/A";
 
-  const arrivalDateValue =
-    formatDateDisplay(
+  const arrivalDate =
+    extractDate(
       shipment.estimatedDelivery
     ) || "N/A";
-
 
   const senderName =
     shipment.sender ||
@@ -3381,12 +3080,7 @@ function printDocument() {
 
   const senderEmailValue =
     shipment.senderEmail ||
-    "N/A";
-
-  const originValue =
-    shipment.origin ||
-    "N/A";
-
+    "";
 
   const recipientName =
     shipment.recipient ||
@@ -3394,12 +3088,11 @@ function printDocument() {
 
   const recipientEmailValue =
     shipment.recipientEmail ||
-    "N/A";
+    "";
 
   const recipientAddressValue =
     shipment.recipientAddress ||
     "N/A";
-
 
   const packageContentValue =
     shipment.packageContent ||
@@ -3409,38 +3102,38 @@ function printDocument() {
     shipment.packageWeight ||
     "N/A";
 
-
-  const errorValue =
-    shipment.errorMessage ||
-    "";
-
-
   const isWatermarked =
     shipment.watermarkEnabled !== false;
 
 
-  const trackingURL =
-    getTrackingURL(
-      tracking
+  // ====================================================
+  // ESCAPE
+  // ====================================================
+
+  function safe(value) {
+
+    return escapeHTML(
+      value
     );
+
+  }
 
 
   // ====================================================
-  // PRINT WINDOW
+  // CREATE PRINT WINDOW
   // ====================================================
 
   const printWindow =
     window.open(
       "",
       "_blank",
-      "width=900,height=1000"
+      "width=1000,height=1200"
     );
-
 
   if (!printWindow) {
 
     alert(
-      "Please allow pop-ups to print the shipping receipt."
+      "Please allow pop-ups to print the shipping document."
     );
 
     return;
@@ -3449,17 +3142,66 @@ function printDocument() {
 
 
   // ====================================================
-  // SAFE HTML
+  // POSITION CONVERSION
   // ====================================================
 
-  const safe =
-    function (value) {
+  function positionStyle(
+    position
+  ) {
 
-      return escapeHTML(
-        value
-      );
+    const leftPercent =
+      (
+        position.left /
+        DOCUMENT_WIDTH
+      ) * 100;
 
-    };
+    const topPercent =
+      (
+        position.top /
+        DOCUMENT_HEIGHT
+      ) * 100;
+
+    return `
+      left: ${leftPercent}%;
+      top: ${topPercent}%;
+    `;
+
+  }
+
+
+  // ====================================================
+  // FIELD HELPER
+  // ====================================================
+
+  function field(
+    name,
+    value,
+    className = ""
+  ) {
+
+    const position =
+      POSITIONS[name];
+
+    if (!position) {
+
+      return "";
+
+    }
+
+    return `
+
+      <div
+        class="document-field ${className}"
+        style="${positionStyle(position)}"
+      >
+
+        ${safe(value)}
+
+      </div>
+
+    `;
+
+  }
 
 
   // ====================================================
@@ -3468,15 +3210,15 @@ function printDocument() {
 
   const watermarkHTML =
     isWatermarked
-
       ? `
 
-        <div class="receipt-watermark">
+        <div class="watermark-layer">
 
           <span>TEST SHIPPING</span>
           <span>TEST SHIPPING</span>
           <span>TEST SHIPPING</span>
           <span>TEST SHIPPING</span>
+
           <span>TEST SHIPPING</span>
           <span>TEST SHIPPING</span>
           <span>TEST SHIPPING</span>
@@ -3485,38 +3227,11 @@ function printDocument() {
         </div>
 
       `
-
       : "";
 
 
   // ====================================================
-  // ERROR MESSAGE
-  // ====================================================
-
-  const errorHTML =
-    errorValue.trim()
-
-      ? `
-
-        <div class="receipt-error">
-
-          <strong>
-            Shipment Message
-          </strong>
-
-          <p>
-            ${safe(errorValue)}
-          </p>
-
-        </div>
-
-      `
-
-      : "";
-
-
-  // ====================================================
-  // PRINT HTML
+  // PRINT DOCUMENT
   // ====================================================
 
   printWindow.document.write(`
@@ -3529,13 +3244,8 @@ function printDocument() {
 
       <meta charset="UTF-8">
 
-      <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-      >
-
       <title>
-        Cargo Receipt - ${safe(tracking)}
+        ZendItCargo - ${safe(tracking)}
       </title>
 
 
@@ -3546,53 +3256,177 @@ function printDocument() {
         }
 
 
+        /* =========================================
+           A4 PAGE
+        ========================================= */
+
         @page {
-          size: A4;
-          margin: 12mm;
+
+          size: A4 portrait;
+
+          margin: 0;
+
         }
 
 
         html,
         body {
+
+          width: 210mm;
+
+          height: 297mm;
+
           margin: 0;
+
           padding: 0;
+
           background: #ffffff;
-          color: #172033;
-          font-family: Arial, Helvetica, sans-serif;
+
         }
 
 
         body {
-          padding: 0;
+
+          overflow: hidden;
+
+          font-family:
+            Arial,
+            Helvetica,
+            sans-serif;
+
         }
 
 
-        .receipt {
+        /* =========================================
+           A4 DOCUMENT
+        ========================================= */
+
+        .cargo-document {
+
           position: relative;
 
-          width: 100%;
-          max-width: 186mm;
+          width: 210mm;
 
-          min-height: 273mm;
+          height: 297mm;
 
-          margin: 0 auto;
+          margin: 0;
+
+          padding: 0;
+
+          overflow: hidden;
 
           background: #ffffff;
 
-          overflow: hidden;
         }
 
 
-        /* ============================================
-           WATERMARK
-        ============================================ */
+        /* =========================================
+           LETTERHEAD
+        ========================================= */
 
-        .receipt-watermark {
+        .letterhead {
+
           position: absolute;
 
-          inset: 0;
+          left: 0;
+
+          top: 0;
+
+          width: 100%;
+
+          height: 100%;
+
+          display: block;
 
           z-index: 1;
+
+          user-select: none;
+
+          pointer-events: none;
+
+        }
+
+
+        /* =========================================
+           DATA LAYER
+        ========================================= */
+
+        .document-data {
+
+          position: absolute;
+
+          left: 0;
+
+          top: 0;
+
+          width: 100%;
+
+          height: 100%;
+
+          z-index: 3;
+
+        }
+
+
+        /* =========================================
+           FIELD
+        ========================================= */
+
+        .document-field {
+
+          position: absolute;
+
+          color: #111827;
+
+          font-size: 5mm;
+
+          line-height: 1.2;
+
+          font-weight: 600;
+
+          white-space: nowrap;
+
+          max-width: 75mm;
+
+          overflow: hidden;
+
+          text-overflow: ellipsis;
+
+        }
+
+
+        /* =========================================
+           TRACKING
+        ========================================= */
+
+        .tracking-field {
+
+          font-weight: 800;
+
+          letter-spacing: 0.3mm;
+
+        }
+
+
+        /* =========================================
+           WATERMARK
+        ========================================= */
+
+        .watermark-layer {
+
+          position: absolute;
+
+          left: 0;
+
+          top: 0;
+
+          width: 100%;
+
+          height: 100%;
+
+          z-index: 5;
+
+          pointer-events: none;
 
           display: grid;
 
@@ -3606,622 +3440,65 @@ function printDocument() {
 
           justify-items: center;
 
-          pointer-events: none;
-
           transform: rotate(-28deg);
 
           opacity: .09;
+
         }
 
 
-        .receipt-watermark span {
+        .watermark-layer span {
+
           color: #dc2626;
 
-          font-size: 27px;
+          font-size: 6.4mm;
 
           font-weight: 900;
 
-          letter-spacing: 2px;
+          letter-spacing: 0.4mm;
 
           white-space: nowrap;
+
         }
 
 
-        /* ============================================
-           CONTENT
-        ============================================ */
-
-        .receipt-content {
-          position: relative;
-
-          z-index: 2;
-
-          width: 100%;
-
-          padding: 7mm;
-        }
-
-
-        /* ============================================
-           HEADER
-        ============================================ */
-
-        .receipt-header {
-          display: flex;
-
-          justify-content: space-between;
-
-          align-items: flex-start;
-
-          gap: 20px;
-
-          padding-bottom: 7mm;
-
-          border-bottom: 2px solid #111827;
-        }
-
-
-        .brand {
-          color: #4f46e5;
-
-          font-size: 22px;
-
-          font-weight: 900;
-
-          letter-spacing: 1px;
-        }
-
-
-        .brand-subtitle {
-          margin-top: 4px;
-
-          color: #64748b;
-
-          font-size: 10px;
-
-          font-weight: 600;
-        }
-
-
-        .receipt-title {
-          text-align: right;
-        }
-
-
-        .receipt-title h1 {
-          margin: 0;
-
-          color: #111827;
-
-          font-size: 24px;
-
-          font-weight: 900;
-
-          letter-spacing: .5px;
-        }
-
-
-        .receipt-title p {
-          margin: 5px 0 0;
-
-          color: #64748b;
-
-          font-size: 9px;
-        }
-
-
-        /* ============================================
-           REFERENCE AREA
-        ============================================ */
-
-        .reference-grid {
-          display: grid;
-
-          grid-template-columns:
-            1fr 1fr;
-
-          gap: 12px;
-
-          margin-top: 6mm;
-        }
-
-
-        .reference-box {
-          padding: 12px;
-
-          border: 1px solid #dbe2ea;
-
-          border-radius: 6px;
-
-          background: #f8fafc;
-        }
-
-
-        .reference-label {
-          display: block;
-
-          margin-bottom: 5px;
-
-          color: #64748b;
-
-          font-size: 8px;
-
-          font-weight: 800;
-
-          letter-spacing: 1px;
-
-          text-transform: uppercase;
-        }
-
-
-        .reference-value {
-          display: block;
-
-          color: #111827;
-
-          font-size: 12px;
-
-          font-weight: 800;
-
-          overflow-wrap: anywhere;
-        }
-
-
-        /* ============================================
-           STATUS
-        ============================================ */
-
-        .status-section {
-          margin-top: 5mm;
-
-          padding: 13px;
-
-          border: 1px solid #c7d2fe;
-
-          border-radius: 7px;
-
-          background: #eef2ff;
-        }
-
-
-        .status-label {
-          display: block;
-
-          margin-bottom: 5px;
-
-          color: #64748b;
-
-          font-size: 8px;
-
-          font-weight: 800;
-
-          letter-spacing: 1px;
-
-          text-transform: uppercase;
-        }
-
-
-        .status-value {
-          color: #312e81;
-
-          font-size: 14px;
-
-          font-weight: 900;
-
-          text-transform: uppercase;
-        }
-
-
-        /* ============================================
-           DATE GRID
-        ============================================ */
-
-        .date-grid {
-          display: grid;
-
-          grid-template-columns:
-            1fr 1fr;
-
-          gap: 12px;
-
-          margin-top: 5mm;
-        }
-
-
-        .date-box {
-          padding: 12px;
-
-          border: 1px solid #e2e8f0;
-
-          border-radius: 6px;
-        }
-
-
-        .date-label {
-          display: block;
-
-          margin-bottom: 5px;
-
-          color: #64748b;
-
-          font-size: 8px;
-
-          font-weight: 800;
-
-          letter-spacing: 1px;
-
-          text-transform: uppercase;
-        }
-
-
-        .date-value {
-          color: #334155;
-
-          font-size: 10px;
-
-          font-weight: 700;
-
-          overflow-wrap: anywhere;
-        }
-
-
-        /* ============================================
-           SECTION TITLE
-        ============================================ */
-
-        .section-title {
-          margin: 7mm 0 3mm;
-
-          padding-bottom: 5px;
-
-          border-bottom: 1px solid #dbe2ea;
-
-          color: #111827;
-
-          font-size: 10px;
-
-          font-weight: 900;
-
-          letter-spacing: 1px;
-
-          text-transform: uppercase;
-        }
-
-
-        /* ============================================
-           FROM / TO
-        ============================================ */
-
-        .address-grid {
-          display: grid;
-
-          grid-template-columns:
-            1fr 1fr;
-
-          gap: 12px;
-        }
-
-
-        .address-box {
-          min-height: 42mm;
-
-          padding: 13px;
-
-          border: 1px solid #dbe2ea;
-
-          border-radius: 7px;
-        }
-
-
-        .address-label {
-          display: block;
-
-          margin-bottom: 8px;
-
-          color: #4f46e5;
-
-          font-size: 9px;
-
-          font-weight: 900;
-
-          letter-spacing: 1px;
-
-          text-transform: uppercase;
-        }
-
-
-        .person-name {
-          color: #111827;
-
-          font-size: 12px;
-
-          font-weight: 800;
-        }
-
-
-        .person-email {
-          margin-top: 5px;
-
-          color: #475569;
-
-          font-size: 9px;
-
-          overflow-wrap: anywhere;
-        }
-
-
-        .person-location {
-          margin-top: 8px;
-
-          color: #334155;
-
-          font-size: 9px;
-
-          line-height: 1.5;
-
-          overflow-wrap: anywhere;
-        }
-
-
-        /* ============================================
-           PACKAGE
-        ============================================ */
-
-        .package-box {
-          padding: 13px;
-
-          border: 1px solid #dbe2ea;
-
-          border-radius: 7px;
-        }
-
-
-        .package-grid {
-          display: grid;
-
-          grid-template-columns:
-            2fr 1fr;
-
-          gap: 12px;
-        }
-
-
-        .package-item-label {
-          display: block;
-
-          margin-bottom: 5px;
-
-          color: #64748b;
-
-          font-size: 8px;
-
-          font-weight: 800;
-
-          letter-spacing: 1px;
-
-          text-transform: uppercase;
-        }
-
-
-        .package-item-value {
-          color: #111827;
-
-          font-size: 10px;
-
-          font-weight: 700;
-
-          line-height: 1.5;
-
-          overflow-wrap: anywhere;
-        }
-
-
-        /* ============================================
-           TRACKING
-        ============================================ */
-
-        .tracking-section {
-          margin-top: 7mm;
-
-          padding: 15px;
-
-          border: 2px solid #4f46e5;
-
-          border-radius: 8px;
-
-          text-align: center;
-
-          background: #f8fafc;
-        }
-
-
-        .tracking-label {
-          display: block;
-
-          margin-bottom: 7px;
-
-          color: #64748b;
-
-          font-size: 8px;
-
-          font-weight: 900;
-
-          letter-spacing: 1.5px;
-
-          text-transform: uppercase;
-        }
-
-
-        .tracking-number {
-          color: #16a34a;
-
-          font-size: 20px;
-
-          font-weight: 900;
-
-          letter-spacing: 2px;
-
-          overflow-wrap: anywhere;
-        }
-
-
-        .tracking-url {
-          display: block;
-
-          margin-top: 7px;
-
-          color: #4f46e5;
-
-          font-size: 8px;
-
-          overflow-wrap: anywhere;
-        }
-
-
-        /* ============================================
-           ERROR
-        ============================================ */
-
-        .receipt-error {
-          margin-top: 5mm;
-
-          padding: 12px;
-
-          border: 1px solid #fecaca;
-
-          border-radius: 6px;
-
-          background: #fef2f2;
-        }
-
-
-        .receipt-error strong {
-          color: #b91c1c;
-
-          font-size: 9px;
-        }
-
-
-        .receipt-error p {
-          margin: 5px 0 0;
-
-          color: #7f1d1d;
-
-          font-size: 9px;
-
-          line-height: 1.5;
-
-          overflow-wrap: anywhere;
-        }
-
-
-        /* ============================================
-           FOOTER
-        ============================================ */
-
-        .receipt-footer {
-          display: flex;
-
-          justify-content: space-between;
-
-          align-items: flex-end;
-
-          gap: 20px;
-
-          margin-top: 10mm;
-
-          padding-top: 5mm;
-
-          border-top: 1px solid #dbe2ea;
-
-          color: #64748b;
-
-          font-size: 8px;
-
-          line-height: 1.5;
-        }
-
-
-        .footer-right {
-          text-align: right;
-        }
-
-
-        .footer-right strong {
-          color: #334155;
-        }
-
-
-        /* ============================================
+        /* =========================================
            PRINT
-        ============================================ */
+        ========================================= */
 
         @media print {
 
           html,
           body {
+
             width: 210mm;
 
-            min-height: 297mm;
-          }
-
-
-          .receipt {
-            width: 186mm;
-
-            min-height: 273mm;
+            height: 297mm;
 
             margin: 0;
+
+            padding: 0;
+
           }
 
 
-          .receipt-content {
-            padding: 5mm;
+          .cargo-document {
+
+            width: 210mm;
+
+            height: 297mm;
+
           }
 
 
           * {
-            -webkit-print-color-adjust: exact !important;
 
-            print-color-adjust: exact !important;
-          }
+            -webkit-print-color-adjust:
+              exact !important;
 
-        }
+            print-color-adjust:
+              exact !important;
 
-
-        /* ============================================
-           SMALL PRINT WINDOW
-        ============================================ */
-
-        @media (max-width: 700px) {
-
-          .receipt-header {
-            flex-direction: column;
-          }
-
-
-          .receipt-title {
-            text-align: left;
-          }
-
-
-          .reference-grid,
-          .date-grid,
-          .address-grid,
-          .package-grid {
-            grid-template-columns: 1fr;
-          }
-
-
-          .receipt-footer {
-            flex-direction: column;
-
-            align-items: flex-start;
-          }
-
-
-          .footer-right {
-            text-align: left;
           }
 
         }
@@ -4234,316 +3511,154 @@ function printDocument() {
     <body>
 
 
-      <div class="receipt">
+      <div class="cargo-document">
 
 
-        ${watermarkHTML}
+        <!-- =====================================
+             LETTERHEAD
+        ====================================== -->
 
+        <img
+          src="${LETTERHEAD}"
+          class="letterhead"
+          alt=""
+        >
 
-        <div class="receipt-content">
 
+        <!-- =====================================
+             SHIPMENT DATA
+        ====================================== -->
 
-          <!-- ======================================
-               HEADER
-          ======================================= -->
+        <div class="document-data">
 
-          <div class="receipt-header">
 
+          ${field(
+            "invoice",
+            invoice
+          )}
 
-            <div>
 
-              <div class="brand">
-                ZENDITCARGO
-              </div>
+          ${field(
+            "dateCreated",
+            dateCreated
+          )}
 
-              <div class="brand-subtitle">
-                Cargo &amp; Shipping Services
-              </div>
 
-            </div>
+          ${field(
+            "arrivalDate",
+            arrivalDate
+          )}
 
 
-            <div class="receipt-title">
+          ${field(
+            "sender",
+            senderName
+          )}
 
-              <h1>
-                CARGO RECEIPT
-              </h1>
 
-              <p>
-                Official shipment document
-              </p>
+          ${field(
+            "senderEmail",
+            senderEmailValue
+          )}
 
-            </div>
 
+          ${field(
+            "tracking",
+            tracking,
+            "tracking-field"
+          )}
 
-          </div>
 
+          ${field(
+            "recipient",
+            recipientName
+          )}
 
-          <!-- ======================================
-               REFERENCE
-          ======================================= -->
 
-          <div class="reference-grid">
+          ${field(
+            "recipientEmail",
+            recipientEmailValue
+          )}
 
 
-            <div class="reference-box">
+          ${field(
+            "recipientAddress",
+            recipientAddressValue
+          )}
 
-              <span class="reference-label">
-                Invoice Number
-              </span>
 
-              <span class="reference-value">
-                ${safe(invoice)}
-              </span>
+          ${field(
+            "packageContent",
+            packageContentValue
+          )}
 
-            </div>
 
-
-            <div class="reference-box">
-
-              <span class="reference-label">
-                Tracking Number
-              </span>
-
-              <span class="reference-value">
-                ${safe(tracking)}
-              </span>
-
-            </div>
-
-
-          </div>
-
-
-          <!-- ======================================
-               STATUS
-          ======================================= -->
-
-          <div class="status-section">
-
-            <span class="status-label">
-              Shipment Status
-            </span>
-
-            <span class="status-value">
-              ${safe(status)}
-            </span>
-
-          </div>
-
-
-          <!-- ======================================
-               DATES
-          ======================================= -->
-
-          <div class="date-grid">
-
-
-            <div class="date-box">
-
-              <span class="date-label">
-                Shipment Date
-              </span>
-
-              <div class="date-value">
-                ${safe(shipmentDateValue)}
-              </div>
-
-            </div>
-
-
-            <div class="date-box">
-
-              <span class="date-label">
-                Expected Arrival
-              </span>
-
-              <div class="date-value">
-                ${safe(arrivalDateValue)}
-              </div>
-
-            </div>
-
-
-          </div>
-
-
-          <!-- ======================================
-               FROM / TO
-          ======================================= -->
-
-          <div class="section-title">
-            Shipment Details
-          </div>
-
-
-          <div class="address-grid">
-
-
-            <div class="address-box">
-
-              <span class="address-label">
-                From
-              </span>
-
-              <div class="person-name">
-                ${safe(senderName)}
-              </div>
-
-              <div class="person-email">
-                ${safe(senderEmailValue)}
-              </div>
-
-              <div class="person-location">
-                ${safe(originValue)}
-              </div>
-
-            </div>
-
-
-            <div class="address-box">
-
-              <span class="address-label">
-                To
-              </span>
-
-              <div class="person-name">
-                ${safe(recipientName)}
-              </div>
-
-              <div class="person-email">
-                ${safe(recipientEmailValue)}
-              </div>
-
-              <div class="person-location">
-                ${safe(recipientAddressValue)}
-              </div>
-
-            </div>
-
-
-          </div>
-
-
-          <!-- ======================================
-               PACKAGE
-          ======================================= -->
-
-          <div class="section-title">
-            Package Information
-          </div>
-
-
-          <div class="package-box">
-
-
-            <div class="package-grid">
-
-
-              <div>
-
-                <span class="package-item-label">
-                  Package Content
-                </span>
-
-                <div class="package-item-value">
-                  ${safe(packageContentValue)}
-                </div>
-
-              </div>
-
-
-              <div>
-
-                <span class="package-item-label">
-                  Weight
-                </span>
-
-                <div class="package-item-value">
-                  ${safe(packageWeightValue)}
-                </div>
-
-              </div>
-
-
-            </div>
-
-
-          </div>
-
-
-          <!-- ======================================
-               TRACKING
-          ======================================= -->
-
-          <div class="tracking-section">
-
-            <span class="tracking-label">
-              Track This Shipment
-            </span>
-
-            <div class="tracking-number">
-              ${safe(tracking)}
-            </div>
-
-            <div class="tracking-url">
-              ${safe(trackingURL)}
-            </div>
-
-          </div>
-
-
-          <!-- ======================================
-               ERROR MESSAGE
-          ======================================= -->
-
-          ${errorHTML}
-
-
-          <!-- ======================================
-               FOOTER
-          ======================================= -->
-
-          <div class="receipt-footer">
-
-
-            <div>
-
-              <strong>
-                ZendItCargo
-              </strong>
-
-              <br>
-
-              Cargo &amp; Shipping Services
-
-              <br>
-
-              Thank you for choosing ZendItCargo.
-
-            </div>
-
-
-            <div class="footer-right">
-
-              <strong>
-                zenditcargo.com
-              </strong>
-
-              <br>
-
-              Tracking available online
-
-            </div>
-
-
-          </div>
+          ${field(
+            "packageWeight",
+            packageWeightValue
+          )}
 
 
         </div>
 
 
+        <!-- =====================================
+             WATERMARK
+        ====================================== -->
+
+        ${watermarkHTML}
+
+
       </div>
+
+
+      <script>
+
+        const letterhead =
+          document.querySelector(
+            ".letterhead"
+          );
+
+
+        function startPrint() {
+
+          window.focus();
+
+          setTimeout(
+            function () {
+
+              window.print();
+
+            },
+            500
+          );
+
+        }
+
+
+        if (
+          letterhead.complete
+        ) {
+
+          startPrint();
+
+        } else {
+
+          letterhead.onload =
+            startPrint;
+
+          letterhead.onerror =
+            function () {
+
+              alert(
+                "Unable to load cargo letterhead.png"
+              );
+
+            };
+
+        }
+
+      </script>
 
 
     </body>
@@ -4554,37 +3669,6 @@ function printDocument() {
 
 
   printWindow.document.close();
-
-
-  printWindow.focus();
-
-
-  setTimeout(
-    function () {
-
-      printWindow.print();
-
-    },
-    700
-  );
-
-}
-
-
-// ======================================================
-// REMOVE WATERMARK BUTTON
-// ======================================================
-
-if (removeWatermark) {
-
-  removeWatermark.addEventListener(
-    "click",
-    function () {
-
-      removeShipmentWatermark();
-
-    }
-  );
 
 }
 
@@ -4598,15 +3682,14 @@ async function initializeCargo() {
   /*
      Start in CREATE mode.
 
-     This keeps the right side showing
-     Create Shipping when the page opens.
+     There is no document preview anymore.
+     Documents are generated only when the
+     user clicks Download on a shipment card.
   */
 
   setFormMode(false);
 
   updateErrorVisibility();
-
-  clearDocument();
 
   restoreFormData();
 
@@ -4641,43 +3724,65 @@ setInterval(
   60000
 );
 
+
+// ======================================================
+// MOBILE NAVBAR
+// ======================================================
+
 const navbarToggler =
-  document.getElementById('navbarToggler');
+  document.getElementById(
+    "navbarToggler"
+  );
 
-if (navbarToggler && authNav) {
+if (
+  navbarToggler &&
+  authNav
+) {
 
-  navbarToggler.onclick = function () {
+  navbarToggler.onclick =
+    function () {
 
-    authNav.classList.toggle('show');
+      authNav.classList.toggle(
+        "show"
+      );
 
-    const isOpen =
-      authNav.classList.contains('show');
-
-    navbarToggler.setAttribute(
-      'aria-expanded',
-      isOpen
-    );
-
-  };
-
-
-  const navLinks =
-    authNav.querySelectorAll('.nav-link');
-
-
-  navLinks.forEach(function (link) {
-
-    link.onclick = function () {
-
-      authNav.classList.remove('show');
+      const isOpen =
+        authNav.classList.contains(
+          "show"
+        );
 
       navbarToggler.setAttribute(
-        'aria-expanded',
-        'false'
+        "aria-expanded",
+        isOpen
       );
 
     };
 
-  });
+
+  const navLinks =
+    authNav.querySelectorAll(
+      ".nav-link"
+    );
+
+
+  navLinks.forEach(
+    function (link) {
+
+      link.onclick =
+        function () {
+
+          authNav.classList.remove(
+            "show"
+          );
+
+          navbarToggler.setAttribute(
+            "aria-expanded",
+            "false"
+          );
+
+        };
+
+    }
+  );
 
 }
