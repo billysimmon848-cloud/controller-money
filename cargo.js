@@ -2915,8 +2915,8 @@ function formatDateDisplay(
 //
 // There is NO preview.
 //
-// Clicking Download directly opens the actual
-// Cargo letterhead print document.
+// Clicking Download directly creates and downloads
+// the actual Cargo PDF.
 //
 // ======================================================
 
@@ -2951,10 +2951,26 @@ function downloadCargoDocument(
 
 
 // ======================================================
-// PRINT CARGO LETTERHEAD DOCUMENT - A4
+// PRINT CARGO LETTERHEAD DOCUMENT - PDF
+// ======================================================
+//
+// ONLY THIS FUNCTION HAS BEEN CHANGED.
+//
+// There is NO window.print().
+//
+// The Cargo letterhead is placed directly into
+// an A4 PDF using jsPDF.
+//
+// This prevents Chrome from adding:
+// - justdoks.com
+// - date
+// - page number
+// - browser headers
+// - browser footers
+//
 // ======================================================
 
-function printDocument(
+async function printDocument(
   shipment = currentShipment
 ) {
 
@@ -2970,15 +2986,193 @@ function printDocument(
 
 
   // ====================================================
-  // LETTERHEAD
+  // LOAD jsPDF
   // ====================================================
 
-  const LETTERHEAD =
-    "images/cargo-letterhead.png";
+  function loadJsPDF() {
+
+    return new Promise(
+      function (
+        resolve,
+        reject
+      ) {
+
+        if (
+          window.jspdf &&
+          window.jspdf.jsPDF
+        ) {
+
+          resolve(
+            window.jspdf.jsPDF
+          );
+
+          return;
+
+        }
+
+
+        const existingScript =
+          document.querySelector(
+            'script[data-cargo-jspdf="true"]'
+          );
+
+
+        if (existingScript) {
+
+          existingScript.addEventListener(
+            "load",
+            function () {
+
+              if (
+                window.jspdf &&
+                window.jspdf.jsPDF
+              ) {
+
+                resolve(
+                  window.jspdf.jsPDF
+                );
+
+              } else {
+
+                reject(
+                  new Error(
+                    "PDF library failed to load."
+                  )
+                );
+
+              }
+
+            }
+          );
+
+
+          existingScript.addEventListener(
+            "error",
+            function () {
+
+              reject(
+                new Error(
+                  "Unable to load PDF library."
+                )
+              );
+
+            }
+          );
+
+          return;
+
+        }
+
+
+        const script =
+          document.createElement(
+            "script"
+          );
+
+
+        script.src =
+          "https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js";
+
+        script.async =
+          true;
+
+        script.dataset.cargoJspdf =
+          "true";
+
+
+        script.onload =
+          function () {
+
+            if (
+              window.jspdf &&
+              window.jspdf.jsPDF
+            ) {
+
+              resolve(
+                window.jspdf.jsPDF
+              );
+
+            } else {
+
+              reject(
+                new Error(
+                  "PDF library failed to load."
+                )
+              );
+
+            }
+
+          };
+
+
+        script.onerror =
+          function () {
+
+            reject(
+              new Error(
+                "Unable to load PDF library."
+              )
+            );
+
+          };
+
+
+        document.head.appendChild(
+          script
+        );
+
+      }
+    );
+
+  }
 
 
   // ====================================================
-  // ORIGINAL LETTERHEAD SIZE
+  // LOAD LETTERHEAD
+  // ====================================================
+
+  function loadLetterhead() {
+
+    return new Promise(
+      function (
+        resolve,
+        reject
+      ) {
+
+        const image =
+          new Image();
+
+        image.onload =
+          function () {
+
+            resolve(
+              image
+            );
+
+          };
+
+        image.onerror =
+          function () {
+
+            reject(
+              new Error(
+                "Unable to load cargo-letterhead.png."
+              )
+            );
+
+          };
+
+        image.src =
+          "images/cargo-letterhead.png";
+
+      }
+    );
+
+  }
+
+
+  // ====================================================
+  // LETTERHEAD SIZE
   // ====================================================
 
   const DOCUMENT_WIDTH =
@@ -2989,6 +3183,17 @@ function printDocument(
 
 
   // ====================================================
+  // A4 SIZE
+  // ====================================================
+
+  const A4_WIDTH =
+    210;
+
+  const A4_HEIGHT =
+    297;
+
+
+  // ====================================================
   // FIELD POSITIONS
   // ====================================================
 
@@ -2996,57 +3201,57 @@ function printDocument(
 
     invoice: {
       left: 1100,
-      top: 326
+      top: 296
     },
 
     dateCreated: {
       left: 250,
-      top: 398
+      top: 368
     },
 
     arrivalDate: {
       left: 250,
-      top: 1567
+      top: 1537
     },
 
     sender: {
       left: 250,
-      top: 705
+      top: 675
     },
 
     senderEmail: {
       left: 250,
-      top: 790
+      top: 760
     },
 
     tracking: {
       left: 250,
-      top: 1005
+      top: 975
     },
 
     recipient: {
       left: 250,
-      top: 1275
+      top: 1245
     },
 
     recipientEmail: {
       left: 250,
-      top: 1410
+      top: 1380
     },
 
     recipientAddress: {
       left: 250,
-      top: 1342
+      top: 1312
     },
 
     packageContent: {
       left: 250,
-      top: 1651
+      top: 1618
     },
 
     packageWeight: {
       left: 250,
-      top: 1765
+      top: 1735
     }
 
   };
@@ -3107,568 +3312,599 @@ function printDocument(
 
 
   // ====================================================
-  // ESCAPE
+  // CONVERT ORIGINAL POSITION TO A4 MM
   // ====================================================
 
-  function safe(value) {
-
-    return escapeHTML(
-      value
-    );
-
-  }
-
-
-  // ====================================================
-  // CREATE PRINT WINDOW
-  // ====================================================
-
-  const printWindow =
-    window.open(
-      "",
-      "_blank",
-      "width=1000,height=1200"
-    );
-
-  if (!printWindow) {
-
-    alert(
-      "Please allow pop-ups to print the shipping document."
-    );
-
-    return;
-
-  }
-
-
-  // ====================================================
-  // POSITION CONVERSION
-  // ====================================================
-
-  function positionStyle(
-    position
+  function convertX(
+    value
   ) {
 
-    const leftPercent =
-      (
-        position.left /
-        DOCUMENT_WIDTH
-      ) * 100;
+    return (
+      value /
+      DOCUMENT_WIDTH
+    ) *
+    A4_WIDTH;
 
-    const topPercent =
-      (
-        position.top /
-        DOCUMENT_HEIGHT
-      ) * 100;
+  }
 
-    return `
-      left: ${leftPercent}%;
-      top: ${topPercent}%;
-    `;
+
+  function convertY(
+    value
+  ) {
+
+    return (
+      value /
+      DOCUMENT_HEIGHT
+    ) *
+    A4_HEIGHT;
 
   }
 
 
   // ====================================================
-  // FIELD HELPER
+  // TEXT SIZE
+  // ====================================================
+  //
+  // Original CSS:
+  //
+  // font-size: 5mm
+  //
+  // 1 inch = 25.4mm
+  // 1 inch = 72pt
+  //
+  // 5mm = 14.17pt
+  //
   // ====================================================
 
-  function field(
-    name,
-    value,
-    className = ""
-  ) {
+  const FONT_SIZE_MM =
+    5;
 
-    const position =
-      POSITIONS[name];
+  const FONT_SIZE_PT =
+    FONT_SIZE_MM *
+    72 /
+    25.4;
 
-    if (!position) {
 
-      return "";
+  // ====================================================
+  // LOAD PDF + LETTERHEAD
+  // ====================================================
+
+  try {
+
+    showMessage(
+      "Preparing shipping document...",
+      "info"
+    );
+
+
+    const jsPDF =
+      await loadJsPDF();
+
+
+    const letterhead =
+      await loadLetterhead();
+
+
+    // ==================================================
+    // CREATE A4 PDF
+    // ==================================================
+
+    const pdf =
+      new jsPDF({
+
+        orientation:
+          "portrait",
+
+        unit:
+          "mm",
+
+        format:
+          "a4",
+
+        compress:
+          true
+
+      });
+
+
+    // ==================================================
+    // ADD LETTERHEAD
+    // ==================================================
+
+    pdf.addImage(
+
+      letterhead,
+
+      "PNG",
+
+      0,
+
+      0,
+
+      A4_WIDTH,
+
+      A4_HEIGHT,
+
+      undefined,
+
+      "FAST"
+
+    );
+
+
+    // ==================================================
+    // PDF TEXT HELPER
+    // ==================================================
+
+    function addText(
+      value,
+      position,
+      options = {}
+    ) {
+
+      if (
+        value === null ||
+        value === undefined
+      ) {
+
+        return;
+
+      }
+
+      const text =
+        String(value);
+
+      if (
+        !text.trim()
+      ) {
+
+        return;
+
+      }
+
+
+      const x =
+        convertX(
+          position.left
+        );
+
+      const y =
+        convertY(
+          position.top
+        );
+
+
+      pdf.setFont(
+        "helvetica",
+        options.bold === false
+          ? "normal"
+          : "bold"
+      );
+
+
+      pdf.setFontSize(
+        options.fontSize ||
+        FONT_SIZE_PT
+      );
+
+
+      pdf.setTextColor(
+        17,
+        24,
+        39
+      );
+
+
+      /*
+        jsPDF text uses a baseline.
+
+        Move the baseline down by the
+        equivalent font height so the
+        visual top remains aligned with
+        the original CSS position.
+      */
+
+      pdf.text(
+        text,
+        x,
+        y + FONT_SIZE_MM,
+        {
+          baseline:
+            "top"
+        }
+      );
 
     }
 
-    return `
 
-      <div
-        class="document-field ${className}"
-        style="${positionStyle(position)}"
-      >
+    // ==================================================
+    // INVOICE
+    // ==================================================
 
-        ${safe(value)}
+    addText(
+      invoice,
+      POSITIONS.invoice
+    );
 
-      </div>
 
-    `;
+    // ==================================================
+    // CREATED DATE
+    // ==================================================
 
-  }
+    addText(
+      dateCreated,
+      POSITIONS.dateCreated
+    );
 
 
-  // ====================================================
-  // WATERMARK
-  // ====================================================
+    // ==================================================
+    // ARRIVAL DATE
+    // ==================================================
 
-  const watermarkHTML =
-    isWatermarked
-      ? `
+    addText(
+      arrivalDate,
+      POSITIONS.arrivalDate
+    );
 
-        <div class="watermark-layer">
 
-          <span>TEST SHIPPING</span>
-          <span>TEST SHIPPING</span>
-          <span>TEST SHIPPING</span>
-          <span>TEST SHIPPING</span>
+    // ==================================================
+    // SENDER
+    // ==================================================
 
-          <span>TEST SHIPPING</span>
-          <span>TEST SHIPPING</span>
-          <span>TEST SHIPPING</span>
-          <span>TEST SHIPPING</span>
+    addText(
+      senderName,
+      POSITIONS.sender
+    );
 
-        </div>
 
-      `
-      : "";
+    // ==================================================
+    // SENDER EMAIL
+    // ==================================================
 
+    addText(
+      senderEmailValue,
+      POSITIONS.senderEmail
+    );
 
-  // ====================================================
-  // PRINT DOCUMENT
-  // ====================================================
 
-  printWindow.document.write(`
+    // ==================================================
+    // TRACKING
+    // ==================================================
+    //
+    // Original:
+    //
+    // font-weight: 800
+    // letter-spacing: .3mm
+    //
+    // Draw each character separately so the
+    // letter spacing remains visible.
+    //
+    // ==================================================
 
-    <!DOCTYPE html>
+    if (
+      tracking &&
+      tracking !== "N/A"
+    ) {
 
-    <html>
+      const trackingX =
+        convertX(
+          POSITIONS.tracking.left
+        );
 
-    <head>
+      const trackingY =
+        convertY(
+          POSITIONS.tracking.top
+        );
 
-      <meta charset="UTF-8">
 
-      <title>
-        ZendItCargo - ${safe(tracking)}
-      </title>
+      pdf.setFont(
+        "helvetica",
+        "bold"
+      );
 
 
-      <style>
+      pdf.setFontSize(
+        FONT_SIZE_PT
+      );
 
-        * {
-          box-sizing: border-box;
-        }
 
+      pdf.setTextColor(
+        17,
+        24,
+        39
+      );
 
-        /* =========================================
-           A4 PAGE
-        ========================================= */
 
-        @page {
-
-          size: A4 portrait;
-
-          margin: 0;
-
-        }
-
-
-        html,
-        body {
-
-          width: 210mm;
-
-          height: 297mm;
-
-          margin: 0;
-
-          padding: 0;
-
-          background: #ffffff;
-
-        }
-
-
-        body {
-
-          overflow: hidden;
-
-          font-family:
-            Arial,
-            Helvetica,
-            sans-serif;
-
-        }
-
-
-        /* =========================================
-           A4 DOCUMENT
-        ========================================= */
-
-        .cargo-document {
-
-          position: relative;
-
-          width: 210mm;
-
-          height: 297mm;
-
-          margin: 0;
-
-          padding: 0;
-
-          overflow: hidden;
-
-          background: #ffffff;
-
-        }
-
-
-        /* =========================================
-           LETTERHEAD
-        ========================================= */
-
-        .letterhead {
-
-          position: absolute;
-
-          left: 0;
-
-          top: 0;
-
-          width: 100%;
-
-          height: 100%;
-
-          display: block;
-
-          z-index: 1;
-
-          user-select: none;
-
-          pointer-events: none;
-
-        }
-
-
-        /* =========================================
-           DATA LAYER
-        ========================================= */
-
-        .document-data {
-
-          position: absolute;
-
-          left: 0;
-
-          top: 0;
-
-          width: 100%;
-
-          height: 100%;
-
-          z-index: 3;
-
-        }
-
-
-        /* =========================================
-           FIELD
-        ========================================= */
-
-        .document-field {
-
-          position: absolute;
-
-          color: #111827;
-
-          font-size: 5mm;
-
-          line-height: 1.2;
-
-          font-weight: 600;
-
-          white-space: nowrap;
-
-          max-width: 75mm;
-
-          overflow: hidden;
-
-          text-overflow: ellipsis;
-
-        }
-
-
-        /* =========================================
-           TRACKING
-        ========================================= */
-
-        .tracking-field {
-
-          font-weight: 800;
-
-          letter-spacing: 0.3mm;
-
-        }
-
-
-        /* =========================================
-           WATERMARK
-        ========================================= */
-
-        .watermark-layer {
-
-          position: absolute;
-
-          left: 0;
-
-          top: 0;
-
-          width: 100%;
-
-          height: 100%;
-
-          z-index: 5;
-
-          pointer-events: none;
-
-          display: grid;
-
-          grid-template-columns:
-            repeat(2, 1fr);
-
-          grid-template-rows:
-            repeat(4, 1fr);
-
-          align-items: center;
-
-          justify-items: center;
-
-          transform: rotate(-28deg);
-
-          opacity: .09;
-
-        }
-
-
-        .watermark-layer span {
-
-          color: #dc2626;
-
-          font-size: 6.4mm;
-
-          font-weight: 900;
-
-          letter-spacing: 0.4mm;
-
-          white-space: nowrap;
-
-        }
-
-
-        /* =========================================
-           PRINT
-        ========================================= */
-
-        @media print {
-
-          html,
-          body {
-
-            width: 210mm;
-
-            height: 297mm;
-
-            margin: 0;
-
-            padding: 0;
+      const TRACKING_SPACING =
+        0.3;
+
+      let currentX =
+        trackingX;
+
+
+      String(tracking)
+        .split("")
+        .forEach(
+          function (
+            character
+          ) {
+
+            pdf.text(
+              character,
+              currentX,
+              trackingY +
+                FONT_SIZE_MM,
+              {
+                baseline:
+                  "top"
+              }
+            );
+
+
+            currentX +=
+              pdf.getTextWidth(
+                character
+              ) +
+              TRACKING_SPACING;
 
           }
+        );
+
+    }
 
 
-          .cargo-document {
+    // ==================================================
+    // RECIPIENT
+    // ==================================================
 
-            width: 210mm;
-
-            height: 297mm;
-
-          }
-
-
-          * {
-
-            -webkit-print-color-adjust:
-              exact !important;
-
-            print-color-adjust:
-              exact !important;
-
-          }
-
-        }
-
-      </style>
-
-    </head>
+    addText(
+      recipientName,
+      POSITIONS.recipient
+    );
 
 
-    <body>
+    // ==================================================
+    // RECIPIENT EMAIL
+    // ==================================================
+
+    addText(
+      recipientEmailValue,
+      POSITIONS.recipientEmail
+    );
 
 
-      <div class="cargo-document">
+    // ==================================================
+    // RECIPIENT ADDRESS
+    // ==================================================
+
+    addText(
+      recipientAddressValue,
+      POSITIONS.recipientAddress
+    );
 
 
-        <!-- =====================================
-             LETTERHEAD
-        ====================================== -->
+    // ==================================================
+    // PACKAGE CONTENT
+    // ==================================================
 
-        <img
-          src="${LETTERHEAD}"
-          class="letterhead"
-          alt=""
-        >
-
-
-        <!-- =====================================
-             SHIPMENT DATA
-        ====================================== -->
-
-        <div class="document-data">
+    addText(
+      packageContentValue,
+      POSITIONS.packageContent
+    );
 
 
-          ${field(
-            "invoice",
-            invoice
-          )}
+    // ==================================================
+    // PACKAGE WEIGHT
+    // ==================================================
+
+    addText(
+      packageWeightValue,
+      POSITIONS.packageWeight
+    );
 
 
-          ${field(
-            "dateCreated",
-            dateCreated
-          )}
+    // ==================================================
+    // WATERMARK
+    // ==================================================
+
+    if (isWatermarked) {
+
+      pdf.saveGraphicsState();
 
 
-          ${field(
-            "arrivalDate",
-            arrivalDate
-          )}
+      /*
+        jsPDF supports GState in 2.5.1.
+        This reproduces the original
+        CSS opacity of approximately .09.
+      */
 
-
-          ${field(
-            "sender",
-            senderName
-          )}
-
-
-          ${field(
-            "senderEmail",
-            senderEmailValue
-          )}
-
-
-          ${field(
-            "tracking",
-            tracking,
-            "tracking-field"
-          )}
-
-
-          ${field(
-            "recipient",
-            recipientName
-          )}
-
-
-          ${field(
-            "recipientEmail",
-            recipientEmailValue
-          )}
-
-
-          ${field(
-            "recipientAddress",
-            recipientAddressValue
-          )}
-
-
-          ${field(
-            "packageContent",
-            packageContentValue
-          )}
-
-
-          ${field(
-            "packageWeight",
-            packageWeightValue
-          )}
-
-
-        </div>
-
-
-        <!-- =====================================
-             WATERMARK
-        ====================================== -->
-
-        ${watermarkHTML}
-
-
-      </div>
-
-
-      <script>
-
-        const letterhead =
-          document.querySelector(
-            ".letterhead"
-          );
-
-
-        function startPrint() {
-
-          window.focus();
-
-          setTimeout(
-            function () {
-
-              window.print();
-
-            },
-            500
-          );
-
-        }
-
+      try {
 
         if (
-          letterhead.complete
+          typeof pdf.GState ===
+          "function"
         ) {
 
-          startPrint();
-
-        } else {
-
-          letterhead.onload =
-            startPrint;
-
-          letterhead.onerror =
-            function () {
-
-              alert(
-                "Unable to load cargo letterhead.png"
-              );
-
-            };
+          pdf.setGState(
+            new pdf.GState({
+              opacity: 0.09
+            })
+          );
 
         }
 
-      </script>
+      } catch (error) {
+
+        /*
+          If transparency is unavailable,
+          use a very light red instead.
+        */
+
+      }
 
 
-    </body>
+      pdf.setFont(
+        "helvetica",
+        "bold"
+      );
 
-    </html>
 
-  `);
+      pdf.setFontSize(
+
+        6.4 *
+        72 /
+        25.4
+
+      );
 
 
-  printWindow.document.close();
+      pdf.setTextColor(
+        220,
+        38,
+        38
+      );
+
+
+      const columns =
+        2;
+
+      const rows =
+        4;
+
+
+      const columnWidth =
+        A4_WIDTH /
+        columns;
+
+      const rowHeight =
+        A4_HEIGHT /
+        rows;
+
+
+      for (
+        let row = 0;
+        row < rows;
+        row++
+      ) {
+
+        for (
+          let column = 0;
+          column < columns;
+          column++
+        ) {
+
+          const x =
+            (
+              column *
+              columnWidth
+            ) +
+            (
+              columnWidth /
+              2
+            );
+
+
+          const y =
+            (
+              row *
+              rowHeight
+            ) +
+            (
+              rowHeight /
+              2
+            );
+
+
+          pdf.text(
+
+            "TEST SHIPPING",
+
+            x,
+
+            y,
+
+            {
+
+              angle:
+                -28,
+
+              align:
+                "center"
+
+            }
+
+          );
+
+        }
+
+      }
+
+
+      pdf.restoreGraphicsState();
+
+    }
+
+
+    // ==================================================
+    // FILE NAME
+    // ==================================================
+
+    const safeTracking =
+      String(
+        tracking
+      )
+        .replace(
+          /[^a-zA-Z0-9_-]/g,
+          "-"
+        );
+
+
+    const fileName =
+      `ZendItCargo-${safeTracking}.pdf`;
+
+
+    // ==================================================
+    // DOWNLOAD
+    // ==================================================
+
+    pdf.save(
+      fileName
+    );
+
+
+    // ==================================================
+    // SUCCESS
+    // ==================================================
+
+    setTimeout(
+      function () {
+
+        showMessage(
+          "Shipping document downloaded successfully.",
+          "success"
+        );
+
+      },
+      300
+    );
+
+
+  } catch (error) {
+
+    console.error(
+      "CARGO PDF ERROR:",
+      error
+    );
+
+
+    showCargoPopup(
+
+      error.message ||
+      "Unable to create shipping document."
+
+    );
+
+  }
 
 }
 
