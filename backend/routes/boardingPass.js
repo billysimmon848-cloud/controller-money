@@ -1655,7 +1655,7 @@ router.patch(
 
             user: userId,
 
-            type: "debit",
+            type: "charge",
 
             amount:
               BOARDING_PASS_PRICE,
