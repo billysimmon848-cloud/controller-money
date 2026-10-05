@@ -5,23 +5,14 @@
 
   <meta charset="UTF-8">
 
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <title>JustDoks Cargo</title>
   <link rel="icon" href="images/fav-ico.png" type="image/png">
-  
-  <link
-    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
-    rel="stylesheet"
-  >
 
-  <link
-    rel="stylesheet"
-    href="cargo.css"
-  >
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <link rel="stylesheet" href="cargo.css">
 
 </head>
 
@@ -29,7 +20,7 @@
 <body>
 
 
-<!-- =========================
+  <!-- =========================
      NAVBAR
 ========================= -->
 
@@ -92,841 +83,721 @@
 
 
 
-<!-- =========================
+  <!-- =========================
      MAIN WORKSPACE
 ========================= -->
 
-<main class="shipping-workspace">
-
-
-  <!-- =========================
-       PAGE HEADER
-  ========================= -->
-
-  <div class="workspace-header">
-
-    <div>
-
-      <span class="shipping-label">
-        Shipping Controller
-      </span>
-
-      <h1>
-        Create Shipping
-      </h1>
-
-      <p>
-        Create and manage your shipment documents.
-      </p>
-
-    </div>
-
-
-    <a
-      href="index.html"
-      class="back-btn"
-    >
-      Back
-    </a>
-
-  </div>
-
-
-
-  <!-- =========================
-       MY SHIPMENTS
-  ========================= -->
-
-  <section class="mode-panel shipments-panel">
-
-    <div class="mode-header">
-
-      <div>
-
-        <span class="mode-label">
-          YOUR SHIPMENTS
-        </span>
-
-        <h2>
-          My Shipments
-        </h2>
-
-      </div>
-
-
-      <div
-        class="shipment-list-actions"
-        style="
-          display:flex;
-          gap:8px;
-          align-items:center;
-        "
-      >
-
-        <button
-          type="button"
-          class="btn btn-primary"
-          id="refreshShipments"
-        >
-          Refresh
-        </button>
-
-
-        <button
-          type="button"
-          class="btn btn-success"
-          id="newShipmentButton"
-        >
-          + New Shipment
-        </button>
-
-      </div>
-
-    </div>
-
-
-    <p>
-      Select one of your shipments to view or edit its status.
-    </p>
-
-
-    <div
-      id="shipmentsList"
-      class="shipments-list"
-    >
-
-      <div class="shipment-loading">
-        Loading your shipments...
-      </div>
-
-    </div>
-
-  </section>
-
-
-
-  <!-- =========================
-       CREATE / EDIT + VIEW
-  ========================= -->
-
-  <div class="workspace-grid">
+  <main class="shipping-workspace">
 
 
     <!-- =========================
-         CREATE / EDIT
-    ========================= -->
+       PAGE HEADER
+  ========================= -->
 
-    <section
-      class="mode-panel edit-panel"
-      id="shipmentEditPanel"
-    >
+    <div class="workspace-header">
+
+      <div>
+
+        <span class="shipping-label">
+          Shipping Controller
+        </span>
+
+        <h1>
+          Create Shipping
+        </h1>
+
+        <p>
+          Create and manage your shipment documents.
+        </p>
+
+      </div>
+
+
+      <a href="index.html" class="back-btn">
+        Back
+      </a>
+
+    </div>
+
+
+
+    <!-- =========================
+       MY SHIPMENTS
+  ========================= -->
+
+    <section class="mode-panel shipments-panel">
 
       <div class="mode-header">
 
         <div>
 
-          <span
-            class="mode-label"
-            id="formModeLabel"
-          >
-            CREATE MODE
+          <span class="mode-label">
+            YOUR SHIPMENTS
           </span>
 
-          <h2 id="formModeTitle">
-            Shipment Details
+          <h2>
+            My Shipments
           </h2>
 
         </div>
 
 
-        <span
-          class="mode-description"
-          id="formModeDescription"
-        >
-          Enter shipment information
-        </span>
+        <div class="shipment-list-actions" style="
+          display:flex;
+          gap:8px;
+          align-items:center;
+        ">
+
+          <button type="button" class="btn btn-primary" id="refreshShipments">
+            Refresh
+          </button>
+
+
+          <button type="button" class="btn btn-success" id="newShipmentButton">
+            + New Shipment
+          </button>
+
+        </div>
 
       </div>
 
 
-
-      <!-- =========================
-           SHIPPING FORM
-      ========================= -->
-
-      <form id="shippingForm">
+      <p>
+        Select one of your shipments to view or edit its status.
+      </p>
 
 
-        <!-- =========================
-             SHIPMENT INFORMATION
-        ========================= -->
+      <div id="shipmentsList" class="shipments-list">
 
-        <div class="form-section">
-
-          <div class="section-heading">
-
-            <h3>
-              Shipment Information
-            </h3>
-
-            <span class="info-icon">
-              ?
-            </span>
-
-          </div>
-
-
-          <div class="form-grid">
-
-
-            <!-- STATUS -->
-
-            <div class="form-group">
-
-              <label
-                for="shippingStatus"
-              >
-                Status
-              </label>
-
-              <select
-                id="shippingStatus"
-                required
-              >
-
-                <option value="Processing">
-                  Processing
-                </option>
-
-                <option value="Package Received">
-                  Package Received
-                </option>
-
-                <option value="In Transit">
-                  In Transit
-                </option>
-
-                <option value="Arrived">
-                  Arrived
-                </option>
-
-                <option value="Delivered">
-                  Delivered
-                </option>
-
-                <option value="Error">
-                  Error
-                </option>
-
-              </select>
-
-            </div>
-
-
-
-            <!-- INVOICE -->
-
-            <div class="form-group">
-
-              <label
-                for="invoiceNumber"
-              >
-                Invoice Number
-              </label>
-
-              <input
-                type="text"
-                id="invoiceNumber"
-                placeholder="e.g. INV-10001"
-              >
-
-            </div>
-
-
-
-            <!-- SHIPMENT DATE -->
-
-            <div class="form-group">
-
-              <label>
-                Shipment Date &amp; Time
-              </label>
-
-              <div class="date-time-group">
-
-                <input
-                  type="date"
-                  id="shipmentDate"
-                  required
-                >
-
-                <input
-                  type="time"
-                  id="shipmentTime"
-                  required
-                >
-
-              </div>
-
-            </div>
-
-
-
-            <!-- EXPECTED ARRIVAL -->
-
-            <div class="form-group">
-
-              <label>
-                Expected Arrival
-              </label>
-
-              <div class="date-time-group">
-
-                <input
-                  type="date"
-                  id="estimatedDelivery"
-                  required
-                >
-
-                <input
-                  type="time"
-                  id="estimatedDeliveryTime"
-                  required
-                >
-
-              </div>
-
-            </div>
-
-
-
-            <!-- ERROR MESSAGE -->
-
-            <div
-              class="form-group full-width"
-              id="errorMessageGroup"
-              style="display:none;"
-            >
-
-              <label
-                for="errorMessage"
-              >
-                Error Message
-              </label>
-
-              <textarea
-                id="errorMessage"
-                placeholder="Enter the shipment error message"
-              ></textarea>
-
-            </div>
-
-
-          </div>
-
+        <div class="shipment-loading">
+          Loading your shipments...
         </div>
 
-
-
-        <!-- =========================
-             SENDER INFORMATION
-        ========================= -->
-
-        <div class="form-section">
-
-          <div class="section-heading">
-
-            <h3>
-              Sender Information
-            </h3>
-
-            <span class="info-icon">
-              ?
-            </span>
-
-          </div>
-
-
-          <div class="form-grid">
-
-
-            <div class="form-group">
-
-              <label
-                for="sender"
-              >
-                Sender Name
-              </label>
-
-              <input
-                type="text"
-                id="sender"
-                placeholder="e.g. John Smith"
-                required
-              >
-
-            </div>
-
-
-
-            <div class="form-group">
-
-              <label
-                for="senderEmail"
-              >
-                Sender Email
-                <span>
-                  (Optional)
-                </span>
-              </label>
-
-              <input
-                type="email"
-                id="senderEmail"
-                placeholder="e.g. john@example.com"
-              >
-
-            </div>
-
-
-
-            <div class="form-group full-width">
-
-              <label
-                for="origin"
-              >
-                Sender Address
-              </label>
-
-              <input
-                type="text"
-                id="origin"
-                placeholder="e.g. Milan, Italy"
-                required
-              >
-
-            </div>
-
-
-          </div>
-
-        </div>
-
-
-
-        <!-- =========================
-             RECIPIENT INFORMATION
-        ========================= -->
-
-        <div class="form-section">
-
-          <div class="section-heading">
-
-            <h3>
-              Recipient Information
-            </h3>
-
-            <span class="info-icon">
-              ?
-            </span>
-
-          </div>
-
-
-          <div class="form-grid">
-
-
-            <div class="form-group">
-
-              <label
-                for="recipient"
-              >
-                Recipient Name
-              </label>
-
-              <input
-                type="text"
-                id="recipient"
-                placeholder="e.g. Michael Johnson"
-                required
-              >
-
-            </div>
-
-
-
-            <div class="form-group">
-
-              <label
-                for="recipientEmail"
-              >
-                Recipient Email
-                <span>
-                  (Optional)
-                </span>
-              </label>
-
-              <input
-                type="email"
-                id="recipientEmail"
-                placeholder="e.g. michael@example.com"
-              >
-
-            </div>
-
-
-
-            <div class="form-group full-width">
-
-              <label
-                for="recipientAddress"
-              >
-                Recipient Address
-              </label>
-
-              <input
-                type="text"
-                id="recipientAddress"
-                placeholder="e.g. Munich, Germany"
-                required
-              >
-
-            </div>
-
-
-          </div>
-
-        </div>
-
-
-
-        <!-- =========================
-             PACKAGE INFORMATION
-        ========================= -->
-
-        <div class="form-section">
-
-          <div class="section-heading">
-
-            <h3>
-              Package Information
-            </h3>
-
-            <span class="info-icon">
-              ?
-            </span>
-
-          </div>
-
-
-          <div class="form-grid">
-
-
-            <div class="form-group">
-
-              <label
-                for="packageContent"
-              >
-                Package Content
-              </label>
-
-              <input
-                type="text"
-                id="packageContent"
-                placeholder="e.g. Electronics"
-              >
-
-            </div>
-
-
-
-            <div class="form-group">
-
-              <label
-                for="packageWeight"
-              >
-                Package Weight
-              </label>
-
-              <input
-                type="text"
-                id="packageWeight"
-                placeholder="e.g. 5 kg"
-              >
-
-            </div>
-
-
-          </div>
-
-        </div>
-
-
-
-        <!-- =========================
-             WATERMARK INFORMATION
-        ========================= -->
-
-        <div class="watermark-box">
-
-          <div class="watermark-title">
-
-            <strong>
-              Document Watermark
-            </strong>
-
-          </div>
-
-
-          <p>
-            Test Shipping documents contain a watermark.
-            Clean Shipping documents remove the watermark.
-          </p>
-
-
-          <div class="watermark-status">
-
-            <span></span>
-
-            Watermark status is determined by the
-            selected shipping type.
-
-          </div>
-
-        </div>
-
-
-
-        <!-- =========================
-             FORM ACTIONS
-        ========================= -->
-
-        <div class="form-actions">
-
-
-          <a
-            href="index.html"
-            class="cancel-btn"
-            id="cancelEditButton"
-          >
-            Cancel
-          </a>
-
-
-          <!-- FIXED: submit instead of button -->
-
-          <button
-            type="submit"
-            class="create-btn"
-            id="createShipping"
-          >
-            Create Shipping
-          </button>
-
-
-        </div>
-
-
-
-        <!-- =========================
-             MESSAGE
-        ========================= -->
-
-        <div
-          id="shippingMessage"
-        ></div>
-
-
-      </form>
+      </div>
 
     </section>
 
 
-  </div>
+
+    <!-- =========================
+       CREATE / EDIT + VIEW
+  ========================= -->
+
+    <div class="workspace-grid">
 
 
-</main>
+      <!-- =========================
+         CREATE / EDIT
+    ========================= -->
+
+      <section class="mode-panel edit-panel" id="shipmentEditPanel">
+
+        <div class="mode-header">
+
+          <div>
+
+            <span class="mode-label" id="formModeLabel">
+              CREATE MODE
+            </span>
+
+            <h2 id="formModeTitle">
+              Shipment Details
+            </h2>
+
+          </div>
 
 
-
-<!-- =========================
-     SHIPPING TYPE MODAL
-========================= -->
-
-<div
-  class="modal fade shipping-modal"
-  id="shippingTypeModal"
-  tabindex="-1"
-  aria-hidden="true"
->
-
-  <div
-    class="modal-dialog modal-dialog-centered"
-  >
-
-    <div
-      class="modal-content"
-    >
-
-
-      <div class="modal-header">
-
-        <div>
-
-          <h5 class="modal-title">
-            Choose Shipping Type
-          </h5>
-
-          <p>
-            Select how you want to create this shipment.
-          </p>
+          <span class="mode-description" id="formModeDescription">
+            Enter shipment information
+          </span>
 
         </div>
 
 
-        <button
-          type="button"
-          class="btn-close btn-close-white"
-          data-bs-dismiss="modal"
-          aria-label="Close"
-        ></button>
 
-      </div>
+        <!-- =========================
+           SHIPPING FORM
+      ========================= -->
+
+        <form id="shippingForm">
 
 
+          <!-- =========================
+             SHIPMENT INFORMATION
+        ========================= -->
 
-      <div class="modal-body">
+          <div class="form-section">
+
+            <div class="section-heading">
+
+              <h3>
+                Shipment Information
+              </h3>
+
+              <span class="info-icon">
+                ?
+              </span>
+
+            </div>
 
 
-        <label class="shipping-option">
+            <div class="form-grid">
 
-          <input
-            type="radio"
-            name="shippingType"
-            value="test"
-            checked
-          >
 
-          <div class="shipping-option-content">
+              <!-- STATUS -->
 
-            <div class="shipping-option-header">
+              <div class="form-group">
 
-              <h5>
-                Test Shipping
-              </h5>
+                <label for="shippingStatus">
+                  Status
+                </label>
+
+                <select id="shippingStatus" required>
+
+                  <option value="Processing">
+                    Processing
+                  </option>
+
+                  <option value="Package Received">
+                    Package Received
+                  </option>
+
+                  <option value="In Transit">
+                    In Transit
+                  </option>
+
+                  <option value="Arrived">
+                    Arrived
+                  </option>
+
+                  <option value="Delivered">
+                    Delivered
+                  </option>
+
+                  <option value="Error">
+                    Error
+                  </option>
+
+                </select>
+
+              </div>
+
+
+
+              <!-- INVOICE -->
+
+              <div class="form-group">
+
+                <label for="invoiceNumber">
+                  Invoice Number
+                </label>
+
+                <input type="text" id="invoiceNumber" placeholder="e.g. INV-10001">
+
+              </div>
+
+
+
+              <!-- SHIPMENT DATE -->
+
+              <div class="form-group">
+
+                <label>
+                  Shipment Date &amp; Time
+                </label>
+
+                <div class="date-time-group">
+
+                  <input type="date" id="shipmentDate" required>
+
+                  <input type="time" id="shipmentTime" required>
+
+                </div>
+
+              </div>
+
+
+
+              <!-- EXPECTED ARRIVAL -->
+
+              <div class="form-group">
+
+                <label>
+                  Expected Arrival
+                </label>
+
+                <div class="date-time-group">
+
+                  <input type="date" id="estimatedDelivery" required>
+
+                  <input type="time" id="estimatedDeliveryTime" required>
+
+                </div>
+
+              </div>
+
+
+
+              <!-- ERROR MESSAGE -->
+
+              <div class="form-group full-width" id="errorMessageGroup" style="display:none;">
+
+                <label for="errorMessage">
+                  Error Message
+                </label>
+
+                <textarea id="errorMessage" placeholder="Enter the shipment error message"></textarea>
+
+              </div>
+
+
+            </div>
+
+          </div>
+
+          <!-- =====================================================
+     SHIPMENT HISTORY
+===================================================== -->
+
+          <div class="form-section">
+
+            <div class="form-section-header">
+
+              <div>
+
+                <h3>
+                  Shipment History
+                </h3>
+
+                <p>
+                  Add the shipment journey manually.
+                </p>
+
+              </div>
+
+              <button type="button" id="addTrackingEventButton" class="btn btn-outline-primary">
+                + Add History
+              </button>
+
+            </div>
+
+
+            <div id="trackingEventsContainer" class="tracking-events-container">
+
+              <div class="tracking-events-empty">
+
+                No history entries added yet.
+
+              </div>
+
+            </div>
+
+          </div>
+
+          <!-- =========================
+             SENDER INFORMATION
+        ========================= -->
+
+          <div class="form-section">
+
+            <div class="section-heading">
+
+              <h3>
+                Sender Information
+              </h3>
+
+              <span class="info-icon">
+                ?
+              </span>
+
+            </div>
+
+
+            <div class="form-grid">
+
+
+              <div class="form-group">
+
+                <label for="sender">
+                  Sender Name
+                </label>
+
+                <input type="text" id="sender" placeholder="e.g. John Smith" required>
+
+              </div>
+
+
+
+              <div class="form-group">
+
+                <label for="senderEmail">
+                  Sender Email
+                  <span>
+                    (Optional)
+                  </span>
+                </label>
+
+                <input type="email" id="senderEmail" placeholder="e.g. john@example.com">
+
+              </div>
+
+
+
+              <div class="form-group full-width">
+
+                <label for="origin">
+                  Sender Address
+                </label>
+
+                <input type="text" id="origin" placeholder="e.g. Milan, Italy" required>
+
+              </div>
+
+
+            </div>
+
+          </div>
+
+
+
+          <!-- =========================
+             RECIPIENT INFORMATION
+        ========================= -->
+
+          <div class="form-section">
+
+            <div class="section-heading">
+
+              <h3>
+                Recipient Information
+              </h3>
+
+              <span class="info-icon">
+                ?
+              </span>
+
+            </div>
+
+
+            <div class="form-grid">
+
+
+              <div class="form-group">
+
+                <label for="recipient">
+                  Recipient Name
+                </label>
+
+                <input type="text" id="recipient" placeholder="e.g. Michael Johnson" required>
+
+              </div>
+
+
+
+              <div class="form-group">
+
+                <label for="recipientEmail">
+                  Recipient Email
+                  <span>
+                    (Optional)
+                  </span>
+                </label>
+
+                <input type="email" id="recipientEmail" placeholder="e.g. michael@example.com">
+
+              </div>
+
+
+
+              <div class="form-group full-width">
+
+                <label for="recipientAddress">
+                  Recipient Address
+                </label>
+
+                <input type="text" id="recipientAddress" placeholder="e.g. Munich, Germany" required>
+
+              </div>
+
+
+            </div>
+
+          </div>
+
+
+
+          <!-- =========================
+             PACKAGE INFORMATION
+        ========================= -->
+
+          <div class="form-section">
+
+            <div class="section-heading">
+
+              <h3>
+                Package Information
+              </h3>
+
+              <span class="info-icon">
+                ?
+              </span>
+
+            </div>
+
+
+            <div class="form-grid">
+
+
+              <div class="form-group">
+
+                <label for="packageContent">
+                  Package Content
+                </label>
+
+                <input type="text" id="packageContent" placeholder="e.g. Electronics">
+
+              </div>
+
+
+
+              <div class="form-group">
+
+                <label for="packageWeight">
+                  Package Weight
+                </label>
+
+                <input type="text" id="packageWeight" placeholder="e.g. 5 kg">
+
+              </div>
+
+
+            </div>
+
+          </div>
+
+
+
+          <!-- =========================
+             WATERMARK INFORMATION
+        ========================= -->
+
+          <div class="watermark-box">
+
+            <div class="watermark-title">
 
               <strong>
-                Free
+                Document Watermark
               </strong>
 
             </div>
 
+
             <p>
-              Create a free shipment for testing
-              and preview purposes.
+              Test Shipping documents contain a watermark.
+              Clean Shipping documents remove the watermark.
             </p>
 
-            <span class="watermark-label">
-              Watermarked
-            </span>
 
-          </div>
+            <div class="watermark-status">
 
-        </label>
+              <span></span>
 
-
-
-        <label class="shipping-option">
-
-          <input
-            type="radio"
-            name="shippingType"
-            value="clean"
-          >
-
-          <div class="shipping-option-content">
-
-            <div class="shipping-option-header">
-
-              <h5>
-                Clean Shipping
-              </h5>
-
-              <strong>
-                $5.00
-              </strong>
+              Watermark status is determined by the
+              selected shipping type.
 
             </div>
 
-            <p>
-              Create a professional shipment document
-              without the watermark.
-            </p>
+          </div>
 
-            <span class="clean-label">
-              No Watermark
-            </span>
+
+
+          <!-- =========================
+             FORM ACTIONS
+        ========================= -->
+
+          <div class="form-actions">
+
+
+            <a href="index.html" class="cancel-btn" id="cancelEditButton">
+              Cancel
+            </a>
+
+
+            <!-- FIXED: submit instead of button -->
+
+            <button type="submit" class="create-btn" id="createShipping">
+              Create Shipping
+            </button>
+
 
           </div>
 
-        </label>
+
+
+          <!-- =========================
+             MESSAGE
+        ========================= -->
+
+          <div id="shippingMessage"></div>
+
+
+        </form>
+
+      </section>
+
+
+    </div>
+
+
+  </main>
+
+
+
+  <!-- =========================
+     SHIPPING TYPE MODAL
+========================= -->
+
+  <div class="modal fade shipping-modal" id="shippingTypeModal" tabindex="-1" aria-hidden="true">
+
+    <div class="modal-dialog modal-dialog-centered">
+
+      <div class="modal-content">
+
+
+        <div class="modal-header">
+
+          <div>
+
+            <h5 class="modal-title">
+              Choose Shipping Type
+            </h5>
+
+            <p>
+              Select how you want to create this shipment.
+            </p>
+
+          </div>
+
+
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+
+        </div>
+
+
+
+        <div class="modal-body">
+
+
+          <label class="shipping-option">
+
+            <input type="radio" name="shippingType" value="test" checked>
+
+            <div class="shipping-option-content">
+
+              <div class="shipping-option-header">
+
+                <h5>
+                  Test Shipping
+                </h5>
+
+                <strong>
+                  Free
+                </strong>
+
+              </div>
+
+              <p>
+                Create a free shipment for testing
+                and preview purposes.
+              </p>
+
+              <span class="watermark-label">
+                Watermarked
+              </span>
+
+            </div>
+
+          </label>
+
+
+
+          <label class="shipping-option">
+
+            <input type="radio" name="shippingType" value="clean">
+
+            <div class="shipping-option-content">
+
+              <div class="shipping-option-header">
+
+                <h5>
+                  Clean Shipping
+                </h5>
+
+                <strong>
+                  $5.00
+                </strong>
+
+              </div>
+
+              <p>
+                Create a professional shipment document
+                without the watermark.
+              </p>
+
+              <span class="clean-label">
+                No Watermark
+              </span>
+
+            </div>
+
+          </label>
+
+
+        </div>
+
+
+
+        <div class="modal-footer">
+
+          <button type="button" class="cancel-shipping" data-bs-dismiss="modal">
+            Cancel
+          </button>
+
+
+          <button type="button" class="continue-shipping" id="continueShipping">
+            Continue
+          </button>
+
+        </div>
 
 
       </div>
-
-
-
-      <div class="modal-footer">
-
-        <button
-          type="button"
-          class="cancel-shipping"
-          data-bs-dismiss="modal"
-        >
-          Cancel
-        </button>
-
-
-        <button
-          type="button"
-          class="continue-shipping"
-          id="continueShipping"
-        >
-          Continue
-        </button>
-
-      </div>
-
 
     </div>
 
   </div>
 
-</div>
 
 
-
-<!-- =========================
+  <!-- =========================
      BOOTSTRAP
 ========================= -->
 
-<script
-  src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
-></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 
 
-<!-- =========================
+  <!-- =========================
      MAIN INDEX JS
 ========================= -->
 
-<script src="index.js"></script>
+  <script src="index.js"></script>
 
 
-<!-- =========================
+  <!-- =========================
      CARGO JS
 ========================= -->
 
-<script src="cargo.js"></script>
+  <script src="cargo.js"></script>
 
 
 </body>
