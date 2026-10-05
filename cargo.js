@@ -58,6 +58,11 @@ const addTrackingEventButton =
     "addTrackingEventButton"
   );
 
+const saveTrackingHistoryButton =
+  document.getElementById(
+    "saveTrackingHistoryButton"
+  );
+
 const trackingEventsContainer =
   document.getElementById(
     "trackingEventsContainer"
@@ -881,6 +886,20 @@ if (addTrackingEventButton) {
 
 
 // ======================================================
+// HISTORY — SAVE ONLY HISTORY
+// ======================================================
+
+if (saveTrackingHistoryButton) {
+
+  saveTrackingHistoryButton.addEventListener(
+    "click",
+    saveTrackingHistory
+  );
+
+}
+
+
+// ======================================================
 // HISTORY — RENDER
 // ======================================================
 
@@ -1117,7 +1136,7 @@ function createTrackingEventEditor(
           <input
             type="text"
             value="${escapeAttribute(location)}"
-            placeholder="Lagos, Nigeria"
+            placeholder="Houston, Texas"
             onchange="updateTrackingEventLocation(${index}, this.value)"
           >
 
@@ -1359,6 +1378,222 @@ function getTrackingEvents() {
 
 
 // ======================================================
+// HISTORY — SAVE ONLY HISTORY
+// ======================================================
+
+async function saveTrackingHistory() {
+
+  const token =
+    getToken();
+
+  if (!token) {
+
+    showMessage(
+      "Please login first.",
+      "danger"
+    );
+
+    return;
+
+  }
+
+  if (
+    !currentShipment ||
+    !currentShipment.trackingNumber
+  ) {
+
+    showMessage(
+      "Please select a shipment first.",
+      "danger"
+    );
+
+    return;
+
+  }
+
+  const trackingNumber =
+    currentShipment.trackingNumber;
+
+
+  const history =
+    getTrackingEvents();
+
+
+  if (
+    saveTrackingHistoryButton
+  ) {
+
+    saveTrackingHistoryButton.disabled =
+      true;
+
+    saveTrackingHistoryButton.dataset
+      .originalText =
+      saveTrackingHistoryButton.textContent;
+
+    saveTrackingHistoryButton.textContent =
+      "Saving History...";
+
+  }
+
+
+  try {
+
+    const response =
+      await fetch(
+
+        `${API_URL}/shipments/${encodeURIComponent(
+          trackingNumber
+        )}`,
+
+        {
+
+          method: "PATCH",
+
+          headers: {
+
+            "Content-Type":
+              "application/json",
+
+            Authorization:
+              `Bearer ${token}`
+
+          },
+
+          body:
+            JSON.stringify({
+
+              trackingEvents:
+                history
+
+            })
+
+        }
+
+      );
+
+
+    const responseText =
+      await response.text();
+
+
+    let data = {};
+
+
+    try {
+
+      data =
+        responseText
+          ? JSON.parse(responseText)
+          : {};
+
+    } catch (error) {
+
+      throw new Error(
+        "Server returned an invalid response."
+      );
+
+    }
+
+
+    if (!response.ok) {
+
+      throw new Error(
+        data.message ||
+        "Unable to save shipment history."
+      );
+
+    }
+
+
+    const shipment =
+      data.shipment || data;
+
+
+    if (
+      !shipment ||
+      !shipment.trackingNumber
+    ) {
+
+      throw new Error(
+        "History was saved but the server did not return the shipment."
+      );
+
+    }
+
+
+    currentShipment =
+      shipment;
+
+
+    generatedTrackingNumber =
+      shipment.trackingNumber;
+
+
+    trackingEvents =
+      Array.isArray(
+        shipment.trackingEvents
+      )
+        ? shipment.trackingEvents
+        : [];
+
+
+    addOrReplaceShipment(
+      shipment
+    );
+
+
+    renderTrackingEvents();
+
+
+    showCargoPopup(
+
+      `Shipment History Saved Successfully\n\n` +
+
+      `Tracking Number: ${
+        shipment.trackingNumber
+      }\n` +
+
+      `History Entries: ${
+        trackingEvents.length
+      }`
+
+    );
+
+
+  } catch (error) {
+
+    console.error(
+      "SAVE HISTORY ERROR:",
+      error
+    );
+
+    showCargoPopup(
+      error.message ||
+      "Unable to save shipment history."
+    );
+
+  } finally {
+
+    if (
+      saveTrackingHistoryButton
+    ) {
+
+      saveTrackingHistoryButton.disabled =
+        false;
+
+      saveTrackingHistoryButton.textContent =
+        saveTrackingHistoryButton.dataset
+          .originalText ||
+        "Save History";
+
+    }
+
+  }
+
+}
+
+
+// ======================================================
 // CREATE SHIPPING
 // ======================================================
 
@@ -1440,7 +1675,9 @@ async function createShipping() {
 
   };
 
+
   setCreateButtonLoading(true);
+
 
   try {
 
@@ -1469,10 +1706,13 @@ async function createShipping() {
         }
       );
 
+
     const responseText =
       await response.text();
 
+
     let data = {};
+
 
     try {
 
@@ -1489,6 +1729,7 @@ async function createShipping() {
 
     }
 
+
     if (!response.ok) {
 
       throw new Error(
@@ -1498,8 +1739,10 @@ async function createShipping() {
 
     }
 
+
     const shipment =
       data.shipment || data;
+
 
     if (
       !shipment ||
@@ -1512,11 +1755,14 @@ async function createShipping() {
 
     }
 
+
     currentShipment =
       shipment;
 
+
     generatedTrackingNumber =
       shipment.trackingNumber;
+
 
     trackingEvents =
       Array.isArray(
@@ -1525,6 +1771,7 @@ async function createShipping() {
         ? shipment.trackingEvents
         : [];
 
+
     currentWalletBalance =
       Number(
         data.walletBalance ??
@@ -1532,20 +1779,25 @@ async function createShipping() {
         currentWalletBalance
       );
 
+
     await loadWalletBalance();
+
 
     addOrReplaceShipment(
       shipment
     );
 
+
     setControllerMode(
       "profile"
     );
+
 
     const paymentAmount =
       Number(
         shipment.paymentAmount || 0
       );
+
 
     const isClean =
       shipment.watermarkEnabled === false ||
@@ -1598,9 +1850,11 @@ async function createShipping() {
 
     }
 
+
     saveFormData();
 
     await loadShipments();
+
 
   } catch (error) {
 
@@ -1685,6 +1939,7 @@ function showMessage(
 
   shippingMessage.style.display =
     "block";
+
 
   if (isHTML) {
 
@@ -1789,6 +2044,7 @@ async function loadShipments() {
 
   }
 
+
   try {
 
     const response =
@@ -1806,8 +2062,10 @@ async function loadShipments() {
         }
       );
 
+
     const data =
       await response.json();
+
 
     if (!response.ok) {
 
@@ -1818,6 +2076,7 @@ async function loadShipments() {
 
     }
 
+
     userShipments =
       Array.isArray(
         data.shipments
@@ -1825,7 +2084,9 @@ async function loadShipments() {
         ? data.shipments
         : [];
 
+
     renderShipments();
+
 
   } catch (error) {
 
@@ -1833,6 +2094,7 @@ async function loadShipments() {
       "LOAD SHIPMENTS ERROR:",
       error
     );
+
 
     if (shipmentsList) {
 
@@ -1867,6 +2129,7 @@ function renderShipments() {
 
   }
 
+
   if (
     userShipments.length === 0
   ) {
@@ -1886,6 +2149,7 @@ function renderShipments() {
     return;
 
   }
+
 
   shipmentsList.innerHTML =
     userShipments
@@ -1917,19 +2181,23 @@ function createShipmentCard(
     shipment.trackingNumber ||
     "";
 
+
   const isClean =
     shipment.watermarkEnabled === false ||
     shipment.shippingType === "clean";
+
 
   const status =
     shipment.status ||
     shipment.currentStatus ||
     "Pending";
 
+
   const trackingURL =
     getTrackingURL(
       tracking
     );
+
 
   const hasError =
     Boolean(
@@ -1939,10 +2207,12 @@ function createShipmentCard(
       ).trim()
     );
 
+
   const isSelected =
     currentShipment &&
     currentShipment.trackingNumber ===
     tracking;
+
 
   return `
 
@@ -2101,6 +2371,7 @@ function addOrReplaceShipment(
         shipment.trackingNumber
     );
 
+
   if (index >= 0) {
 
     userShipments[index] =
@@ -2113,6 +2384,7 @@ function addOrReplaceShipment(
     );
 
   }
+
 
   renderShipments();
 
@@ -2130,6 +2402,7 @@ function editShipment(
   const shipment =
     userShipments[index];
 
+
   if (!shipment) {
 
     showMessage(
@@ -2145,8 +2418,10 @@ function editShipment(
   currentShipment =
     shipment;
 
+
   generatedTrackingNumber =
     shipment.trackingNumber || "";
+
 
   editingShipment =
     true;
@@ -2338,6 +2613,7 @@ function editShipment(
 
   updateErrorVisibility();
 
+
   renderShipments();
 
 
@@ -2366,6 +2642,7 @@ async function updateShipment() {
   const token =
     getToken();
 
+
   if (!token) {
 
     showMessage(
@@ -2376,6 +2653,7 @@ async function updateShipment() {
     return;
 
   }
+
 
   if (
     !currentShipment ||
@@ -2390,6 +2668,7 @@ async function updateShipment() {
     return;
 
   }
+
 
   const trackingNumber =
     currentShipment.trackingNumber;
@@ -2410,6 +2689,7 @@ async function updateShipment() {
   const selectedStatus =
     shippingStatus?.value ||
     "Processing";
+
 
   const updatedErrorMessage =
     errorMessage?.value?.trim() ||
@@ -2529,6 +2809,7 @@ async function updateShipment() {
 
     let data = {};
 
+
     try {
 
       data =
@@ -2574,6 +2855,7 @@ async function updateShipment() {
     currentShipment =
       shipment;
 
+
     generatedTrackingNumber =
       shipment.trackingNumber;
 
@@ -2594,10 +2876,12 @@ async function updateShipment() {
     editingShipment =
       false;
 
+
     setFormMode(false);
 
 
     await loadWalletBalance();
+
 
     await loadShipments();
 
@@ -2626,10 +2910,12 @@ async function updateShipment() {
       error
     );
 
+
     showCargoPopup(
       error.message ||
       "Unable to update shipment."
     );
+
 
   } finally {
 
@@ -2665,6 +2951,7 @@ async function deleteShipment(
   const token =
     getToken();
 
+
   if (!token) {
 
     showMessage(
@@ -2676,8 +2963,10 @@ async function deleteShipment(
 
   }
 
+
   const shipment =
     userShipments[index];
+
 
   if (!shipment) {
 
@@ -2690,19 +2979,23 @@ async function deleteShipment(
 
   }
 
+
   const trackingNumber =
     shipment.trackingNumber;
+
 
   const confirmed =
     confirm(
       `Are you sure you want to delete shipment ${trackingNumber}?`
     );
 
+
   if (!confirmed) {
 
     return;
 
   }
+
 
   try {
 
@@ -2728,8 +3021,10 @@ async function deleteShipment(
 
       );
 
+
     const data =
       await response.json();
+
 
     if (!response.ok) {
 
@@ -2740,10 +3035,12 @@ async function deleteShipment(
 
     }
 
+
     userShipments.splice(
       index,
       1
     );
+
 
     if (
       currentShipment &&
@@ -2759,6 +3056,7 @@ async function deleteShipment(
 
     }
 
+
     if (
       editingShipment &&
       currentShipment === null
@@ -2772,6 +3070,7 @@ async function deleteShipment(
       clearForm();
 
     }
+
 
     renderShipments();
 
@@ -2794,6 +3093,7 @@ async function deleteShipment(
       error
     );
 
+
     showCargoPopup(
       error.message ||
       "Unable to delete shipment."
@@ -2815,6 +3115,7 @@ async function removeShipmentWatermark(
   const token =
     getToken();
 
+
   if (!token) {
 
     showMessage(
@@ -2826,8 +3127,10 @@ async function removeShipmentWatermark(
 
   }
 
+
   let targetShipment =
     null;
+
 
   if (
     index !== null &&
@@ -2846,6 +3149,7 @@ async function removeShipmentWatermark(
 
   }
 
+
   if (!targetShipment) {
 
     showMessage(
@@ -2857,8 +3161,10 @@ async function removeShipmentWatermark(
 
   }
 
+
   const targetTracking =
     targetShipment.trackingNumber;
+
 
   if (
     targetShipment.watermarkEnabled ===
@@ -2874,6 +3180,7 @@ async function removeShipmentWatermark(
 
   }
 
+
   const confirmed =
     confirm(
       `Remove the watermark for ${formatMoney(
@@ -2881,11 +3188,13 @@ async function removeShipmentWatermark(
       )}?`
     );
 
+
   if (!confirmed) {
 
     return;
 
   }
+
 
   try {
 
@@ -2914,8 +3223,10 @@ async function removeShipmentWatermark(
 
       );
 
+
     const data =
       await response.json();
+
 
     if (!response.ok) {
 
@@ -2926,14 +3237,18 @@ async function removeShipmentWatermark(
 
     }
 
+
     const updatedShipment =
       data.shipment || data;
+
 
     currentShipment =
       updatedShipment;
 
+
     generatedTrackingNumber =
       updatedShipment.trackingNumber;
+
 
     trackingEvents =
       Array.isArray(
@@ -2942,6 +3257,7 @@ async function removeShipmentWatermark(
         ? updatedShipment.trackingEvents
         : [];
 
+
     currentWalletBalance =
       Number(
         data.walletBalance ??
@@ -2949,9 +3265,11 @@ async function removeShipmentWatermark(
         currentWalletBalance
       );
 
+
     addOrReplaceShipment(
       updatedShipment
     );
+
 
     await loadWalletBalance();
 
@@ -2989,6 +3307,7 @@ async function removeShipmentWatermark(
       error
     );
 
+
     showCargoPopup(
       error.message ||
       "Unable to remove watermark."
@@ -3010,6 +3329,7 @@ function setFormMode(
   editingShipment =
     editing;
 
+
   if (createShippingButton) {
 
     createShippingButton.textContent =
@@ -3018,6 +3338,7 @@ function setFormMode(
         : "Create Shipping";
 
   }
+
 
   if (cancelEditButton) {
 
@@ -3068,6 +3389,7 @@ if (cancelEditButton) {
 
       renderShipments();
 
+
       if (shippingMessage) {
 
         shippingMessage.style.display =
@@ -3103,12 +3425,14 @@ if (newShipmentButton) {
 
       renderShipments();
 
+
       if (shippingMessage) {
 
         shippingMessage.style.display =
           "none";
 
       }
+
 
       window.scrollTo({
         top: 0,
@@ -3155,19 +3479,23 @@ function updateErrorVisibility(
 
   }
 
+
   const status =
     shippingStatus?.value ||
     "";
+
 
   const normalizedStatus =
     status
       .trim()
       .toLowerCase();
 
+
   const hasErrorStatus =
     normalizedStatus === "error" ||
     normalizedStatus === "failed" ||
     normalizedStatus === "exception";
+
 
   errorMessageGroup.style.display =
     hasErrorStatus
@@ -3207,18 +3535,23 @@ function clearForm() {
 
   }
 
+
   selectedShippingType =
     "test";
+
 
   trackingEvents =
     [];
 
+
   renderTrackingEvents();
+
 
   const testOption =
     document.querySelector(
       'input[name="shippingType"][value="test"]'
     );
+
 
   if (testOption) {
 
@@ -3226,6 +3559,7 @@ function clearForm() {
       true;
 
   }
+
 
   updateErrorVisibility();
 
@@ -3290,10 +3624,12 @@ function saveFormData() {
 
     };
 
+
     localStorage.setItem(
       "cargoFormData",
       JSON.stringify(data)
     );
+
 
   } catch (error) {
 
@@ -3320,14 +3656,17 @@ function restoreFormData() {
         "cargoFormData"
       );
 
+
     if (!saved) {
 
       return;
 
     }
 
+
     const data =
       JSON.parse(saved);
+
 
     if (invoiceNumber) {
 
@@ -3336,12 +3675,14 @@ function restoreFormData() {
 
     }
 
+
     if (shipmentDate) {
 
       shipmentDate.value =
         data.shipmentDate || "";
 
     }
+
 
     if (shipmentTime) {
 
@@ -3350,12 +3691,14 @@ function restoreFormData() {
 
     }
 
+
     if (estimatedDelivery) {
 
       estimatedDelivery.value =
         data.estimatedDelivery || "";
 
     }
+
 
     if (estimatedDeliveryTime) {
 
@@ -3364,12 +3707,14 @@ function restoreFormData() {
 
     }
 
+
     if (sender) {
 
       sender.value =
         data.sender || "";
 
     }
+
 
     if (senderEmail) {
 
@@ -3378,12 +3723,14 @@ function restoreFormData() {
 
     }
 
+
     if (origin) {
 
       origin.value =
         data.origin || "";
 
     }
+
 
     if (recipient) {
 
@@ -3392,12 +3739,14 @@ function restoreFormData() {
 
     }
 
+
     if (recipientEmail) {
 
       recipientEmail.value =
         data.recipientEmail || "";
 
     }
+
 
     if (recipientAddress) {
 
@@ -3406,6 +3755,7 @@ function restoreFormData() {
 
     }
 
+
     if (packageContent) {
 
       packageContent.value =
@@ -3413,12 +3763,14 @@ function restoreFormData() {
 
     }
 
+
     if (packageWeight) {
 
       packageWeight.value =
         data.packageWeight || "";
 
     }
+
 
     if (shippingStatus) {
 
@@ -3428,6 +3780,7 @@ function restoreFormData() {
 
     }
 
+
     if (errorMessage) {
 
       errorMessage.value =
@@ -3435,7 +3788,9 @@ function restoreFormData() {
 
     }
 
+
     updateErrorVisibility();
+
 
   } catch (error) {
 
@@ -3463,8 +3818,10 @@ function extractDate(
 
   }
 
+
   const stringValue =
     String(value);
+
 
   if (
     /^\d{4}-\d{2}-\d{2}/
@@ -3475,6 +3832,7 @@ function extractDate(
       .substring(0, 10);
 
   }
+
 
   return "";
 
@@ -3495,19 +3853,23 @@ function extractTime(
 
   }
 
+
   const stringValue =
     String(value);
+
 
   const match =
     stringValue.match(
       /T(\d{2}:\d{2})/
     );
 
+
   if (match) {
 
     return match[1];
 
   }
+
 
   return "";
 
@@ -3528,8 +3890,10 @@ function formatDateDisplay(
 
   }
 
+
   const date =
     new Date(value);
+
 
   if (
     Number.isNaN(
@@ -3540,6 +3904,7 @@ function formatDateDisplay(
     return String(value);
 
   }
+
 
   return date.toLocaleString();
 
@@ -3557,6 +3922,7 @@ function downloadCargoDocument(
   const shipment =
     userShipments[index];
 
+
   if (!shipment) {
 
     alert(
@@ -3567,11 +3933,14 @@ function downloadCargoDocument(
 
   }
 
+
   currentShipment =
     shipment;
 
+
   generatedTrackingNumber =
     shipment.trackingNumber || "";
+
 
   printDocument(
     shipment
@@ -3756,6 +4125,7 @@ async function printDocument(
         const image =
           new Image();
 
+
         image.onload =
           function () {
 
@@ -3764,6 +4134,7 @@ async function printDocument(
             );
 
           };
+
 
         image.onerror =
           function () {
@@ -3775,6 +4146,7 @@ async function printDocument(
             );
 
           };
+
 
         image.src =
           "images/cargo-letterhead.png";
@@ -3879,47 +4251,58 @@ async function printDocument(
     shipment.invoiceNumber ||
     "N/A";
 
+
   const tracking =
     shipment.trackingNumber ||
     "N/A";
+
 
   const dateCreated =
     extractDate(
       shipment.shipmentDate
     ) || "N/A";
 
+
   const arrivalDate =
     extractDate(
       shipment.estimatedDelivery
     ) || "N/A";
 
+
   const senderName =
     shipment.sender ||
     "N/A";
+
 
   const senderEmailValue =
     shipment.senderEmail ||
     "";
 
+
   const recipientName =
     shipment.recipient ||
     "N/A";
+
 
   const recipientEmailValue =
     shipment.recipientEmail ||
     "";
 
+
   const recipientAddressValue =
     shipment.recipientAddress ||
     "N/A";
+
 
   const packageContentValue =
     shipment.packageContent ||
     "N/A";
 
+
   const packageWeightValue =
     shipment.packageWeight ||
     "N/A";
+
 
   const isWatermarked =
     shipment.watermarkEnabled !== false;
@@ -4054,8 +4437,10 @@ async function printDocument(
 
       }
 
+
       const text =
         String(value);
+
 
       if (
         !text.trim()
@@ -4070,6 +4455,7 @@ async function printDocument(
         convertX(
           position.left
         );
+
 
       const y =
         convertY(
@@ -4175,6 +4561,7 @@ async function printDocument(
           POSITIONS.tracking.left
         );
 
+
       const trackingY =
         convertY(
           POSITIONS.tracking.top
@@ -4201,6 +4588,7 @@ async function printDocument(
 
       const TRACKING_SPACING =
         0.3;
+
 
       let currentX =
         trackingX;
@@ -4535,6 +4923,7 @@ const navbarToggler =
     "navbarToggler"
   );
 
+
 if (
   navbarToggler &&
   authNav
@@ -4547,10 +4936,12 @@ if (
         "show"
       );
 
+
       const isOpen =
         authNav.classList.contains(
           "show"
         );
+
 
       navbarToggler.setAttribute(
         "aria-expanded",
@@ -4575,6 +4966,7 @@ if (
           authNav.classList.remove(
             "show"
           );
+
 
           navbarToggler.setAttribute(
             "aria-expanded",
