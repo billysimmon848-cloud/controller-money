@@ -30,16 +30,19 @@ const errorMessageGroup =
 const errorMessage =
   document.getElementById("errorMessage");
 
-const continueShipping =
-  document.getElementById("continueShipping");
-
 const shippingTypeModal =
   document.getElementById("shippingTypeModal");
 
-const shipmentsList =
-  document.getElementById("shipmentsList");
+const continueShipping =
+  document.getElementById("continueShipping");
 
-const refreshShipments =
+const cancelShippingType =
+  document.getElementById("cancelShippingType");
+
+const shipmentList =
+  document.getElementById("shipmentList");
+
+const refreshShipmentsButton =
   document.getElementById("refreshShipments");
 
 const newShipmentButton =
@@ -48,91 +51,69 @@ const newShipmentButton =
 const cancelEditButton =
   document.getElementById("cancelEditButton");
 
+const controllerWorkspace =
+  document.getElementById("controllerWorkspace");
 
-// ======================================================
-// HISTORY DOM ELEMENTS
-// ======================================================
+const profileView =
+  document.getElementById("profileView");
 
-const addTrackingEventButton =
-  document.getElementById(
-    "addTrackingEventButton"
-  );
-
-const saveTrackingHistoryButton =
-  document.getElementById(
-    "saveTrackingHistoryButton"
-  );
-
-const trackingEventsContainer =
-  document.getElementById(
-    "trackingEventsContainer"
-  );
-
-
-// ======================================================
-// REMOVE OLD DOCUMENT PREVIEW
-// ======================================================
-
-const oldShippingDocument =
-  document.getElementById("shippingDocument");
-
-if (oldShippingDocument) {
-
-  oldShippingDocument.remove();
-
-}
-
-
-// ======================================================
-// CONTROLLER LAYOUT
-// ======================================================
-
-const workspaceGrid =
-  document.querySelector(".workspace-grid");
+const createView =
+  document.getElementById("createView");
 
 
 // ======================================================
 // FORM ELEMENTS
 // ======================================================
 
-const invoiceNumber =
+const invoiceNumberInput =
   document.getElementById("invoiceNumber");
 
-const shipmentDate =
-  document.getElementById("shipmentDate");
+const shippingDateInput =
+  document.getElementById("shippingDate");
 
-const shipmentTime =
-  document.getElementById("shipmentTime");
+const shippingTimeInput =
+  document.getElementById("shippingTime");
 
-const estimatedDelivery =
+const estimatedDeliveryInput =
   document.getElementById("estimatedDelivery");
 
-const estimatedDeliveryTime =
-  document.getElementById("estimatedDeliveryTime");
-
-const sender =
+const senderInput =
   document.getElementById("sender");
 
-const senderEmail =
+const senderEmailInput =
   document.getElementById("senderEmail");
 
-const origin =
+const originInput =
   document.getElementById("origin");
 
-const recipient =
+const recipientInput =
   document.getElementById("recipient");
 
-const recipientEmail =
-  document.getElementById("recipientEmail");
-
-const recipientAddress =
+const recipientAddressInput =
   document.getElementById("recipientAddress");
 
-const packageContent =
+const recipientEmailInput =
+  document.getElementById("recipientEmail");
+
+const packageContentInput =
   document.getElementById("packageContent");
 
-const packageWeight =
+const packageWeightInput =
   document.getElementById("packageWeight");
+
+
+// ======================================================
+// HISTORY ELEMENTS
+// ======================================================
+
+const addTrackingEventButton =
+  document.getElementById("addTrackingEventButton");
+
+const saveTrackingHistoryButton =
+  document.getElementById("saveTrackingHistoryButton");
+
+const trackingEventsContainer =
+  document.getElementById("trackingEventsContainer");
 
 
 // ======================================================
@@ -155,16 +136,19 @@ let editingShipment = false;
 
 let currentWalletBalance = 0;
 
-
-// ======================================================
-// TRACKING HISTORY STATE
-// ======================================================
-
 let trackingEvents = [];
 
 
 // ======================================================
-// GET TOKEN
+// API
+// ======================================================
+
+const API_URL =
+  "https://api.justdoks.com/api";
+
+
+// ======================================================
+// TOKEN
 // ======================================================
 
 function getToken() {
@@ -175,18 +159,13 @@ function getToken() {
 
 
 // ======================================================
-// ESCAPE HTML
+// HTML ESCAPE
 // ======================================================
 
 function escapeHTML(value) {
 
-  if (
-    value === null ||
-    value === undefined
-  ) {
-
+  if (value === null || value === undefined) {
     return "";
-
   }
 
   return String(value)
@@ -200,7 +179,7 @@ function escapeHTML(value) {
 
 
 // ======================================================
-// ESCAPE ATTRIBUTE
+// ATTRIBUTE ESCAPE
 // ======================================================
 
 function escapeAttribute(value) {
@@ -211,140 +190,82 @@ function escapeAttribute(value) {
 
 
 // ======================================================
-// FORMAT MONEY
+// MONEY
 // ======================================================
 
-function formatMoney(value) {
+function formatMoney(amount) {
 
-  const amount =
-    Number(value);
+  const number =
+    Number(amount) || 0;
 
-  if (
-    Number.isNaN(amount)
-  ) {
-
-    return "$0.00";
-
-  }
-
-  return "$" +
-    amount.toFixed(2);
+  return `$${number.toFixed(2)}`;
 
 }
 
 
 // ======================================================
-// BUILD DATE TIME
+// BUILD DATE + TIME
 // ======================================================
 
-function buildDateTime(
-  dateValue,
-  timeValue
-) {
+function buildDateTime(date, time) {
 
-  if (!dateValue) {
-
+  if (!date) {
     return "";
-
   }
 
-  if (!timeValue) {
-
-    return dateValue;
-
+  if (!time) {
+    return `${date}T00:00`;
   }
 
-  return `${dateValue}T${timeValue}`;
+  return `${date}T${time}`;
 
 }
 
 
 // ======================================================
-// BUILD HISTORY TIMESTAMP
+// HISTORY TIMESTAMP
 // ======================================================
 
-function buildHistoryTimestamp(
-  dateValue,
-  timeValue
-) {
+function buildHistoryTimestamp(date, time) {
 
-  if (!dateValue) {
-
+  if (!date) {
     return "";
-
   }
 
-  if (!timeValue) {
+  if (!time) {
+    return `${date}T00:00:00`;
+  }
 
-    return dateValue;
+  return `${date}T${time}:00`;
 
+}
+
+
+// ======================================================
+// LOCAL DATE
+// ======================================================
+
+function getLocalDateFromTimestamp(timestamp) {
+
+  if (!timestamp) {
+    return "";
   }
 
   const date =
-    new Date(
-      `${dateValue}T${timeValue}`
-    );
+    new Date(timestamp);
 
-  if (
-    Number.isNaN(
-      date.getTime()
-    )
-  ) {
-
+  if (Number.isNaN(date.getTime())) {
     return "";
-
-  }
-
-  return date.toISOString();
-
-}
-
-
-// ======================================================
-// GET LOCAL DATE FROM TIMESTAMP
-// ======================================================
-
-function getLocalDateFromTimestamp(
-  value
-) {
-
-  if (!value) {
-
-    return "";
-
-  }
-
-  const date =
-    new Date(value);
-
-  if (
-    Number.isNaN(
-      date.getTime()
-    )
-  ) {
-
-    return "";
-
   }
 
   const year =
     date.getFullYear();
 
   const month =
-    String(
-      date.getMonth() + 1
-    ).padStart(
-      2,
-      "0"
-    );
+    String(date.getMonth() + 1).padStart(2, "0");
 
   const day =
-    String(
-      date.getDate()
-    ).padStart(
-      2,
-      "0"
-    );
+    String(date.getDate()).padStart(2, "0");
 
   return `${year}-${month}-${day}`;
 
@@ -352,47 +273,27 @@ function getLocalDateFromTimestamp(
 
 
 // ======================================================
-// GET LOCAL TIME FROM TIMESTAMP
+// LOCAL TIME
 // ======================================================
 
-function getLocalTimeFromTimestamp(
-  value
-) {
+function getLocalTimeFromTimestamp(timestamp) {
 
-  if (!value) {
-
+  if (!timestamp) {
     return "";
-
   }
 
   const date =
-    new Date(value);
+    new Date(timestamp);
 
-  if (
-    Number.isNaN(
-      date.getTime()
-    )
-  ) {
-
+  if (Number.isNaN(date.getTime())) {
     return "";
-
   }
 
   const hours =
-    String(
-      date.getHours()
-    ).padStart(
-      2,
-      "0"
-    );
+    String(date.getHours()).padStart(2, "0");
 
   const minutes =
-    String(
-      date.getMinutes()
-    ).padStart(
-      2,
-      "0"
-    );
+    String(date.getMinutes()).padStart(2, "0");
 
   return `${hours}:${minutes}`;
 
@@ -400,7 +301,7 @@ function getLocalTimeFromTimestamp(
 
 
 // ======================================================
-// AUTH USER
+// CURRENT USER
 // ======================================================
 
 async function getCurrentUser() {
@@ -409,28 +310,20 @@ async function getCurrentUser() {
     getToken();
 
   if (!token) {
-
     return null;
-
   }
 
   try {
 
     const response =
-      await fetch(
-        `${API_URL}/auth/me`,
-        {
-          headers: {
-            Authorization:
-              `Bearer ${token}`
-          }
+      await fetch(`${API_URL}/auth/me`, {
+        headers: {
+          Authorization: `Bearer ${token}`
         }
-      );
+      });
 
     if (!response.ok) {
-
       return null;
-
     }
 
     const data =
@@ -441,7 +334,7 @@ async function getCurrentUser() {
   } catch (error) {
 
     console.error(
-      "GET CURRENT USER ERROR:",
+      "Unable to load current user:",
       error
     );
 
@@ -453,68 +346,51 @@ async function getCurrentUser() {
 
 
 // ======================================================
-// CARGO NAVBAR
+// UPDATE NAVBAR
 // ======================================================
 
 function updateCargoNavbar() {
 
+  const token =
+    getToken();
+
+  const authNav =
+    document.getElementById("authNav");
+
   if (!authNav) {
-
     return;
-
   }
 
-  if (!currentUser) {
+  if (!token || !currentUser) {
 
     authNav.innerHTML = `
-
-      <a
-        href="login.html"
-        class="btn btn-primary"
-      >
-        Login
-      </a>
-
+      <a href="/login.html">Login</a>
     `;
 
     return;
-
   }
 
   const name =
     currentUser.name ||
-    currentUser.username ||
+    currentUser.fullName ||
     currentUser.email ||
-    "User";
+    "Account";
 
   authNav.innerHTML = `
+    <span class="user-name">
+      ${escapeHTML(name)}
+    </span>
 
-    <div class="cargo-account-nav">
+    <span class="wallet-balance">
+      ${formatMoney(currentWalletBalance)}
+    </span>
 
-      <span class="cargo-user-name">
-        ${escapeHTML(name)}
-      </span>
-
-      <span class="cargo-wallet-balance">
-
-        <strong id="cargoNavbarWallet">
-          ${formatMoney(
-            currentWalletBalance
-          )}
-        </strong>
-
-      </span>
-
-      <button
-        type="button"
-        class="btn btn-outline-danger btn-sm"
-        onclick="logoutCargo()"
-      >
-        Logout
-      </button>
-
-    </div>
-
+    <button
+      type="button"
+      onclick="logoutCargo()"
+    >
+      Logout
+    </button>
   `;
 
 }
@@ -529,7 +405,7 @@ function logoutCargo() {
   localStorage.removeItem("token");
 
   window.location.href =
-    "login.html";
+    "/login.html";
 
 }
 
@@ -544,37 +420,24 @@ async function loadWalletBalance() {
     getToken();
 
   if (!token) {
-
     return;
-
   }
 
   try {
 
     const response =
-      await fetch(
-        `${API_URL}/wallet`,
-        {
-          headers: {
-            Authorization:
-              `Bearer ${token}`
-          }
+      await fetch(`${API_URL}/wallet`, {
+        headers: {
+          Authorization: `Bearer ${token}`
         }
-      );
+      });
+
+    if (!response.ok) {
+      return;
+    }
 
     const data =
       await response.json();
-
-    if (!response.ok) {
-
-      console.error(
-        "WALLET ERROR:",
-        data
-      );
-
-      return;
-
-    }
 
     currentWalletBalance =
       Number(
@@ -583,24 +446,12 @@ async function loadWalletBalance() {
         0
       );
 
-    const navbarWallet =
-      document.getElementById(
-        "cargoNavbarWallet"
-      );
-
-    if (navbarWallet) {
-
-      navbarWallet.textContent =
-        formatMoney(
-          currentWalletBalance
-        );
-
-    }
+    updateCargoNavbar();
 
   } catch (error) {
 
     console.error(
-      "LOAD WALLET ERROR:",
+      "Unable to load wallet:",
       error
     );
 
@@ -610,46 +461,21 @@ async function loadWalletBalance() {
 
 
 // ======================================================
-// LOAD USER
+// LOAD USER STORAGE
 // ======================================================
 
 async function loadUserStorage() {
-
-  const token =
-    getToken();
-
-  if (!token) {
-
-    currentUser = null;
-
-    updateCargoNavbar();
-
-    if (shipmentsList) {
-
-      shipmentsList.innerHTML = `
-
-        <p class="text-muted">
-          Please login to view your shipments.
-        </p>
-
-      `;
-
-    }
-
-    return;
-
-  }
 
   currentUser =
     await getCurrentUser();
 
   if (!currentUser) {
 
-    localStorage.removeItem("token");
-
-    currentUser = null;
+    currentUserId = "";
 
     updateCargoNavbar();
+
+    setControllerMode("create");
 
     return;
 
@@ -673,33 +499,28 @@ async function loadUserStorage() {
 // CONTROLLER MODE
 // ======================================================
 
-function setControllerMode(
-  mode
-) {
+function setControllerMode(mode) {
 
-  if (!workspaceGrid) {
+  if (mode === "profile") {
+
+    if (profileView) {
+      profileView.style.display = "";
+    }
+
+    if (createView) {
+      createView.style.display = "none";
+    }
 
     return;
 
   }
 
-  workspaceGrid.classList.remove(
-    "create-mode",
-    "profile-mode"
-  );
+  if (profileView) {
+    profileView.style.display = "none";
+  }
 
-  if (mode === "profile") {
-
-    workspaceGrid.classList.add(
-      "profile-mode"
-    );
-
-  } else {
-
-    workspaceGrid.classList.add(
-      "create-mode"
-    );
-
+  if (createView) {
+    createView.style.display = "";
   }
 
 }
@@ -709,9 +530,7 @@ function setControllerMode(
 // SELECT SHIPMENT
 // ======================================================
 
-function selectShipment(
-  index
-) {
+function selectShipment(index) {
 
   editShipment(index);
 
@@ -719,46 +538,52 @@ function selectShipment(
 
 
 // ======================================================
-// OPEN SHIPPING TYPE MODAL
+// SHIPPING TYPE MODAL
 // ======================================================
 
 function openShippingTypeModal() {
 
   if (!shippingTypeModal) {
+    createShipping();
+    return;
+  }
 
-    console.error(
-      "shippingTypeModal was not found."
+  const selected =
+    document.querySelector(
+      'input[name="shippingType"]:checked'
     );
 
-    return;
+  if (selected) {
+
+    selectedShippingType =
+      selected.value;
 
   }
 
-  if (
-    typeof bootstrap ===
-    "undefined"
-  ) {
-
-    alert(
-      "Shipping options could not be opened. Please refresh the page."
-    );
-
-    return;
-
-  }
-
-  const modal =
-    bootstrap.Modal.getOrCreateInstance(
-      shippingTypeModal
-    );
-
-  modal.show();
+  shippingTypeModal.style.display =
+    "flex";
 
 }
 
 
 // ======================================================
-// CONTINUE SHIPPING TYPE
+// CLOSE SHIPPING TYPE MODAL
+// ======================================================
+
+function closeShippingTypeModal() {
+
+  if (!shippingTypeModal) {
+    return;
+  }
+
+  shippingTypeModal.style.display =
+    "none";
+
+}
+
+
+// ======================================================
+// CONTINUE SHIPPING
 // ======================================================
 
 if (continueShipping) {
@@ -772,38 +597,14 @@ if (continueShipping) {
           'input[name="shippingType"]:checked'
         );
 
-      if (!selected) {
+      if (selected) {
 
-        alert(
-          "Please select a shipping type."
-        );
-
-        return;
+        selectedShippingType =
+          selected.value;
 
       }
 
-      selectedShippingType =
-        selected.value === "clean"
-          ? "clean"
-          : "test";
-
-      if (
-        typeof bootstrap !==
-        "undefined"
-      ) {
-
-        const modal =
-          bootstrap.Modal.getInstance(
-            shippingTypeModal
-          );
-
-        if (modal) {
-
-          modal.hide();
-
-        }
-
-      }
+      closeShippingTypeModal();
 
       createShipping();
 
@@ -814,7 +615,25 @@ if (continueShipping) {
 
 
 // ======================================================
-// SHIPPING FORM
+// CANCEL SHIPPING TYPE
+// ======================================================
+
+if (cancelShippingType) {
+
+  cancelShippingType.addEventListener(
+    "click",
+    function () {
+
+      closeShippingTypeModal();
+
+    }
+  );
+
+}
+
+
+// ======================================================
+// FORM SUBMIT
 // ======================================================
 
 if (shippingForm) {
@@ -825,9 +644,7 @@ if (shippingForm) {
 
       event.preventDefault();
 
-      if (
-        !shippingForm.checkValidity()
-      ) {
+      if (!shippingForm.checkValidity()) {
 
         shippingForm.reportValidity();
 
@@ -852,7 +669,7 @@ if (shippingForm) {
 
 
 // ======================================================
-// HISTORY — ADD ENTRY
+// ADD TRACKING EVENT
 // ======================================================
 
 if (addTrackingEventButton) {
@@ -863,14 +680,11 @@ if (addTrackingEventButton) {
 
       trackingEvents.push({
 
-        status:
-          "Processing",
+        status: "Processing",
 
-        location:
-          "",
+        location: "",
 
-        description:
-          "",
+        description: "",
 
         timestamp:
           new Date().toISOString()
@@ -886,43 +700,21 @@ if (addTrackingEventButton) {
 
 
 // ======================================================
-// HISTORY — SAVE ONLY HISTORY
-// ======================================================
-
-if (saveTrackingHistoryButton) {
-
-  saveTrackingHistoryButton.addEventListener(
-    "click",
-    saveTrackingHistory
-  );
-
-}
-
-
-// ======================================================
-// HISTORY — RENDER
+// RENDER TRACKING EVENTS
 // ======================================================
 
 function renderTrackingEvents() {
 
   if (!trackingEventsContainer) {
-
     return;
-
   }
 
-  if (
-    trackingEvents.length === 0
-  ) {
+  if (!trackingEvents.length) {
 
     trackingEventsContainer.innerHTML = `
-
       <div class="tracking-events-empty">
-
         No history entries added yet.
-
       </div>
-
     `;
 
     return;
@@ -930,455 +722,320 @@ function renderTrackingEvents() {
   }
 
   trackingEventsContainer.innerHTML =
-
     trackingEvents
-      .map(
-        function (
-          event,
-          index
-        ) {
+      .map(function (event, index) {
 
-          return createTrackingEventEditor(
-            event,
-            index
+        const date =
+          getLocalDateFromTimestamp(
+            event.timestamp
           );
 
-        }
-      )
+        const time =
+          getLocalTimeFromTimestamp(
+            event.timestamp
+          );
+
+        return `
+          <div
+            class="tracking-event-editor"
+            data-index="${index}"
+          >
+
+            <div class="tracking-event-fields">
+
+              <div class="form-group">
+
+                <label>
+                  Date
+                </label>
+
+                <input
+                  type="date"
+                  value="${escapeAttribute(date)}"
+                  data-history-field="date"
+                  data-index="${index}"
+                >
+
+              </div>
+
+
+              <div class="form-group">
+
+                <label>
+                  Time
+                </label>
+
+                <input
+                  type="time"
+                  value="${escapeAttribute(time)}"
+                  data-history-field="time"
+                  data-index="${index}"
+                >
+
+              </div>
+
+
+              <div class="form-group">
+
+                <label>
+                  Status
+                </label>
+
+                <select
+                  data-history-field="status"
+                  data-index="${index}"
+                >
+
+                  ${[
+                    "Processing",
+                    "Package Received",
+                    "In Transit",
+                    "Arrived",
+                    "Delivered",
+                    "Error"
+                  ]
+                    .map(function (status) {
+
+                      return `
+                        <option
+                          value="${escapeAttribute(status)}"
+                          ${
+                            event.status === status
+                              ? "selected"
+                              : ""
+                          }
+                        >
+                          ${escapeHTML(status)}
+                        </option>
+                      `;
+
+                    })
+                    .join("")}
+
+                </select>
+
+              </div>
+
+
+              <div class="form-group">
+
+                <label>
+                  Location
+                </label>
+
+                <input
+                  type="text"
+                  value="${escapeAttribute(event.location || "")}"
+                  placeholder="Location"
+                  data-history-field="location"
+                  data-index="${index}"
+                >
+
+              </div>
+
+
+              <div class="form-group">
+
+                <label>
+                  Description
+                </label>
+
+                <input
+                  type="text"
+                  value="${escapeAttribute(event.description || "")}"
+                  placeholder="Description"
+                  data-history-field="description"
+                  data-index="${index}"
+                >
+
+              </div>
+
+
+              <button
+                type="button"
+                class="btn btn-outline-danger"
+                data-remove-history="${index}"
+              >
+                Remove
+              </button>
+
+            </div>
+
+          </div>
+        `;
+
+      })
       .join("");
 
+
+  trackingEventsContainer
+    .querySelectorAll(
+      "[data-history-field]"
+    )
+    .forEach(function (input) {
+
+      input.addEventListener(
+        "input",
+        updateTrackingEvent
+      );
+
+      input.addEventListener(
+        "change",
+        updateTrackingEvent
+      );
+
+    });
+
+
+  trackingEventsContainer
+    .querySelectorAll(
+      "[data-remove-history]"
+    )
+    .forEach(function (button) {
+
+      button.addEventListener(
+        "click",
+        function () {
+
+          const index =
+            Number(
+              button.dataset.removeHistory
+            );
+
+          trackingEvents.splice(
+            index,
+            1
+          );
+
+          renderTrackingEvents();
+
+        }
+      );
+
+    });
+
 }
 
 
 // ======================================================
-// HISTORY — CREATE EDITOR
+// UPDATE TRACKING EVENT
 // ======================================================
 
-function createTrackingEventEditor(
-  event,
-  index
-) {
+function updateTrackingEvent(event) {
 
-  const dateValue =
-    getLocalDateFromTimestamp(
-      event.timestamp
+  const element =
+    event.target;
+
+  const index =
+    Number(
+      element.dataset.index
     );
 
-  const timeValue =
-    getLocalTimeFromTimestamp(
-      event.timestamp
-    );
-
-  const status =
-    event.status ||
-    "Processing";
-
-  const location =
-    event.location ||
-    "";
-
-  const description =
-    event.description ||
-    "";
-
-  return `
-
-    <div
-      class="tracking-event-editor"
-      data-event-index="${index}"
-    >
-
-      <div class="tracking-event-editor-header">
-
-        <strong>
-          History Entry ${index + 1}
-        </strong>
-
-        <button
-          type="button"
-          class="btn btn-sm btn-outline-danger"
-          onclick="removeTrackingEvent(${index})"
-        >
-          Remove
-        </button>
-
-      </div>
-
-
-      <div class="tracking-event-editor-grid">
-
-
-        <!-- DATE -->
-
-        <div class="tracking-event-field">
-
-          <label>
-            Date
-          </label>
-
-          <input
-            type="date"
-            value="${escapeAttribute(dateValue)}"
-            onchange="updateTrackingEventDate(${index}, this.value)"
-          >
-
-        </div>
-
-
-        <!-- TIME -->
-
-        <div class="tracking-event-field">
-
-          <label>
-            Time
-          </label>
-
-          <input
-            type="time"
-            value="${escapeAttribute(timeValue)}"
-            onchange="updateTrackingEventTime(${index}, this.value)"
-          >
-
-        </div>
-
-
-        <!-- STATUS -->
-
-        <div class="tracking-event-field">
-
-          <label>
-            Status
-          </label>
-
-          <select
-            onchange="updateTrackingEventStatus(${index}, this.value)"
-          >
-
-            <option
-              value="Processing"
-              ${
-                status === "Processing"
-                  ? "selected"
-                  : ""
-              }
-            >
-              Processing
-            </option>
-
-            <option
-              value="Package Received"
-              ${
-                status === "Package Received"
-                  ? "selected"
-                  : ""
-              }
-            >
-              Package Received
-            </option>
-
-            <option
-              value="In Transit"
-              ${
-                status === "In Transit"
-                  ? "selected"
-                  : ""
-              }
-            >
-              In Transit
-            </option>
-
-            <option
-              value="Arrived"
-              ${
-                status === "Arrived"
-                  ? "selected"
-                  : ""
-              }
-            >
-              Arrived
-            </option>
-
-            <option
-              value="Delivered"
-              ${
-                status === "Delivered"
-                  ? "selected"
-                  : ""
-              }
-            >
-              Delivered
-            </option>
-
-            <option
-              value="Error"
-              ${
-                status === "Error"
-                  ? "selected"
-                  : ""
-              }
-            >
-              Error
-            </option>
-
-          </select>
-
-        </div>
-
-
-        <!-- LOCATION -->
-
-        <div class="tracking-event-field">
-
-          <label>
-            Location
-          </label>
-
-          <input
-            type="text"
-            value="${escapeAttribute(location)}"
-            placeholder="Houston, Texas"
-            onchange="updateTrackingEventLocation(${index}, this.value)"
-          >
-
-        </div>
-
-
-        <!-- DESCRIPTION -->
-
-        <div
-          class="tracking-event-field tracking-event-description"
-        >
-
-          <label>
-            Description
-          </label>
-
-          <textarea
-            rows="3"
-            placeholder="Package collected from sender."
-            onchange="updateTrackingEventDescription(${index}, this.value)"
-          >${escapeHTML(description)}</textarea>
-
-        </div>
-
-      </div>
-
-    </div>
-
-  `;
-
-}
-
-
-// ======================================================
-// HISTORY — UPDATE DATE
-// ======================================================
-
-function updateTrackingEventDate(
-  index,
-  value
-) {
+  const field =
+    element.dataset.historyField;
 
   if (
+    Number.isNaN(index) ||
     !trackingEvents[index]
   ) {
+    return;
+  }
+
+  if (field === "date") {
+
+    const currentTime =
+      getLocalTimeFromTimestamp(
+        trackingEvents[index].timestamp
+      ) || "00:00";
+
+    trackingEvents[index].timestamp =
+      buildHistoryTimestamp(
+        element.value,
+        currentTime
+      );
 
     return;
 
   }
 
-  const currentTime =
-    getLocalTimeFromTimestamp(
-      trackingEvents[index].timestamp
-    ) ||
-    "00:00";
+  if (field === "time") {
 
-  trackingEvents[index].timestamp =
-    buildHistoryTimestamp(
-      value,
-      currentTime
-    );
+    const currentDate =
+      getLocalDateFromTimestamp(
+        trackingEvents[index].timestamp
+      ) ||
+      getLocalDateFromTimestamp(
+        new Date().toISOString()
+      );
 
-}
-
-
-// ======================================================
-// HISTORY — UPDATE TIME
-// ======================================================
-
-function updateTrackingEventTime(
-  index,
-  value
-) {
-
-  if (
-    !trackingEvents[index]
-  ) {
+    trackingEvents[index].timestamp =
+      buildHistoryTimestamp(
+        currentDate,
+        element.value
+      );
 
     return;
 
   }
 
-  const currentDate =
-    getLocalDateFromTimestamp(
-      trackingEvents[index].timestamp
-    );
-
-  trackingEvents[index].timestamp =
-    buildHistoryTimestamp(
-      currentDate,
-      value
-    );
+  trackingEvents[index][field] =
+    element.value;
 
 }
 
 
 // ======================================================
-// HISTORY — UPDATE STATUS
-// ======================================================
-
-function updateTrackingEventStatus(
-  index,
-  value
-) {
-
-  if (
-    !trackingEvents[index]
-  ) {
-
-    return;
-
-  }
-
-  trackingEvents[index].status =
-    value;
-
-}
-
-
-// ======================================================
-// HISTORY — UPDATE LOCATION
-// ======================================================
-
-function updateTrackingEventLocation(
-  index,
-  value
-) {
-
-  if (
-    !trackingEvents[index]
-  ) {
-
-    return;
-
-  }
-
-  trackingEvents[index].location =
-    value.trim();
-
-}
-
-
-// ======================================================
-// HISTORY — UPDATE DESCRIPTION
-// ======================================================
-
-function updateTrackingEventDescription(
-  index,
-  value
-) {
-
-  if (
-    !trackingEvents[index]
-  ) {
-
-    return;
-
-  }
-
-  trackingEvents[index].description =
-    value.trim();
-
-}
-
-
-// ======================================================
-// HISTORY — REMOVE ENTRY
-// ======================================================
-
-function removeTrackingEvent(
-  index
-) {
-
-  if (
-    !trackingEvents[index]
-  ) {
-
-    return;
-
-  }
-
-  trackingEvents.splice(
-    index,
-    1
-  );
-
-  renderTrackingEvents();
-
-}
-
-
-// ======================================================
-// HISTORY — COLLECT / CLEAN
+// GET TRACKING EVENTS
 // ======================================================
 
 function getTrackingEvents() {
 
   return trackingEvents
-    .map(
-      function (event) {
+    .map(function (event) {
 
-        return {
+      return {
 
-          status:
-            String(
-              event.status || ""
-            ).trim(),
+        status:
+          String(
+            event.status || ""
+          ).trim(),
 
-          location:
-            String(
-              event.location || ""
-            ).trim(),
+        location:
+          String(
+            event.location || ""
+          ).trim(),
 
-          description:
-            String(
-              event.description || ""
-            ).trim(),
+        description:
+          String(
+            event.description || ""
+          ).trim(),
 
-          timestamp:
-            event.timestamp || ""
+        timestamp:
+          event.timestamp || ""
 
-        };
+      };
 
-      }
-    )
-    .filter(
-      function (event) {
+    })
+    .filter(function (event) {
 
-        return (
-          event.status &&
-          event.location &&
-          event.timestamp
-        );
+      /*
+       * Do not save incomplete
+       * history entries.
+       */
 
-      }
-    );
+      return (
+        event.status &&
+        event.location &&
+        event.timestamp
+      );
+
+    });
 
 }
 
 
 // ======================================================
-// HISTORY — SAVE ONLY HISTORY
+// SAVE TRACKING HISTORY
 // ======================================================
 
 async function saveTrackingHistory() {
@@ -1388,111 +1045,55 @@ async function saveTrackingHistory() {
 
   if (!token) {
 
-    showMessage(
-      "Please login first.",
-      "danger"
+    alert(
+      "Please login first."
     );
 
     return;
 
   }
 
-  if (
-    !currentShipment ||
-    !currentShipment.trackingNumber
-  ) {
+  if (!generatedTrackingNumber) {
 
-    showMessage(
-      "Please select a shipment first.",
-      "danger"
+    alert(
+      "Please select a shipment first."
     );
 
     return;
 
   }
-
-  const trackingNumber =
-    currentShipment.trackingNumber;
-
 
   const history =
     getTrackingEvents();
-
-
-  if (
-    saveTrackingHistoryButton
-  ) {
-
-    saveTrackingHistoryButton.disabled =
-      true;
-
-    saveTrackingHistoryButton.dataset
-      .originalText =
-      saveTrackingHistoryButton.textContent;
-
-    saveTrackingHistoryButton.textContent =
-      "Saving History...";
-
-  }
-
 
   try {
 
     const response =
       await fetch(
-
         `${API_URL}/shipments/${encodeURIComponent(
-          trackingNumber
+          generatedTrackingNumber
         )}`,
-
         {
-
           method: "PATCH",
 
           headers: {
-
             "Content-Type":
               "application/json",
 
             Authorization:
               `Bearer ${token}`
-
           },
 
-          body:
-            JSON.stringify({
-
-              trackingEvents:
-                history
-
-            })
-
+          body: JSON.stringify({
+            trackingEvents:
+              history
+          })
         }
-
       );
 
 
-    const responseText =
-      await response.text();
-
-
-    let data = {};
-
-
-    try {
-
-      data =
-        responseText
-          ? JSON.parse(responseText)
-          : {};
-
-    } catch (error) {
-
-      throw new Error(
-        "Server returned an invalid response."
-      );
-
-    }
+    const data =
+      await response.json();
 
 
     if (!response.ok) {
@@ -1505,88 +1106,54 @@ async function saveTrackingHistory() {
     }
 
 
-    const shipment =
-      data.shipment || data;
-
-
-    if (
-      !shipment ||
-      !shipment.trackingNumber
-    ) {
-
-      throw new Error(
-        "History was saved but the server did not return the shipment."
-      );
-
-    }
-
-
     currentShipment =
-      shipment;
+      data.shipment ||
+      data;
 
 
     generatedTrackingNumber =
-      shipment.trackingNumber;
+      currentShipment.trackingNumber ||
+      generatedTrackingNumber;
 
 
     trackingEvents =
-      Array.isArray(
-        shipment.trackingEvents
-      )
-        ? shipment.trackingEvents
-        : [];
+      currentShipment.trackingEvents ||
+      history;
 
 
     addOrReplaceShipment(
-      shipment
+      currentShipment
     );
 
 
     renderTrackingEvents();
 
 
-    showCargoPopup(
+    await loadShipments();
 
-      `Shipment History Saved Successfully\n\n` +
 
-      `Tracking Number: ${
-        shipment.trackingNumber
-      }\n` +
+    if (shippingMessage) {
 
-      `History Entries: ${
-        trackingEvents.length
-      }`
+      shippingMessage.textContent =
+        "Shipment history saved successfully.";
 
-    );
+      shippingMessage.style.display =
+        "block";
+
+    }
 
 
   } catch (error) {
 
     console.error(
-      "SAVE HISTORY ERROR:",
+      "Save tracking history error:",
       error
     );
 
-    showCargoPopup(
+    alert(
       error.message ||
       "Unable to save shipment history."
     );
-
-  } finally {
-
-    if (
-      saveTrackingHistoryButton
-    ) {
-
-      saveTrackingHistoryButton.disabled =
-        false;
-
-      saveTrackingHistoryButton.textContent =
-        saveTrackingHistoryButton.dataset
-          .originalText ||
-        "Save History";
-
-    }
 
   }
 
@@ -1604,130 +1171,117 @@ async function createShipping() {
 
   if (!token) {
 
-    showMessage(
-      "Please login before creating a shipment.",
-      "danger"
+    alert(
+      "Please login first."
     );
 
     return;
 
   }
 
-  const shipmentData = {
 
-    invoiceNumber:
-      invoiceNumber?.value || "",
+  if (!shippingForm.checkValidity()) {
 
-    shipmentDate:
-      buildDateTime(
-        shipmentDate?.value || "",
-        shipmentTime?.value || ""
-      ),
+    shippingForm.reportValidity();
 
-    shipmentTime:
-      shipmentTime?.value || "",
+    return;
 
-    estimatedDelivery:
-      buildDateTime(
-        estimatedDelivery?.value || "",
-        estimatedDeliveryTime?.value || ""
-      ),
-
-    estimatedDeliveryTime:
-      estimatedDeliveryTime?.value || "",
-
-    sender:
-      sender?.value || "",
-
-    senderEmail:
-      senderEmail?.value || "",
-
-    origin:
-      origin?.value || "",
-
-    recipient:
-      recipient?.value || "",
-
-    recipientEmail:
-      recipientEmail?.value || "",
-
-    recipientAddress:
-      recipientAddress?.value || "",
-
-    packageContent:
-      packageContent?.value || "",
-
-    packageWeight:
-      packageWeight?.value || "",
-
-    currentStatus:
-      shippingStatus?.value ||
-      "Processing",
-
-    errorMessage:
-      errorMessage?.value || "",
-
-    shippingType:
-      selectedShippingType,
-
-    trackingEvents:
-      getTrackingEvents()
-
-  };
+  }
 
 
-  setCreateButtonLoading(true);
+  if (createShippingButton) {
+
+    createShippingButton.disabled =
+      true;
+
+    createShippingButton.textContent =
+      "Creating...";
+
+  }
 
 
   try {
+
+    const trackingHistory =
+      getTrackingEvents();
+
+
+    const payload = {
+
+      invoiceNumber:
+        invoiceNumberInput?.value.trim() || "",
+
+      shippingDate:
+        shippingDateInput?.value || "",
+
+      shippingTime:
+        shippingTimeInput?.value || "",
+
+      estimatedDelivery:
+        estimatedDeliveryInput?.value || "",
+
+      sender:
+        senderInput?.value.trim() || "",
+
+      senderEmail:
+        senderEmailInput?.value.trim() || "",
+
+      origin:
+        originInput?.value.trim() || "",
+
+      recipient:
+        recipientInput?.value.trim() || "",
+
+      recipientAddress:
+        recipientAddressInput?.value.trim() || "",
+
+      recipientEmail:
+        recipientEmailInput?.value.trim() || "",
+
+      packageContent:
+        packageContentInput?.value.trim() || "",
+
+      packageWeight:
+        packageWeightInput?.value.trim() || "",
+
+      currentStatus:
+        shippingStatus?.value ||
+        "Processing",
+
+      errorMessage:
+        errorMessage?.value.trim() || "",
+
+      shippingType:
+        selectedShippingType,
+
+      trackingEvents:
+        trackingHistory
+
+    };
+
 
     const response =
       await fetch(
         `${API_URL}/shipments`,
         {
-
           method: "POST",
 
           headers: {
-
             "Content-Type":
               "application/json",
 
             Authorization:
               `Bearer ${token}`
-
           },
 
           body:
-            JSON.stringify(
-              shipmentData
-            )
-
+            JSON.stringify(payload)
         }
       );
 
 
-    const responseText =
-      await response.text();
-
-
-    let data = {};
-
-
-    try {
-
-      data =
-        responseText
-          ? JSON.parse(responseText)
-          : {};
-
-    } catch (error) {
-
-      throw new Error(
-        "Server returned an invalid response."
-      );
-
-    }
+    const data =
+      await response.json();
 
 
     if (!response.ok) {
@@ -1740,51 +1294,36 @@ async function createShipping() {
     }
 
 
-    const shipment =
-      data.shipment || data;
+    currentShipment =
+      data.shipment ||
+      data;
+
+
+    generatedTrackingNumber =
+      currentShipment.trackingNumber ||
+      "";
+
+
+    trackingEvents =
+      currentShipment.trackingEvents ||
+      trackingHistory;
 
 
     if (
-      !shipment ||
-      !shipment.trackingNumber
+      currentShipment.walletBalance !==
+      undefined
     ) {
 
-      throw new Error(
-        "Shipment was created but no tracking number was returned."
-      );
+      currentWalletBalance =
+        Number(
+          currentShipment.walletBalance
+        );
 
     }
 
 
-    currentShipment =
-      shipment;
-
-
-    generatedTrackingNumber =
-      shipment.trackingNumber;
-
-
-    trackingEvents =
-      Array.isArray(
-        shipment.trackingEvents
-      )
-        ? shipment.trackingEvents
-        : [];
-
-
-    currentWalletBalance =
-      Number(
-        data.walletBalance ??
-        data.balance ??
-        currentWalletBalance
-      );
-
-
-    await loadWalletBalance();
-
-
     addOrReplaceShipment(
-      shipment
+      currentShipment
     );
 
 
@@ -1793,65 +1332,25 @@ async function createShipping() {
     );
 
 
-    const paymentAmount =
-      Number(
-        shipment.paymentAmount || 0
-      );
+    setFormMode(false);
 
 
-    const isClean =
-      shipment.watermarkEnabled === false ||
-      shipment.shippingType === "clean";
+    if (shippingMessage) {
 
+      shippingMessage.textContent =
+        selectedShippingType === "clean"
+          ? "Clean shipment created successfully."
+          : "Free test shipment created successfully.";
 
-    if (isClean) {
-
-      showCargoPopup(
-
-        `Shipping Created Successfully\n\n` +
-
-        `Tracking Number: ${
-          shipment.trackingNumber
-        }\n` +
-
-        `Payment: ${
-          formatMoney(paymentAmount)
-        }\n` +
-
-        `Wallet Balance: ${
-          formatMoney(currentWalletBalance)
-        }`
-
-      );
-
-    } else {
-
-      showCargoPopup(
-
-        `Test Shipping Created Successfully\n\n` +
-
-        `Tracking Number: ${
-          shipment.trackingNumber
-        }\n` +
-
-        `Payment: $0.00\n` +
-
-        `Wallet Balance: ${
-          formatMoney(currentWalletBalance)
-        }\n` +
-
-        `Document: Watermarked\n\n` +
-
-        `You can remove the watermark for ${
-          formatMoney(CLEAN_SHIPPING_PRICE)
-        }.`
-
-      );
+      shippingMessage.style.display =
+        "block";
 
     }
 
 
     saveFormData();
+
+    await loadWalletBalance();
 
     await loadShipments();
 
@@ -1859,160 +1358,30 @@ async function createShipping() {
   } catch (error) {
 
     console.error(
-      "CREATE SHIPPING ERROR:",
+      "Create shipping error:",
       error
     );
 
-    showCargoPopup(
+    alert(
       error.message ||
       "Unable to create shipment."
     );
 
   } finally {
 
-    setCreateButtonLoading(false);
+    if (createShippingButton) {
+
+      createShippingButton.disabled =
+        false;
+
+      createShippingButton.textContent =
+        editingShipment
+          ? "Update Shipment"
+          : "Create Shipping";
+
+    }
 
   }
-
-}
-
-
-// ======================================================
-// CREATE BUTTON LOADING
-// ======================================================
-
-function setCreateButtonLoading(
-  loading
-) {
-
-  if (!createShippingButton) {
-
-    return;
-
-  }
-
-  if (loading) {
-
-    createShippingButton.disabled =
-      true;
-
-    createShippingButton.dataset
-      .originalText =
-      createShippingButton.textContent;
-
-    createShippingButton.textContent =
-      "Creating...";
-
-  } else {
-
-    createShippingButton.disabled =
-      false;
-
-    createShippingButton.textContent =
-      createShippingButton.dataset
-        .originalText ||
-      "Create Shipping";
-
-  }
-
-}
-
-
-// ======================================================
-// MESSAGE
-// ======================================================
-
-function showMessage(
-  message,
-  type = "info",
-  isHTML = false
-) {
-
-  if (!shippingMessage) {
-
-    return;
-
-  }
-
-  shippingMessage.className =
-    `alert alert-${type}`;
-
-  shippingMessage.style.display =
-    "block";
-
-
-  if (isHTML) {
-
-    shippingMessage.innerHTML =
-      message;
-
-  } else {
-
-    shippingMessage.textContent =
-      message;
-
-  }
-
-}
-
-
-// ======================================================
-// CARGO POPUP
-// ======================================================
-
-function showCargoPopup(
-  message
-) {
-
-  alert(message);
-
-}
-
-
-// ======================================================
-// TRACKING URL
-// ======================================================
-
-function getTrackingURL(
-  trackingNumber
-) {
-
-  return (
-    mainShippingWebsite +
-    "?tracking=" +
-    encodeURIComponent(
-      trackingNumber
-    )
-  );
-
-}
-
-
-// ======================================================
-// TRACKING LINK HTML
-// ======================================================
-
-function getTrackingLinkHTML(
-  trackingNumber
-) {
-
-  const url =
-    getTrackingURL(
-      trackingNumber
-    );
-
-  return `
-
-    <a
-      href="${escapeAttribute(url)}"
-      target="_blank"
-      rel="noopener noreferrer"
-      onclick="event.stopPropagation();"
-    >
-      Open Tracking Website →
-    </a>
-
-  `;
 
 }
 
@@ -2028,17 +1397,9 @@ async function loadShipments() {
 
   if (!token) {
 
-    if (shipmentsList) {
+    userShipments = [];
 
-      shipmentsList.innerHTML = `
-
-        <p class="text-muted">
-          Please login to view your shipments.
-        </p>
-
-      `;
-
-    }
+    renderShipments();
 
     return;
 
@@ -2051,38 +1412,34 @@ async function loadShipments() {
       await fetch(
         `${API_URL}/shipments/mine`,
         {
-
           headers: {
-
             Authorization:
               `Bearer ${token}`
-
           }
-
         }
       );
-
-
-    const data =
-      await response.json();
 
 
     if (!response.ok) {
 
       throw new Error(
-        data.message ||
         "Unable to load shipments."
       );
 
     }
 
 
+    const data =
+      await response.json();
+
+
     userShipments =
-      Array.isArray(
-        data.shipments
-      )
-        ? data.shipments
-        : [];
+      Array.isArray(data)
+        ? data
+        : (
+          data.shipments ||
+          []
+        );
 
 
     renderShipments();
@@ -2091,26 +1448,13 @@ async function loadShipments() {
   } catch (error) {
 
     console.error(
-      "LOAD SHIPMENTS ERROR:",
+      "Load shipments error:",
       error
     );
 
+    userShipments = [];
 
-    if (shipmentsList) {
-
-      shipmentsList.innerHTML = `
-
-        <div class="alert alert-danger">
-
-          ${escapeHTML(
-            error.message
-          )}
-
-        </div>
-
-      `;
-
-    }
+    renderShipments();
 
   }
 
@@ -2123,27 +1467,17 @@ async function loadShipments() {
 
 function renderShipments() {
 
-  if (!shipmentsList) {
-
+  if (!shipmentList) {
     return;
-
   }
 
 
-  if (
-    userShipments.length === 0
-  ) {
+  if (!userShipments.length) {
 
-    shipmentsList.innerHTML = `
-
-      <div class="empty-shipments">
-
-        <p>
-          No shipments created yet.
-        </p>
-
+    shipmentList.innerHTML = `
+      <div class="empty-state">
+        No shipments created yet.
       </div>
-
     `;
 
     return;
@@ -2151,19 +1485,86 @@ function renderShipments() {
   }
 
 
-  shipmentsList.innerHTML =
+  shipmentList.innerHTML =
     userShipments
-      .map(
-        (
+      .map(function (shipment, index) {
+
+        return createShipmentCard(
           shipment,
           index
-        ) =>
-          createShipmentCard(
-            shipment,
-            index
-          )
-      )
+        );
+
+      })
       .join("");
+
+
+  shipmentList
+    .querySelectorAll(
+      "[data-shipment-edit]"
+    )
+    .forEach(function (button) {
+
+      button.addEventListener(
+        "click",
+        function () {
+
+          const index =
+            Number(
+              button.dataset.shipmentEdit
+            );
+
+          editShipment(index);
+
+        }
+      );
+
+    });
+
+
+  shipmentList
+    .querySelectorAll(
+      "[data-shipment-delete]"
+    )
+    .forEach(function (button) {
+
+      button.addEventListener(
+        "click",
+        function () {
+
+          const index =
+            Number(
+              button.dataset.shipmentDelete
+            );
+
+          deleteShipment(index);
+
+        }
+      );
+
+    });
+
+
+  shipmentList
+    .querySelectorAll(
+      "[data-shipment-watermark]"
+    )
+    .forEach(function (button) {
+
+      button.addEventListener(
+        "click",
+        function () {
+
+          const index =
+            Number(
+              button.dataset.shipmentWatermark
+            );
+
+          removeShipmentWatermark(index);
+
+        }
+      );
+
+    });
 
 }
 
@@ -2177,66 +1578,64 @@ function createShipmentCard(
   index
 ) {
 
-  const tracking =
+  const trackingNumber =
     shipment.trackingNumber ||
     "";
 
+  const status =
+    shipment.currentStatus ||
+    shipment.status ||
+    "Processing";
+
+  const shippingType =
+    shipment.shippingType ||
+    "test";
 
   const isClean =
-    shipment.watermarkEnabled === false ||
-    shipment.shippingType === "clean";
+    shippingType === "clean";
 
 
-  const status =
-    shipment.status ||
-    shipment.currentStatus ||
-    "Pending";
+  const trackingUrl =
+    `${mainShippingWebsite}/?tracking=${encodeURIComponent(
+      trackingNumber
+    )}`;
 
 
-  const trackingURL =
-    getTrackingURL(
-      tracking
-    );
+  const documentText =
+    isClean
+      ? "Clean Document"
+      : "Watermarked Document";
 
 
-  const hasError =
-    Boolean(
-      shipment.errorMessage &&
-      String(
-        shipment.errorMessage
-      ).trim()
-    );
-
-
-  const isSelected =
-    currentShipment &&
-    currentShipment.trackingNumber ===
-    tracking;
+  const errorText =
+    shipment.errorMessage ||
+    "";
 
 
   return `
-
-    <div
-      class="shipment-card ${
-        isSelected
-          ? "selected-shipment"
-          : ""
-      }"
-      onclick="selectShipment(${index})"
-    >
+    <div class="shipment-card">
 
       <div class="shipment-card-header">
 
-        <strong>
-          ${escapeHTML(
-            tracking
-          )}
-        </strong>
+        <div>
 
-        <span>
-          ${escapeHTML(
-            status
-          )}
+          <h4>
+            ${escapeHTML(
+              shipment.recipient ||
+              "Shipment"
+            )}
+          </h4>
+
+          <p>
+            ${escapeHTML(
+              trackingNumber
+            )}
+          </p>
+
+        </div>
+
+        <span class="shipment-status">
+          ${escapeHTML(status)}
         </span>
 
       </div>
@@ -2244,60 +1643,81 @@ function createShipmentCard(
 
       <div class="shipment-card-body">
 
-        <p>
-
+        <div>
           <strong>
-            Tracking:
+            Sender
           </strong>
 
-          <a
-            href="${escapeAttribute(
-              trackingURL
-            )}"
-            target="_blank"
-            rel="noopener noreferrer"
-            onclick="event.stopPropagation();"
-          >
-            Open Tracking Website →
-          </a>
-
-        </p>
+          <span>
+            ${escapeHTML(
+              shipment.sender ||
+              ""
+            )}
+          </span>
+        </div>
 
 
-        <p>
-
+        <div>
           <strong>
-            Document:
+            Origin
           </strong>
 
-          ${
-            isClean
-              ? "Clean"
-              : "Watermarked"
-          }
+          <span>
+            ${escapeHTML(
+              shipment.origin ||
+              ""
+            )}
+          </span>
+        </div>
 
-        </p>
+
+        <div>
+          <strong>
+            Recipient
+          </strong>
+
+          <span>
+            ${escapeHTML(
+              shipment.recipient ||
+              ""
+            )}
+          </span>
+        </div>
 
 
-        ${
-          hasError
-            ? `
+        <div>
+          <strong>
+            Document
+          </strong>
 
-              <p class="shipment-card-error">
+          <span>
+            ${documentText}
+          </span>
+        </div>
 
-                <strong>
-                  Message:
-                </strong>
+      </div>
 
-                ${escapeHTML(
-                  shipment.errorMessage
-                )}
 
-              </p>
+      ${
+        errorText
+          ? `
+            <div class="shipment-error-message">
+              ${escapeHTML(errorText)}
+            </div>
+          `
+          : ""
+      }
 
-            `
-            : ""
-        }
+
+      <div class="shipment-tracking-link">
+
+        <a
+          href="${escapeAttribute(trackingUrl)}"
+          target="_blank"
+          rel="noopener"
+        >
+          Open Tracking Page
+        </a>
 
       </div>
 
@@ -2306,17 +1726,8 @@ function createShipmentCard(
 
         <button
           type="button"
-          class="btn btn-sm btn-primary"
-          onclick="event.stopPropagation(); downloadCargoDocument(${index})"
-        >
-          Download
-        </button>
-
-
-        <button
-          type="button"
-          class="btn btn-sm btn-secondary"
-          onclick="event.stopPropagation(); editShipment(${index})"
+          class="btn btn-primary"
+          data-shipment-edit="${index}"
         >
           Edit
         </button>
@@ -2325,15 +1736,13 @@ function createShipmentCard(
         ${
           !isClean
             ? `
-
               <button
                 type="button"
-                class="btn btn-sm btn-warning"
-                onclick="event.stopPropagation(); removeShipmentWatermark(${index})"
+                class="btn btn-outline-primary"
+                data-shipment-watermark="${index}"
               >
-                Remove Watermark — $5
+                Remove Watermark
               </button>
-
             `
             : ""
         }
@@ -2341,8 +1750,8 @@ function createShipmentCard(
 
         <button
           type="button"
-          class="btn btn-sm btn-danger"
-          onclick="event.stopPropagation(); deleteShipment(${index})"
+          class="btn btn-outline-danger"
+          data-shipment-delete="${index}"
         >
           Delete
         </button>
@@ -2350,7 +1759,6 @@ function createShipmentCard(
       </div>
 
     </div>
-
   `;
 
 }
@@ -2364,18 +1772,33 @@ function addOrReplaceShipment(
   shipment
 ) {
 
-  const index =
+  if (!shipment) {
+    return;
+  }
+
+
+  const trackingNumber =
+    shipment.trackingNumber;
+
+
+  const existingIndex =
     userShipments.findIndex(
-      item =>
-        item.trackingNumber ===
-        shipment.trackingNumber
+      function (item) {
+
+        return (
+          item.trackingNumber ===
+          trackingNumber
+        );
+
+      }
     );
 
 
-  if (index >= 0) {
+  if (existingIndex >= 0) {
 
-    userShipments[index] =
-      shipment;
+    userShipments[
+      existingIndex
+    ] = shipment;
 
   } else {
 
@@ -2395,23 +1818,14 @@ function addOrReplaceShipment(
 // EDIT SHIPMENT
 // ======================================================
 
-function editShipment(
-  index
-) {
+function editShipment(index) {
 
   const shipment =
     userShipments[index];
 
 
   if (!shipment) {
-
-    showMessage(
-      "Shipment not found.",
-      "danger"
-    );
-
     return;
-
   }
 
 
@@ -2420,7 +1834,8 @@ function editShipment(
 
 
   generatedTrackingNumber =
-    shipment.trackingNumber || "";
+    shipment.trackingNumber ||
+    "";
 
 
   editingShipment =
@@ -2430,134 +1845,75 @@ function editShipment(
   setFormMode(true);
 
 
-  if (invoiceNumber) {
-
-    invoiceNumber.value =
-      shipment.invoiceNumber ||
-      "";
-
-  }
+  invoiceNumberInput.value =
+    shipment.invoiceNumber ||
+    "";
 
 
-  if (shipmentDate) {
-
-    shipmentDate.value =
-      extractDate(
-        shipment.shipmentDate
-      );
-
-  }
+  shippingDateInput.value =
+    shipment.shippingDate ||
+    getLocalDateFromTimestamp(
+      shipment.createdAt
+    );
 
 
-  if (shipmentTime) {
-
-    shipmentTime.value =
-      shipment.shipmentTime ||
-      extractTime(
-        shipment.shipmentDate
-      );
-
-  }
+  shippingTimeInput.value =
+    shipment.shippingTime ||
+    getLocalTimeFromTimestamp(
+      shipment.createdAt
+    );
 
 
-  if (estimatedDelivery) {
-
-    estimatedDelivery.value =
-      extractDate(
-        shipment.estimatedDelivery
-      );
-
-  }
+  estimatedDeliveryInput.value =
+    shipment.estimatedDelivery ||
+    "";
 
 
-  if (estimatedDeliveryTime) {
-
-    estimatedDeliveryTime.value =
-      shipment.estimatedDeliveryTime ||
-      extractTime(
-        shipment.estimatedDelivery
-      );
-
-  }
+  senderInput.value =
+    shipment.sender ||
+    "";
 
 
-  if (sender) {
-
-    sender.value =
-      shipment.sender ||
-      "";
-
-  }
+  senderEmailInput.value =
+    shipment.senderEmail ||
+    "";
 
 
-  if (senderEmail) {
-
-    senderEmail.value =
-      shipment.senderEmail ||
-      "";
-
-  }
+  originInput.value =
+    shipment.origin ||
+    "";
 
 
-  if (origin) {
-
-    origin.value =
-      shipment.origin ||
-      "";
-
-  }
+  recipientInput.value =
+    shipment.recipient ||
+    "";
 
 
-  if (recipient) {
-
-    recipient.value =
-      shipment.recipient ||
-      "";
-
-  }
+  recipientAddressInput.value =
+    shipment.recipientAddress ||
+    "";
 
 
-  if (recipientEmail) {
-
-    recipientEmail.value =
-      shipment.recipientEmail ||
-      "";
-
-  }
+  recipientEmailInput.value =
+    shipment.recipientEmail ||
+    "";
 
 
-  if (recipientAddress) {
-
-    recipientAddress.value =
-      shipment.recipientAddress ||
-      "";
-
-  }
+  packageContentInput.value =
+    shipment.packageContent ||
+    "";
 
 
-  if (packageContent) {
-
-    packageContent.value =
-      shipment.packageContent ||
-      "";
-
-  }
-
-
-  if (packageWeight) {
-
-    packageWeight.value =
-      shipment.packageWeight ||
-      "";
-
-  }
+  packageWeightInput.value =
+    shipment.packageWeight ||
+    "";
 
 
   if (shippingStatus) {
 
     shippingStatus.value =
-      shipment.status ||
       shipment.currentStatus ||
+      shipment.status ||
       "Processing";
 
   }
@@ -2572,9 +1928,10 @@ function editShipment(
   }
 
 
-  // ====================================================
-  // LOAD HISTORY
-  // ====================================================
+  selectedShippingType =
+    shipment.shippingType ||
+    "test";
+
 
   trackingEvents =
     Array.isArray(
@@ -2584,7 +1941,6 @@ function editShipment(
           function (event) {
 
             return {
-
               status:
                 event.status ||
                 "Processing",
@@ -2600,7 +1956,6 @@ function editShipment(
               timestamp:
                 event.timestamp ||
                 ""
-
             };
 
           }
@@ -2610,25 +1965,33 @@ function editShipment(
 
   renderTrackingEvents();
 
-
   updateErrorVisibility();
 
 
-  renderShipments();
-
-
-  window.scrollTo({
-    top: 0,
-    behavior: "smooth"
-  });
-
-
-  showMessage(
-    `Editing shipment ${escapeHTML(
-      shipment.trackingNumber
-    )}. Change the shipment details or history, then click "Update Shipment".`,
-    "info"
+  setControllerMode(
+    "create"
   );
+
+
+  if (controllerWorkspace) {
+
+    controllerWorkspace.scrollIntoView({
+      behavior: "smooth",
+      block: "start"
+    });
+
+  }
+
+
+  if (shippingMessage) {
+
+    shippingMessage.textContent =
+      "Editing shipment.";
+
+    shippingMessage.style.display =
+      "block";
+
+  }
 
 }
 
@@ -2645,9 +2008,8 @@ async function updateShipment() {
 
   if (!token) {
 
-    showMessage(
-      "Please login first.",
-      "danger"
+    alert(
+      "Please login first."
     );
 
     return;
@@ -2655,14 +2017,10 @@ async function updateShipment() {
   }
 
 
-  if (
-    !currentShipment ||
-    !currentShipment.trackingNumber
-  ) {
+  if (!currentShipment) {
 
-    showMessage(
-      "No shipment selected for editing.",
-      "danger"
+    alert(
+      "No shipment selected."
     );
 
     return;
@@ -2670,14 +2028,7 @@ async function updateShipment() {
   }
 
 
-  const trackingNumber =
-    currentShipment.trackingNumber;
-
-
-  if (
-    shippingForm &&
-    !shippingForm.checkValidity()
-  ) {
+  if (!shippingForm.checkValidity()) {
 
     shippingForm.reportValidity();
 
@@ -2686,83 +2037,26 @@ async function updateShipment() {
   }
 
 
-  const selectedStatus =
-    shippingStatus?.value ||
-    "Processing";
+  const trackingNumber =
+    currentShipment.trackingNumber ||
+    generatedTrackingNumber;
 
 
-  const updatedErrorMessage =
-    errorMessage?.value?.trim() ||
-    "";
+  if (!trackingNumber) {
 
+    alert(
+      "Tracking number not found."
+    );
 
-  const updateData = {
+    return;
 
-    invoiceNumber:
-      invoiceNumber?.value || "",
-
-    shipmentDate:
-      buildDateTime(
-        shipmentDate?.value || "",
-        shipmentTime?.value || ""
-      ),
-
-    shipmentTime:
-      shipmentTime?.value || "",
-
-    estimatedDelivery:
-      buildDateTime(
-        estimatedDelivery?.value || "",
-        estimatedDeliveryTime?.value || ""
-      ),
-
-    estimatedDeliveryTime:
-      estimatedDeliveryTime?.value || "",
-
-    sender:
-      sender?.value || "",
-
-    senderEmail:
-      senderEmail?.value || "",
-
-    origin:
-      origin?.value || "",
-
-    recipient:
-      recipient?.value || "",
-
-    recipientEmail:
-      recipientEmail?.value || "",
-
-    recipientAddress:
-      recipientAddress?.value || "",
-
-    packageContent:
-      packageContent?.value || "",
-
-    packageWeight:
-      packageWeight?.value || "",
-
-    currentStatus:
-      selectedStatus,
-
-    errorMessage:
-      updatedErrorMessage,
-
-    trackingEvents:
-      getTrackingEvents()
-
-  };
+  }
 
 
   if (createShippingButton) {
 
     createShippingButton.disabled =
       true;
-
-    createShippingButton.dataset
-      .originalText =
-      createShippingButton.textContent;
 
     createShippingButton.textContent =
       "Updating...";
@@ -2772,58 +2066,85 @@ async function updateShipment() {
 
   try {
 
+    const history =
+      getTrackingEvents();
+
+
+    const updateData = {
+
+      invoiceNumber:
+        invoiceNumberInput?.value.trim() || "",
+
+      shippingDate:
+        shippingDateInput?.value || "",
+
+      shippingTime:
+        shippingTimeInput?.value || "",
+
+      estimatedDelivery:
+        estimatedDeliveryInput?.value || "",
+
+      sender:
+        senderInput?.value.trim() || "",
+
+      senderEmail:
+        senderEmailInput?.value.trim() || "",
+
+      origin:
+        originInput?.value.trim() || "",
+
+      recipient:
+        recipientInput?.value.trim() || "",
+
+      recipientAddress:
+        recipientAddressInput?.value.trim() || "",
+
+      recipientEmail:
+        recipientEmailInput?.value.trim() || "",
+
+      packageContent:
+        packageContentInput?.value.trim() || "",
+
+      packageWeight:
+        packageWeightInput?.value.trim() || "",
+
+      currentStatus:
+        shippingStatus?.value ||
+        "Processing",
+
+      errorMessage:
+        errorMessage?.value.trim() || "",
+
+      trackingEvents:
+        history
+
+    };
+
+
     const response =
       await fetch(
-
         `${API_URL}/shipments/${encodeURIComponent(
           trackingNumber
         )}`,
-
         {
-
           method: "PATCH",
 
           headers: {
-
             "Content-Type":
               "application/json",
 
             Authorization:
               `Bearer ${token}`
-
           },
 
           body:
-            JSON.stringify(
-              updateData
-            )
-
+            JSON.stringify(updateData)
         }
-
       );
 
 
-    const responseText =
-      await response.text();
-
-
-    let data = {};
-
-
-    try {
-
-      data =
-        responseText
-          ? JSON.parse(responseText)
-          : {};
-
-    } catch (error) {
-
-      throw new Error(
-        "Server returned an invalid response."
-      );
-
-    }
+    const data =
+      await response.json();
 
 
     if (!response.ok) {
@@ -2836,86 +2157,63 @@ async function updateShipment() {
     }
 
 
-    const shipment =
-      data.shipment || data;
-
-
-    if (
-      !shipment ||
-      !shipment.trackingNumber
-    ) {
-
-      throw new Error(
-        "Shipment was updated but the server did not return the shipment."
-      );
-
-    }
-
-
     currentShipment =
-      shipment;
+      data.shipment ||
+      data;
 
 
     generatedTrackingNumber =
-      shipment.trackingNumber;
+      currentShipment.trackingNumber ||
+      trackingNumber;
 
 
     trackingEvents =
-      Array.isArray(
-        shipment.trackingEvents
-      )
-        ? shipment.trackingEvents
-        : [];
+      currentShipment.trackingEvents ||
+      history;
 
 
     addOrReplaceShipment(
-      shipment
+      currentShipment
     );
 
 
+    // ==================================================
+    // KEEP EDIT MODE ACTIVE
+    // ==================================================
+
     editingShipment =
-      false;
+      true;
 
-
-    setFormMode(false);
+    setFormMode(true);
 
 
     await loadWalletBalance();
 
-
     await loadShipments();
 
 
-    showCargoPopup(
+    if (shippingMessage) {
 
-      `Shipment Updated Successfully\n\n` +
+      shippingMessage.textContent =
+        "Shipment updated successfully.";
 
-      `Tracking Number: ${
-        shipment.trackingNumber
-      }\n` +
+      shippingMessage.style.display =
+        "block";
 
-      `Status: ${
-        shipment.status ||
-        shipment.currentStatus ||
-        "Pending"
-      }`
-
-    );
+    }
 
 
   } catch (error) {
 
     console.error(
-      "UPDATE SHIPMENT ERROR:",
+      "Update shipment error:",
       error
     );
 
-
-    showCargoPopup(
+    alert(
       error.message ||
       "Unable to update shipment."
     );
-
 
   } finally {
 
@@ -2925,13 +2223,9 @@ async function updateShipment() {
         false;
 
       createShippingButton.textContent =
-        createShippingButton.dataset
-          .originalText ||
-        (
-          editingShipment
-            ? "Update Shipment"
-            : "Create Shipping"
-        );
+        editingShipment
+          ? "Update Shipment"
+          : "Create Shipping";
 
     }
 
@@ -2944,39 +2238,14 @@ async function updateShipment() {
 // DELETE SHIPMENT
 // ======================================================
 
-async function deleteShipment(
-  index
-) {
-
-  const token =
-    getToken();
-
-
-  if (!token) {
-
-    showMessage(
-      "Please login first.",
-      "danger"
-    );
-
-    return;
-
-  }
-
+async function deleteShipment(index) {
 
   const shipment =
     userShipments[index];
 
 
   if (!shipment) {
-
-    showMessage(
-      "Shipment not found.",
-      "danger"
-    );
-
     return;
-
   }
 
 
@@ -2986,11 +2255,24 @@ async function deleteShipment(
 
   const confirmed =
     confirm(
-      `Are you sure you want to delete shipment ${trackingNumber}?`
+      `Delete shipment ${trackingNumber}?`
     );
 
 
   if (!confirmed) {
+    return;
+  }
+
+
+  const token =
+    getToken();
+
+
+  if (!token) {
+
+    alert(
+      "Please login first."
+    );
 
     return;
 
@@ -3001,24 +2283,17 @@ async function deleteShipment(
 
     const response =
       await fetch(
-
         `${API_URL}/shipments/${encodeURIComponent(
           trackingNumber
         )}`,
-
         {
-
           method: "DELETE",
 
           headers: {
-
             Authorization:
               `Bearer ${token}`
-
           }
-
         }
-
       );
 
 
@@ -3045,7 +2320,7 @@ async function deleteShipment(
     if (
       currentShipment &&
       currentShipment.trackingNumber ===
-      trackingNumber
+        trackingNumber
     ) {
 
       currentShipment =
@@ -3054,20 +2329,12 @@ async function deleteShipment(
       generatedTrackingNumber =
         "";
 
-    }
-
-
-    if (
-      editingShipment &&
-      currentShipment === null
-    ) {
-
       editingShipment =
         false;
 
       setFormMode(false);
 
-      clearForm();
+      clearShippingForm();
 
     }
 
@@ -3075,26 +2342,14 @@ async function deleteShipment(
     renderShipments();
 
 
-    showCargoPopup(
-
-      `Shipment Deleted Successfully\n\n` +
-
-      `Tracking Number: ${
-        trackingNumber
-      }`
-
-    );
-
-
   } catch (error) {
 
     console.error(
-      "DELETE SHIPMENT ERROR:",
+      "Delete shipment error:",
       error
     );
 
-
-    showCargoPopup(
+    alert(
       error.message ||
       "Unable to delete shipment."
     );
@@ -3109,8 +2364,36 @@ async function deleteShipment(
 // ======================================================
 
 async function removeShipmentWatermark(
-  index = null
+  index
 ) {
+
+  const shipment =
+    userShipments[index];
+
+
+  if (!shipment) {
+    return;
+  }
+
+
+  const trackingNumber =
+    shipment.trackingNumber;
+
+
+  if (!trackingNumber) {
+    return;
+  }
+
+
+  if (
+    shipment.shippingType ===
+    "clean"
+  ) {
+
+    return;
+
+  }
+
 
   const token =
     getToken();
@@ -3118,62 +2401,8 @@ async function removeShipmentWatermark(
 
   if (!token) {
 
-    showMessage(
-      "Please login first.",
-      "danger"
-    );
-
-    return;
-
-  }
-
-
-  let targetShipment =
-    null;
-
-
-  if (
-    index !== null &&
-    userShipments[index]
-  ) {
-
-    targetShipment =
-      userShipments[index];
-
-  } else if (
-    currentShipment
-  ) {
-
-    targetShipment =
-      currentShipment;
-
-  }
-
-
-  if (!targetShipment) {
-
-    showMessage(
-      "No shipment selected.",
-      "danger"
-    );
-
-    return;
-
-  }
-
-
-  const targetTracking =
-    targetShipment.trackingNumber;
-
-
-  if (
-    targetShipment.watermarkEnabled ===
-    false
-  ) {
-
-    showMessage(
-      "This shipment is already clean.",
-      "success"
+    alert(
+      "Please login first."
     );
 
     return;
@@ -3183,16 +2412,12 @@ async function removeShipmentWatermark(
 
   const confirmed =
     confirm(
-      `Remove the watermark for ${formatMoney(
-        CLEAN_SHIPPING_PRICE
-      )}?`
+      `Remove the watermark for $${CLEAN_SHIPPING_PRICE}?`
     );
 
 
   if (!confirmed) {
-
     return;
-
   }
 
 
@@ -3200,27 +2425,20 @@ async function removeShipmentWatermark(
 
     const response =
       await fetch(
-
         `${API_URL}/shipments/${encodeURIComponent(
-          targetTracking
+          trackingNumber
         )}/upgrade`,
-
         {
-
           method: "PATCH",
 
           headers: {
-
             "Content-Type":
               "application/json",
 
             Authorization:
               `Bearer ${token}`
-
           }
-
         }
-
       );
 
 
@@ -3239,31 +2457,8 @@ async function removeShipmentWatermark(
 
 
     const updatedShipment =
-      data.shipment || data;
-
-
-    currentShipment =
-      updatedShipment;
-
-
-    generatedTrackingNumber =
-      updatedShipment.trackingNumber;
-
-
-    trackingEvents =
-      Array.isArray(
-        updatedShipment.trackingEvents
-      )
-        ? updatedShipment.trackingEvents
-        : [];
-
-
-    currentWalletBalance =
-      Number(
-        data.walletBalance ??
-        data.balance ??
-        currentWalletBalance
-      );
+      data.shipment ||
+      data;
 
 
     addOrReplaceShipment(
@@ -3271,44 +2466,49 @@ async function removeShipmentWatermark(
     );
 
 
+    if (
+      currentShipment &&
+      currentShipment.trackingNumber ===
+        trackingNumber
+    ) {
+
+      currentShipment =
+        updatedShipment;
+
+    }
+
+
+    if (
+      data.walletBalance !==
+      undefined
+    ) {
+
+      currentWalletBalance =
+        Number(
+          data.walletBalance
+        );
+
+    }
+
+
     await loadWalletBalance();
 
-
-    showCargoPopup(
-
-      `Watermark Removed Successfully\n\n` +
-
-      `Tracking Number: ${
-        updatedShipment.trackingNumber
-      }\n` +
-
-      `Payment: ${
-        formatMoney(
-          CLEAN_SHIPPING_PRICE
-        )
-      }\n` +
-
-      `Wallet Balance: ${
-        formatMoney(
-          currentWalletBalance
-        )
-      }`
-
-    );
-
-
     await loadShipments();
+
+
+    alert(
+      "Watermark removed successfully."
+    );
 
 
   } catch (error) {
 
     console.error(
-      "REMOVE WATERMARK ERROR:",
+      "Remove watermark error:",
       error
     );
 
-
-    showCargoPopup(
+    alert(
       error.message ||
       "Unable to remove watermark."
     );
@@ -3322,9 +2522,7 @@ async function removeShipmentWatermark(
 // SET FORM MODE
 // ======================================================
 
-function setFormMode(
-  editing
-) {
+function setFormMode(editing) {
 
   editingShipment =
     editing;
@@ -3344,25 +2542,25 @@ function setFormMode(
 
     cancelEditButton.style.display =
       editing
-        ? "inline-block"
+        ? ""
         : "none";
 
   }
 
 
-  if (editing) {
+  if (newShipmentButton) {
 
-    setControllerMode(
-      "profile"
-    );
-
-  } else {
-
-    setControllerMode(
-      "create"
-    );
+    newShipmentButton.style.display =
+      editing
+        ? "none"
+        : "";
 
   }
+
+
+  setControllerMode(
+    "create"
+  );
 
 }
 
@@ -3385,10 +2583,15 @@ if (cancelEditButton) {
       generatedTrackingNumber =
         "";
 
-      clearForm();
+      trackingEvents = [];
 
-      renderShipments();
+      renderTrackingEvents();
 
+      clearShippingForm();
+
+      setControllerMode(
+        "profile"
+      );
 
       if (shippingMessage) {
 
@@ -3421,23 +2624,15 @@ if (newShipmentButton) {
       generatedTrackingNumber =
         "";
 
-      clearForm();
+      trackingEvents = [];
 
-      renderShipments();
+      renderTrackingEvents();
 
+      clearShippingForm();
 
-      if (shippingMessage) {
-
-        shippingMessage.style.display =
-          "none";
-
-      }
-
-
-      window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-      });
+      setControllerMode(
+        "create"
+      );
 
     }
   );
@@ -3449,9 +2644,9 @@ if (newShipmentButton) {
 // REFRESH SHIPMENTS
 // ======================================================
 
-if (refreshShipments) {
+if (refreshShipmentsButton) {
 
-  refreshShipments.addEventListener(
+  refreshShipmentsButton.addEventListener(
     "click",
     async function () {
 
@@ -3469,37 +2664,34 @@ if (refreshShipments) {
 // ERROR VISIBILITY
 // ======================================================
 
-function updateErrorVisibility(
-  forceVisible = false
-) {
+function updateErrorVisibility() {
 
-  if (!errorMessageGroup) {
-
+  if (
+    !errorMessageGroup ||
+    !shippingStatus
+  ) {
     return;
-
   }
 
 
   const status =
-    shippingStatus?.value ||
-    "";
+    String(
+      shippingStatus.value ||
+      ""
+    ).toLowerCase();
 
 
-  const normalizedStatus =
-    status
-      .trim()
-      .toLowerCase();
-
-
-  const hasErrorStatus =
-    normalizedStatus === "error" ||
-    normalizedStatus === "failed" ||
-    normalizedStatus === "exception";
+  const show =
+    [
+      "error",
+      "failed",
+      "exception"
+    ].includes(status);
 
 
   errorMessageGroup.style.display =
-    hasErrorStatus
-      ? "block"
+    show
+      ? ""
       : "none";
 
 }
@@ -3513,21 +2705,17 @@ if (shippingStatus) {
 
   shippingStatus.addEventListener(
     "change",
-    function () {
-
-      updateErrorVisibility();
-
-    }
+    updateErrorVisibility
   );
 
 }
 
 
 // ======================================================
-// CLEAR FORM
+// CLEAR SHIPPING FORM
 // ======================================================
 
-function clearForm() {
+function clearShippingForm() {
 
   if (shippingForm) {
 
@@ -3536,34 +2724,41 @@ function clearForm() {
   }
 
 
-  selectedShippingType =
-    "test";
+  if (shippingStatus) {
 
-
-  trackingEvents =
-    [];
-
-
-  renderTrackingEvents();
-
-
-  const testOption =
-    document.querySelector(
-      'input[name="shippingType"][value="test"]'
-    );
-
-
-  if (testOption) {
-
-    testOption.checked =
-      true;
+    shippingStatus.value =
+      "Processing";
 
   }
 
 
+  if (errorMessage) {
+
+    errorMessage.value =
+      "";
+
+  }
+
+
+  selectedShippingType =
+    "test";
+
+
+  trackingEvents = [];
+
+  renderTrackingEvents();
+
   updateErrorVisibility();
 
 }
+
+
+// ======================================================
+// LOCAL STORAGE DRAFT
+// ======================================================
+
+const cargoFormStorageKey =
+  "cargoFormData";
 
 
 // ======================================================
@@ -3572,73 +2767,51 @@ function clearForm() {
 
 function saveFormData() {
 
-  try {
+  const data = {
 
-    const data = {
+    invoiceNumber:
+      invoiceNumberInput?.value || "",
 
-      invoiceNumber:
-        invoiceNumber?.value || "",
+    shippingDate:
+      shippingDateInput?.value || "",
 
-      shipmentDate:
-        shipmentDate?.value || "",
+    shippingTime:
+      shippingTimeInput?.value || "",
 
-      shipmentTime:
-        shipmentTime?.value || "",
+    estimatedDelivery:
+      estimatedDeliveryInput?.value || "",
 
-      estimatedDelivery:
-        estimatedDelivery?.value || "",
+    sender:
+      senderInput?.value || "",
 
-      estimatedDeliveryTime:
-        estimatedDeliveryTime?.value || "",
+    senderEmail:
+      senderEmailInput?.value || "",
 
-      sender:
-        sender?.value || "",
+    origin:
+      originInput?.value || "",
 
-      senderEmail:
-        senderEmail?.value || "",
+    recipient:
+      recipientInput?.value || "",
 
-      origin:
-        origin?.value || "",
+    recipientAddress:
+      recipientAddressInput?.value || "",
 
-      recipient:
-        recipient?.value || "",
+    recipientEmail:
+      recipientEmailInput?.value || "",
 
-      recipientEmail:
-        recipientEmail?.value || "",
+    packageContent:
+      packageContentInput?.value || "",
 
-      recipientAddress:
-        recipientAddress?.value || "",
+    packageWeight:
+      packageWeightInput?.value || ""
 
-      packageContent:
-        packageContent?.value || "",
-
-      packageWeight:
-        packageWeight?.value || "",
-
-      currentStatus:
-        shippingStatus?.value ||
-        "Processing",
-
-      errorMessage:
-        errorMessage?.value || ""
-
-    };
+  };
 
 
-    localStorage.setItem(
-      "cargoFormData",
-      JSON.stringify(data)
-    );
-
-
-  } catch (error) {
-
-    console.error(
-      "SAVE FORM ERROR:",
-      error
-    );
-
-  }
+  localStorage.setItem(
+    cargoFormStorageKey,
+    JSON.stringify(data)
+  );
 
 }
 
@@ -3649,153 +2822,123 @@ function saveFormData() {
 
 function restoreFormData() {
 
+  const saved =
+    localStorage.getItem(
+      cargoFormStorageKey
+    );
+
+
+  if (!saved) {
+    return;
+  }
+
+
   try {
-
-    const saved =
-      localStorage.getItem(
-        "cargoFormData"
-      );
-
-
-    if (!saved) {
-
-      return;
-
-    }
-
 
     const data =
       JSON.parse(saved);
 
 
-    if (invoiceNumber) {
+    if (invoiceNumberInput) {
 
-      invoiceNumber.value =
+      invoiceNumberInput.value =
         data.invoiceNumber || "";
 
     }
 
 
-    if (shipmentDate) {
+    if (shippingDateInput) {
 
-      shipmentDate.value =
-        data.shipmentDate || "";
-
-    }
-
-
-    if (shipmentTime) {
-
-      shipmentTime.value =
-        data.shipmentTime || "";
+      shippingDateInput.value =
+        data.shippingDate || "";
 
     }
 
 
-    if (estimatedDelivery) {
+    if (shippingTimeInput) {
 
-      estimatedDelivery.value =
+      shippingTimeInput.value =
+        data.shippingTime || "";
+
+    }
+
+
+    if (estimatedDeliveryInput) {
+
+      estimatedDeliveryInput.value =
         data.estimatedDelivery || "";
 
     }
 
 
-    if (estimatedDeliveryTime) {
+    if (senderInput) {
 
-      estimatedDeliveryTime.value =
-        data.estimatedDeliveryTime || "";
-
-    }
-
-
-    if (sender) {
-
-      sender.value =
+      senderInput.value =
         data.sender || "";
 
     }
 
 
-    if (senderEmail) {
+    if (senderEmailInput) {
 
-      senderEmail.value =
+      senderEmailInput.value =
         data.senderEmail || "";
 
     }
 
 
-    if (origin) {
+    if (originInput) {
 
-      origin.value =
+      originInput.value =
         data.origin || "";
 
     }
 
 
-    if (recipient) {
+    if (recipientInput) {
 
-      recipient.value =
+      recipientInput.value =
         data.recipient || "";
 
     }
 
 
-    if (recipientEmail) {
+    if (recipientAddressInput) {
 
-      recipientEmail.value =
-        data.recipientEmail || "";
-
-    }
-
-
-    if (recipientAddress) {
-
-      recipientAddress.value =
+      recipientAddressInput.value =
         data.recipientAddress || "";
 
     }
 
 
-    if (packageContent) {
+    if (recipientEmailInput) {
 
-      packageContent.value =
+      recipientEmailInput.value =
+        data.recipientEmail || "";
+
+    }
+
+
+    if (packageContentInput) {
+
+      packageContentInput.value =
         data.packageContent || "";
 
     }
 
 
-    if (packageWeight) {
+    if (packageWeightInput) {
 
-      packageWeight.value =
+      packageWeightInput.value =
         data.packageWeight || "";
 
     }
 
 
-    if (shippingStatus) {
-
-      shippingStatus.value =
-        data.currentStatus ||
-        "Processing";
-
-    }
-
-
-    if (errorMessage) {
-
-      errorMessage.value =
-        data.errorMessage || "";
-
-    }
-
-
-    updateErrorVisibility();
-
-
   } catch (error) {
 
     console.error(
-      "RESTORE FORM ERROR:",
+      "Unable to restore cargo form:",
       error
     );
 
@@ -3805,162 +2948,43 @@ function restoreFormData() {
 
 
 // ======================================================
-// EXTRACT DATE
+// AUTO SAVE FORM
 // ======================================================
 
-function extractDate(
-  value
-) {
+if (shippingForm) {
 
-  if (!value) {
+  shippingForm.addEventListener(
+    "input",
+    function () {
 
-    return "";
+      saveFormData();
 
-  }
-
-
-  const stringValue =
-    String(value);
-
-
-  if (
-    /^\d{4}-\d{2}-\d{2}/
-      .test(stringValue)
-  ) {
-
-    return stringValue
-      .substring(0, 10);
-
-  }
-
-
-  return "";
-
-}
-
-
-// ======================================================
-// EXTRACT TIME
-// ======================================================
-
-function extractTime(
-  value
-) {
-
-  if (!value) {
-
-    return "";
-
-  }
-
-
-  const stringValue =
-    String(value);
-
-
-  const match =
-    stringValue.match(
-      /T(\d{2}:\d{2})/
-    );
-
-
-  if (match) {
-
-    return match[1];
-
-  }
-
-
-  return "";
-
-}
-
-
-// ======================================================
-// FORMAT DATE DISPLAY
-// ======================================================
-
-function formatDateDisplay(
-  value
-) {
-
-  if (!value) {
-
-    return "";
-
-  }
-
-
-  const date =
-    new Date(value);
-
-
-  if (
-    Number.isNaN(
-      date.getTime()
-    )
-  ) {
-
-    return String(value);
-
-  }
-
-
-  return date.toLocaleString();
-
-}
-
-
-// ======================================================
-// DOWNLOAD CARGO DOCUMENT
-// ======================================================
-
-function downloadCargoDocument(
-  index
-) {
-
-  const shipment =
-    userShipments[index];
-
-
-  if (!shipment) {
-
-    alert(
-      "Shipment not found."
-    );
-
-    return;
-
-  }
-
-
-  currentShipment =
-    shipment;
-
-
-  generatedTrackingNumber =
-    shipment.trackingNumber || "";
-
-
-  printDocument(
-    shipment
+    }
   );
 
 }
 
 
 // ======================================================
-// PRINT CARGO LETTERHEAD DOCUMENT - PDF
+// DOWNLOAD CARGO PDF
 // ======================================================
 
-async function printDocument(
-  shipment = currentShipment
+async function downloadCargoPdf(
+  shipment
 ) {
 
   if (!shipment) {
+    return;
+  }
+
+
+  if (
+    typeof window.jspdf ===
+    "undefined"
+  ) {
 
     alert(
-      "No shipping document available."
+      "PDF library is not loaded."
     );
 
     return;
@@ -3968,220 +2992,63 @@ async function printDocument(
   }
 
 
-  // ====================================================
-  // LOAD jsPDF
-  // ====================================================
+  const {
+    jsPDF
+  } = window.jspdf;
 
-  function loadJsPDF() {
 
-    return new Promise(
-      function (
-        resolve,
-        reject
-      ) {
+  const pdf =
+    new jsPDF({
+      orientation: "portrait",
+      unit: "mm",
+      format: "a4"
+    });
 
-        if (
-          window.jspdf &&
-          window.jspdf.jsPDF
-        ) {
 
-          resolve(
-            window.jspdf.jsPDF
-          );
+  const image =
+    new Image();
 
-          return;
 
-        }
+  image.src =
+    "images/cargo-letterhead.png";
 
 
-        const existingScript =
-          document.querySelector(
-            'script[data-cargo-jspdf="true"]'
-          );
+  await new Promise(
+    function (resolve, reject) {
 
+      image.onload =
+        resolve;
 
-        if (existingScript) {
+      image.onerror =
+        reject;
 
-          existingScript.addEventListener(
-            "load",
-            function () {
+    }
+  );
 
-              if (
-                window.jspdf &&
-                window.jspdf.jsPDF
-              ) {
 
-                resolve(
-                  window.jspdf.jsPDF
-                );
-
-              } else {
-
-                reject(
-                  new Error(
-                    "PDF library failed to load."
-                  )
-                );
-
-              }
-
-            }
-          );
-
-
-          existingScript.addEventListener(
-            "error",
-            function () {
-
-              reject(
-                new Error(
-                  "Unable to load PDF library."
-                )
-              );
-
-            }
-          );
-
-          return;
-
-        }
-
-
-        const script =
-          document.createElement(
-            "script"
-          );
-
-
-        script.src =
-          "https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js";
-
-        script.async =
-          true;
-
-        script.dataset.cargoJspdf =
-          "true";
-
-
-        script.onload =
-          function () {
-
-            if (
-              window.jspdf &&
-              window.jspdf.jsPDF
-            ) {
-
-              resolve(
-                window.jspdf.jsPDF
-              );
-
-            } else {
-
-              reject(
-                new Error(
-                  "PDF library failed to load."
-                )
-              );
-
-            }
-
-          };
-
-
-        script.onerror =
-          function () {
-
-            reject(
-              new Error(
-                "Unable to load PDF library."
-              )
-            );
-
-          };
-
-
-        document.head.appendChild(
-          script
-        );
-
-      }
-    );
-
-  }
-
-
-  // ====================================================
-  // LOAD LETTERHEAD
-  // ====================================================
-
-  function loadLetterhead() {
-
-    return new Promise(
-      function (
-        resolve,
-        reject
-      ) {
-
-        const image =
-          new Image();
-
-
-        image.onload =
-          function () {
-
-            resolve(
-              image
-            );
-
-          };
-
-
-        image.onerror =
-          function () {
-
-            reject(
-              new Error(
-                "Unable to load cargo-letterhead.png."
-              )
-            );
-
-          };
-
-
-        image.src =
-          "images/cargo-letterhead.png";
-
-      }
-    );
-
-  }
-
-
-  // ====================================================
-  // LETTERHEAD SIZE
-  // ====================================================
-
-  const DOCUMENT_WIDTH =
+  const sourceWidth =
     1414;
 
-  const DOCUMENT_HEIGHT =
+  const sourceHeight =
     2000;
 
 
-  // ====================================================
-  // A4 SIZE
-  // ====================================================
-
-  const A4_WIDTH =
+  const pageWidth =
     210;
 
-  const A4_HEIGHT =
+  const pageHeight =
     297;
 
 
-  // ====================================================
-  // FIELD POSITIONS
-  // ====================================================
+  pdf.addImage(
+    image,
+    "PNG",
+    0,
+    0,
+    pageWidth,
+    pageHeight
+  );
+
 
   const POSITIONS = {
 
@@ -4243,625 +3110,209 @@ async function printDocument(
   };
 
 
-  // ====================================================
-  // VALUES
-  // ====================================================
+  function x(position) {
 
-  const invoice =
+    return (
+      position.left /
+      sourceWidth
+    ) * pageWidth;
+
+  }
+
+
+  function y(position) {
+
+    return (
+      position.top /
+      sourceHeight
+    ) * pageHeight;
+
+  }
+
+
+  pdf.setTextColor(
+    30,
+    30,
+    30
+  );
+
+
+  pdf.setFontSize(9);
+
+
+  pdf.text(
     shipment.invoiceNumber ||
-    "N/A";
+      "",
+    x(POSITIONS.invoice),
+    y(POSITIONS.invoice)
+  );
 
 
-  const tracking =
-    shipment.trackingNumber ||
-    "N/A";
+  pdf.text(
+    shipment.shippingDate ||
+      "",
+    x(POSITIONS.dateCreated),
+    y(POSITIONS.dateCreated)
+  );
 
 
-  const dateCreated =
-    extractDate(
-      shipment.shipmentDate
-    ) || "N/A";
+  pdf.text(
+    shipment.estimatedDelivery ||
+      "",
+    x(POSITIONS.arrivalDate),
+    y(POSITIONS.arrivalDate)
+  );
 
 
-  const arrivalDate =
-    extractDate(
-      shipment.estimatedDelivery
-    ) || "N/A";
-
-
-  const senderName =
+  pdf.text(
     shipment.sender ||
-    "N/A";
+      "",
+    x(POSITIONS.sender),
+    y(POSITIONS.sender)
+  );
 
 
-  const senderEmailValue =
+  pdf.text(
     shipment.senderEmail ||
-    "";
+      "",
+    x(POSITIONS.senderEmail),
+    y(POSITIONS.senderEmail)
+  );
 
 
-  const recipientName =
+  pdf.text(
+    shipment.trackingNumber ||
+      "",
+    x(POSITIONS.tracking),
+    y(POSITIONS.tracking)
+  );
+
+
+  pdf.text(
     shipment.recipient ||
-    "N/A";
+      "",
+    x(POSITIONS.recipient),
+    y(POSITIONS.recipient)
+  );
 
 
-  const recipientEmailValue =
+  pdf.text(
     shipment.recipientEmail ||
-    "";
+      "",
+    x(POSITIONS.recipientEmail),
+    y(POSITIONS.recipientEmail)
+  );
 
 
-  const recipientAddressValue =
+  pdf.text(
     shipment.recipientAddress ||
-    "N/A";
+      "",
+    x(POSITIONS.recipientAddress),
+    y(POSITIONS.recipientAddress)
+  );
 
 
-  const packageContentValue =
+  pdf.text(
     shipment.packageContent ||
-    "N/A";
+      "",
+    x(POSITIONS.packageContent),
+    y(POSITIONS.packageContent)
+  );
 
 
-  const packageWeightValue =
+  pdf.text(
     shipment.packageWeight ||
-    "N/A";
-
-
-  const isWatermarked =
-    shipment.watermarkEnabled !== false;
+      "",
+    x(POSITIONS.packageWeight),
+    y(POSITIONS.packageWeight)
+  );
 
 
   // ====================================================
-  // CONVERT POSITION TO A4
+  // WATERMARK
   // ====================================================
 
-  function convertX(
-    value
+  if (
+    shipment.shippingType !==
+    "clean"
   ) {
 
-    return (
-      value /
-      DOCUMENT_WIDTH
-    ) *
-    A4_WIDTH;
-
-  }
-
-
-  function convertY(
-    value
-  ) {
-
-    return (
-      value /
-      DOCUMENT_HEIGHT
-    ) *
-    A4_HEIGHT;
-
-  }
-
-
-  // ====================================================
-  // TEXT SIZE
-  // ====================================================
-
-  const FONT_SIZE_MM =
-    5;
-
-  const FONT_SIZE_PT =
-    FONT_SIZE_MM *
-    72 /
-    25.4;
-
-
-  // ====================================================
-  // LOAD PDF + LETTERHEAD
-  // ====================================================
-
-  try {
-
-    showMessage(
-      "Preparing shipping document...",
-      "info"
+    pdf.setTextColor(
+      180,
+      0,
+      0
     );
 
 
-    const jsPDF =
-      await loadJsPDF();
-
-
-    const letterhead =
-      await loadLetterhead();
-
-
-    // ==================================================
-    // CREATE A4 PDF
-    // ==================================================
-
-    const pdf =
-      new jsPDF({
-
-        orientation:
-          "portrait",
-
-        unit:
-          "mm",
-
-        format:
-          "a4",
-
-        compress:
-          true
-
-      });
-
-
-    // ==================================================
-    // ADD LETTERHEAD
-    // ==================================================
-
-    pdf.addImage(
-
-      letterhead,
-
-      "PNG",
-
-      0,
-
-      0,
-
-      A4_WIDTH,
-
-      A4_HEIGHT,
-
-      undefined,
-
-      "FAST"
-
+    pdf.setFontSize(
+      18
     );
 
 
-    // ==================================================
-    // PDF TEXT HELPER
-    // ==================================================
+    pdf.setGState(
+      new pdf.GState({
+        opacity: 0.09
+      })
+    );
 
-    function addText(
-      value,
-      position,
-      options = {}
+
+    for (
+      let row = 0;
+      row < 4;
+      row++
     ) {
 
-      if (
-        value === null ||
-        value === undefined
+      for (
+        let column = 0;
+        column < 2;
+        column++
       ) {
 
-        return;
+        const watermarkX =
+          30 +
+          column * 105;
 
-      }
-
-
-      const text =
-        String(value);
-
-
-      if (
-        !text.trim()
-      ) {
-
-        return;
-
-      }
+        const watermarkY =
+          55 +
+          row * 70;
 
 
-      const x =
-        convertX(
-          position.left
-        );
-
-
-      const y =
-        convertY(
-          position.top
-        );
-
-
-      pdf.setFont(
-        "helvetica",
-        options.bold === false
-          ? "normal"
-          : "bold"
-      );
-
-
-      pdf.setFontSize(
-        options.fontSize ||
-        FONT_SIZE_PT
-      );
-
-
-      pdf.setTextColor(
-        17,
-        24,
-        39
-      );
-
-
-      pdf.text(
-        text,
-        x,
-        y + FONT_SIZE_MM,
-        {
-          baseline:
-            "top"
-        }
-      );
-
-    }
-
-
-    // ==================================================
-    // INVOICE
-    // ==================================================
-
-    addText(
-      invoice,
-      POSITIONS.invoice
-    );
-
-
-    // ==================================================
-    // CREATED DATE
-    // ==================================================
-
-    addText(
-      dateCreated,
-      POSITIONS.dateCreated
-    );
-
-
-    // ==================================================
-    // ARRIVAL DATE
-    // ==================================================
-
-    addText(
-      arrivalDate,
-      POSITIONS.arrivalDate
-    );
-
-
-    // ==================================================
-    // SENDER
-    // ==================================================
-
-    addText(
-      senderName,
-      POSITIONS.sender
-    );
-
-
-    // ==================================================
-    // SENDER EMAIL
-    // ==================================================
-
-    addText(
-      senderEmailValue,
-      POSITIONS.senderEmail
-    );
-
-
-    // ==================================================
-    // TRACKING
-    // ==================================================
-
-    if (
-      tracking &&
-      tracking !== "N/A"
-    ) {
-
-      const trackingX =
-        convertX(
-          POSITIONS.tracking.left
-        );
-
-
-      const trackingY =
-        convertY(
-          POSITIONS.tracking.top
-        );
-
-
-      pdf.setFont(
-        "helvetica",
-        "bold"
-      );
-
-
-      pdf.setFontSize(
-        FONT_SIZE_PT
-      );
-
-
-      pdf.setTextColor(
-        17,
-        24,
-        39
-      );
-
-
-      const TRACKING_SPACING =
-        0.3;
-
-
-      let currentX =
-        trackingX;
-
-
-      String(tracking)
-        .split("")
-        .forEach(
-          function (
-            character
-          ) {
-
-            pdf.text(
-              character,
-              currentX,
-              trackingY +
-                FONT_SIZE_MM,
-              {
-                baseline:
-                  "top"
-              }
-            );
-
-
-            currentX +=
-              pdf.getTextWidth(
-                character
-              ) +
-              TRACKING_SPACING;
-
+        pdf.text(
+          "TEST SHIPPING",
+          watermarkX,
+          watermarkY,
+          {
+            angle: -28
           }
         );
 
-    }
-
-
-    // ==================================================
-    // RECIPIENT
-    // ==================================================
-
-    addText(
-      recipientName,
-      POSITIONS.recipient
-    );
-
-
-    // ==================================================
-    // RECIPIENT EMAIL
-    // ==================================================
-
-    addText(
-      recipientEmailValue,
-      POSITIONS.recipientEmail
-    );
-
-
-    // ==================================================
-    // RECIPIENT ADDRESS
-    // ==================================================
-
-    addText(
-      recipientAddressValue,
-      POSITIONS.recipientAddress
-    );
-
-
-    // ==================================================
-    // PACKAGE CONTENT
-    // ==================================================
-
-    addText(
-      packageContentValue,
-      POSITIONS.packageContent
-    );
-
-
-    // ==================================================
-    // PACKAGE WEIGHT
-    // ==================================================
-
-    addText(
-      packageWeightValue,
-      POSITIONS.packageWeight
-    );
-
-
-    // ==================================================
-    // WATERMARK
-    // ==================================================
-
-    if (isWatermarked) {
-
-      pdf.saveGraphicsState();
-
-
-      try {
-
-        if (
-          typeof pdf.GState ===
-          "function"
-        ) {
-
-          pdf.setGState(
-            new pdf.GState({
-              opacity: 0.09
-            })
-          );
-
-        }
-
-      } catch (error) {
-
       }
-
-
-      pdf.setFont(
-        "helvetica",
-        "bold"
-      );
-
-
-      pdf.setFontSize(
-
-        6.4 *
-        72 /
-        25.4
-
-      );
-
-
-      pdf.setTextColor(
-        220,
-        38,
-        38
-      );
-
-
-      const columns =
-        2;
-
-      const rows =
-        4;
-
-
-      const columnWidth =
-        A4_WIDTH /
-        columns;
-
-      const rowHeight =
-        A4_HEIGHT /
-        rows;
-
-
-      for (
-        let row = 0;
-        row < rows;
-        row++
-      ) {
-
-        for (
-          let column = 0;
-          column < columns;
-          column++
-        ) {
-
-          const x =
-            (
-              column *
-              columnWidth
-            ) +
-            (
-              columnWidth /
-              2
-            );
-
-
-          const y =
-            (
-              row *
-              rowHeight
-            ) +
-            (
-              rowHeight /
-              2
-            );
-
-
-          pdf.text(
-
-            "TEST SHIPPING",
-
-            x,
-
-            y,
-
-            {
-
-              angle:
-                -28,
-
-              align:
-                "center"
-
-            }
-
-          );
-
-        }
-
-      }
-
-
-      pdf.restoreGraphicsState();
 
     }
 
 
-    // ==================================================
-    // FILE NAME
-    // ==================================================
-
-    const safeTracking =
-      String(
-        tracking
-      )
-        .replace(
-          /[^a-zA-Z0-9_-]/g,
-          "-"
-        );
-
-
-    const fileName =
-      `ZendItCargo-${safeTracking}.pdf`;
-
-
-    // ==================================================
-    // DOWNLOAD
-    // ==================================================
-
-    pdf.save(
-      fileName
-    );
-
-
-    setTimeout(
-      function () {
-
-        showMessage(
-          "Shipping document downloaded successfully.",
-          "success"
-        );
-
-      },
-      300
-    );
-
-
-  } catch (error) {
-
-    console.error(
-      "CARGO PDF ERROR:",
-      error
-    );
-
-
-    showCargoPopup(
-
-      error.message ||
-      "Unable to create shipping document."
-
+    pdf.setGState(
+      new pdf.GState({
+        opacity: 1
+      })
     );
 
   }
+
+
+  const safeTracking =
+    String(
+      shipment.trackingNumber ||
+      "shipment"
+    ).replace(
+      /[^a-zA-Z0-9-_]/g,
+      ""
+    );
+
+
+  pdf.save(
+    `ZendItCargo-${safeTracking}.pdf`
+  );
 
 }
 
@@ -4887,10 +3338,6 @@ async function initializeCargo() {
 }
 
 
-// ======================================================
-// START
-// ======================================================
-
 initializeCargo();
 
 
@@ -4901,13 +3348,9 @@ initializeCargo();
 setInterval(
   async function () {
 
-    if (getToken()) {
+    await loadWalletBalance();
 
-      await loadWalletBalance();
-
-      await loadShipments();
-
-    }
+    await loadShipments();
 
   },
   60000
@@ -4919,8 +3362,13 @@ setInterval(
 // ======================================================
 
 const navbarToggler =
+  document.querySelector(
+    ".navbar-toggler"
+  );
+
+const authNav =
   document.getElementById(
-    "navbarToggler"
+    "authNav"
   );
 
 
@@ -4929,16 +3377,12 @@ if (
   authNav
 ) {
 
-  navbarToggler.onclick =
+  navbarToggler.addEventListener(
+    "click",
     function () {
 
-      authNav.classList.toggle(
-        "show"
-      );
-
-
       const isOpen =
-        authNav.classList.contains(
+        authNav.classList.toggle(
           "show"
         );
 
@@ -4946,21 +3390,20 @@ if (
       navbarToggler.setAttribute(
         "aria-expanded",
         isOpen
+          ? "true"
+          : "false"
       );
 
-    };
+    }
+  );
 
 
-  const navLinks =
-    authNav.querySelectorAll(
-      ".nav-link"
-    );
+  authNav
+    .querySelectorAll("a")
+    .forEach(function (link) {
 
-
-  navLinks.forEach(
-    function (link) {
-
-      link.onclick =
+      link.addEventListener(
+        "click",
         function () {
 
           authNav.classList.remove(
@@ -4973,9 +3416,9 @@ if (
             "false"
           );
 
-        };
+        }
+      );
 
-    }
-  );
+    });
 
 }
