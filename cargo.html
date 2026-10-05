@@ -358,33 +358,49 @@
           <!-- =====================================================
      SHIPMENT HISTORY
 ===================================================== -->
-<div class="form-section-header">
 
-  <div>
+          <div class="form-section">
 
-    <h3>
-      Shipment History
-    </h3>
+            <div class="form-section-header">
 
-    <p>
-      Add the shipment journey manually.
-    </p>
+              <div>
 
-  </div>
+                <h3>
+                  Shipment History
+                </h3>
 
-  <div style="display:flex; gap:8px; align-items:center;">
+                <p>
+                  Add the shipment journey manually.
+                </p>
 
-    <button type="button" id="addTrackingEventButton" class="btn btn-outline-primary">
-      + Add History
-    </button>
+              </div>
 
-    <button type="button" id="saveTrackingHistoryButton" class="btn btn-primary">
-      Save History
-    </button>
+              <div style="display:flex; gap:8px; align-items:center;">
 
-  </div>
+                <button type="button" id="addTrackingEventButton" class="btn btn-outline-primary">
+                  + Add History
+                </button>
 
-</div>
+                <button type="button" id="saveTrackingHistoryButton" class="btn btn-primary">
+                  Save History
+                </button>
+
+              </div>
+
+            </div>
+
+
+            <!-- HISTORY INPUT ROWS WILL APPEAR HERE -->
+
+            <div id="trackingEventsContainer" class="tracking-events-container">
+
+              <div class="tracking-events-empty">
+                No history entries added yet.
+              </div>
+
+            </div>
+
+          </div>
 
           <!-- =========================
              SENDER INFORMATION
