@@ -77,6 +77,9 @@ const shippingTimeInput =
 const estimatedDeliveryInput =
   document.getElementById("estimatedDelivery");
 
+const estimatedDeliveryTimeInput =
+  document.getElementById("estimatedDeliveryTime");
+
 const senderInput =
   document.getElementById("sender");
 
@@ -301,6 +304,41 @@ function getLocalTimeFromTimestamp(timestamp) {
 
 
 // ======================================================
+// PDF DATE
+// ======================================================
+
+function formatPdfDate(value) {
+
+  if (!value) {
+    return "";
+  }
+
+  const date =
+    new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return "";
+  }
+
+  const day =
+    String(
+      date.getDate()
+    ).padStart(2, "0");
+
+  const month =
+    String(
+      date.getMonth() + 1
+    ).padStart(2, "0");
+
+  const year =
+    date.getFullYear();
+
+  return `${day}/${month}/${year}`;
+
+}
+
+
+// ======================================================
 // CURRENT USER
 // ======================================================
 
@@ -361,36 +399,84 @@ function updateCargoNavbar() {
     return;
   }
 
+
+  // ====================================================
+  // LOGGED OUT
+  // ====================================================
+
   if (!token || !currentUser) {
 
     authNav.innerHTML = `
-      <a href="/login.html">Login</a>
+      <div class="nav-item">
+
+        <a
+          href="login.html"
+          class="nav-link"
+        >
+          Login
+        </a>
+
+      </div>
     `;
 
     return;
   }
 
+
+  // ====================================================
+  // USER NAME
+  // ====================================================
+
   const name =
     currentUser.name ||
     currentUser.fullName ||
     currentUser.email ||
-    "Account";
+    "User";
+
+
+  // ====================================================
+  // NAVBAR
+  // ====================================================
 
   authNav.innerHTML = `
-    <span class="user-name">
-      ${escapeHTML(name)}
-    </span>
 
-    <span class="wallet-balance">
-      ${formatMoney(currentWalletBalance)}
-    </span>
+    <div class="nav-item">
 
-    <button
-      type="button"
-      onclick="logoutCargo()"
-    >
-      Logout
-    </button>
+      <a
+        href="#"
+        class="nav-link username-link"
+        onclick="return false;"
+      >
+        ${escapeHTML(name)}
+      </a>
+
+    </div>
+
+
+    <div class="nav-item">
+
+      <a
+        href="wallet.html"
+        class="nav-link wallet-balance"
+      >
+        ${formatMoney(currentWalletBalance)}
+      </a>
+
+    </div>
+
+
+    <div class="nav-item">
+
+      <a
+        href="#"
+        class="nav-link"
+        onclick="logoutCargo(); return false;"
+      >
+        Logout
+      </a>
+
+    </div>
+
   `;
 
 }
@@ -540,7 +626,6 @@ function selectShipment(index) {
 // ======================================================
 // SHIPPING TYPE MODAL
 // ======================================================
-
 function openShippingTypeModal() {
 
   if (!shippingTypeModal) {
@@ -554,15 +639,15 @@ function openShippingTypeModal() {
     );
 
   if (selected) {
-
-    selectedShippingType =
-      selected.value;
-
+    selectedShippingType = selected.value;
   }
 
-  shippingTypeModal.style.display =
-    "flex";
+  const modal =
+    bootstrap.Modal.getOrCreateInstance(
+      shippingTypeModal
+    );
 
+  modal.show();
 }
 
 
@@ -576,8 +661,12 @@ function closeShippingTypeModal() {
     return;
   }
 
-  shippingTypeModal.style.display =
-    "none";
+const modal =
+  bootstrap.Modal.getOrCreateInstance(
+    shippingTypeModal
+  );
+
+modal.hide();
 
 }
 
@@ -598,15 +687,37 @@ if (continueShipping) {
         );
 
       if (selected) {
-
         selectedShippingType =
           selected.value;
-
       }
 
-      closeShippingTypeModal();
 
-      createShipping();
+      // Move focus away from the modal button
+      continueShipping.blur();
+
+
+      const modal =
+        bootstrap.Modal.getOrCreateInstance(
+          shippingTypeModal
+        );
+
+
+      shippingTypeModal.addEventListener(
+        "hidden.bs.modal",
+        function handleModalHidden() {
+
+          shippingTypeModal.removeEventListener(
+            "hidden.bs.modal",
+            handleModalHidden
+          );
+
+          createShipping();
+
+        }
+      );
+
+
+      modal.hide();
 
     }
   );
@@ -1211,7 +1322,7 @@ async function createShipping() {
       invoiceNumber:
         invoiceNumberInput?.value.trim() || "",
 
-      shippingDate:
+      shipmentDate:
         shippingDateInput?.value || "",
 
       shippingTime:
@@ -1219,6 +1330,9 @@ async function createShipping() {
 
       estimatedDelivery:
         estimatedDeliveryInput?.value || "",
+
+      estimatedDeliveryTime:
+        estimatedDeliveryTimeInput?.value || "",
 
       sender:
         senderInput?.value.trim() || "",
@@ -1498,6 +1612,10 @@ function renderShipments() {
       .join("");
 
 
+  // ====================================================
+  // EDIT
+  // ====================================================
+
   shipmentList
     .querySelectorAll(
       "[data-shipment-edit]"
@@ -1521,6 +1639,77 @@ function renderShipments() {
     });
 
 
+  // ====================================================
+  // DOWNLOAD
+  // ====================================================
+
+  shipmentList
+    .querySelectorAll(
+      "[data-shipment-download]"
+    )
+    .forEach(function (button) {
+
+      button.addEventListener(
+        "click",
+        async function () {
+
+          const index =
+            Number(
+              button.dataset.shipmentDownload
+            );
+
+          const shipment =
+            userShipments[index];
+
+          if (!shipment) {
+            return;
+          }
+
+
+          button.disabled =
+            true;
+
+          button.textContent =
+            "Downloading...";
+
+
+          try {
+
+            await downloadCargoPdf(
+              shipment
+            );
+
+          } catch (error) {
+
+            console.error(
+              "Download cargo PDF error:",
+              error
+            );
+
+            alert(
+              "Unable to download shipment PDF."
+            );
+
+          } finally {
+
+            button.disabled =
+              false;
+
+            button.textContent =
+              "Download";
+
+          }
+
+        }
+      );
+
+    });
+
+
+  // ====================================================
+  // DELETE
+  // ====================================================
+
   shipmentList
     .querySelectorAll(
       "[data-shipment-delete]"
@@ -1543,6 +1732,10 @@ function renderShipments() {
 
     });
 
+
+  // ====================================================
+  // REMOVE WATERMARK
+  // ====================================================
 
   shipmentList
     .querySelectorAll(
@@ -1733,6 +1926,15 @@ function createShipmentCard(
         </button>
 
 
+        <button
+          type="button"
+          class="btn btn-outline-success"
+          data-shipment-download="${index}"
+        >
+          Download
+        </button>
+
+
         ${
           !isClean
             ? `
@@ -1851,10 +2053,13 @@ function editShipment(index) {
 
 
   shippingDateInput.value =
-    shipment.shippingDate ||
-    getLocalDateFromTimestamp(
-      shipment.createdAt
-    );
+    shipment.shipmentDate
+      ? getLocalDateFromTimestamp(
+          shipment.shipmentDate
+        )
+      : getLocalDateFromTimestamp(
+          shipment.createdAt
+        );
 
 
   shippingTimeInput.value =
@@ -1865,8 +2070,20 @@ function editShipment(index) {
 
 
   estimatedDeliveryInput.value =
-    shipment.estimatedDelivery ||
-    "";
+    shipment.estimatedDelivery
+      ? getLocalDateFromTimestamp(
+          shipment.estimatedDelivery
+        )
+      : "";
+
+
+  if (estimatedDeliveryTimeInput) {
+
+    estimatedDeliveryTimeInput.value =
+      shipment.estimatedDeliveryTime ||
+      "";
+
+  }
 
 
   senderInput.value =
@@ -2075,7 +2292,7 @@ async function updateShipment() {
       invoiceNumber:
         invoiceNumberInput?.value.trim() || "",
 
-      shippingDate:
+      shipmentDate:
         shippingDateInput?.value || "",
 
       shippingTime:
@@ -2083,6 +2300,9 @@ async function updateShipment() {
 
       estimatedDelivery:
         estimatedDeliveryInput?.value || "",
+
+      estimatedDeliveryTime:
+        estimatedDeliveryTimeInput?.value || "",
 
       sender:
         senderInput?.value.trim() || "",
@@ -2781,6 +3001,9 @@ function saveFormData() {
     estimatedDelivery:
       estimatedDeliveryInput?.value || "",
 
+    estimatedDeliveryTime:
+      estimatedDeliveryTimeInput?.value || "",
+
     sender:
       senderInput?.value || "",
 
@@ -2867,6 +3090,14 @@ function restoreFormData() {
 
       estimatedDeliveryInput.value =
         data.estimatedDelivery || "";
+
+    }
+
+
+    if (estimatedDeliveryTimeInput) {
+
+      estimatedDeliveryTimeInput.value =
+        data.estimatedDeliveryTime || "";
 
     }
 
@@ -3054,57 +3285,57 @@ async function downloadCargoPdf(
 
     invoice: {
       left: 1100,
-      top: 296
+      top: 356
     },
 
     dateCreated: {
       left: 250,
-      top: 368
+      top: 430
     },
 
     arrivalDate: {
       left: 250,
-      top: 1537
+      top: 1599
     },
 
     sender: {
       left: 250,
-      top: 675
+      top: 737
     },
 
     senderEmail: {
       left: 250,
-      top: 760
+      top: 822
     },
 
     tracking: {
       left: 250,
-      top: 975
+      top: 1037
     },
 
     recipient: {
       left: 250,
-      top: 1245
+      top: 1307
     },
 
     recipientEmail: {
       left: 250,
-      top: 1380
+      top: 1442
     },
 
     recipientAddress: {
       left: 250,
-      top: 1312
+      top: 1374
     },
 
     packageContent: {
       left: 250,
-      top: 1618
+      top: 1680
     },
 
     packageWeight: {
       left: 250,
-      top: 1735
+      top: 1797
     }
 
   };
@@ -3136,8 +3367,12 @@ async function downloadCargoPdf(
     30
   );
 
+pdf.setFont(
+  "helvetica",
+  "bold"
+);
 
-  pdf.setFontSize(9);
+  pdf.setFontSize(14);
 
 
   pdf.text(
@@ -3148,17 +3383,36 @@ async function downloadCargoPdf(
   );
 
 
+  // ====================================================
+  // DATE CREATED
+  // ====================================================
+
+  const createdDate =
+    formatPdfDate(
+      shipment.shipmentDate ||
+      shipment.createdAt
+    );
+
+
   pdf.text(
-    shipment.shippingDate ||
-      "",
+    createdDate,
     x(POSITIONS.dateCreated),
     y(POSITIONS.dateCreated)
   );
 
 
+  // ====================================================
+  // EXPECTED ARRIVAL
+  // ====================================================
+
+  const arrivalDate =
+    formatPdfDate(
+      shipment.estimatedDelivery
+    );
+
+
   pdf.text(
-    shipment.estimatedDelivery ||
-      "",
+    arrivalDate,
     x(POSITIONS.arrivalDate),
     y(POSITIONS.arrivalDate)
   );
@@ -3204,12 +3458,25 @@ async function downloadCargoPdf(
   );
 
 
+const recipientAddress =
+  shipment.recipientAddress ||
+  "";
+
+if (recipientAddress) {
+
+  const addressLines =
+    pdf.splitTextToSize(
+      recipientAddress,
+      70
+    );
+
   pdf.text(
-    shipment.recipientAddress ||
-      "",
+    addressLines,
     x(POSITIONS.recipientAddress),
     y(POSITIONS.recipientAddress)
   );
+
+}
 
 
   pdf.text(
@@ -3245,7 +3512,7 @@ async function downloadCargoPdf(
 
 
     pdf.setFontSize(
-      18
+      30
     );
 
 
@@ -3355,70 +3622,3 @@ setInterval(
   },
   60000
 );
-
-
-// ======================================================
-// MOBILE NAVBAR
-// ======================================================
-
-const navbarToggler =
-  document.querySelector(
-    ".navbar-toggler"
-  );
-
-const authNav =
-  document.getElementById(
-    "authNav"
-  );
-
-
-if (
-  navbarToggler &&
-  authNav
-) {
-
-  navbarToggler.addEventListener(
-    "click",
-    function () {
-
-      const isOpen =
-        authNav.classList.toggle(
-          "show"
-        );
-
-
-      navbarToggler.setAttribute(
-        "aria-expanded",
-        isOpen
-          ? "true"
-          : "false"
-      );
-
-    }
-  );
-
-
-  authNav
-    .querySelectorAll("a")
-    .forEach(function (link) {
-
-      link.addEventListener(
-        "click",
-        function () {
-
-          authNav.classList.remove(
-            "show"
-          );
-
-
-          navbarToggler.setAttribute(
-            "aria-expanded",
-            "false"
-          );
-
-        }
-      );
-
-    });
-
-}

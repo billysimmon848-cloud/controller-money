@@ -75,7 +75,7 @@ body {
   width: 96%;
   max-width: 1450px;
   margin: auto;
-  padding: 22px 0;
+  padding: 82px 0 22px;
   min-width: 0;
   min-height: 100vh;
 }
@@ -1294,98 +1294,52 @@ body {
 }
 
 /* ======================================================
-   RESPONSIVE MOBILE NAVBAR
+   MOBILE NAVBAR
 ====================================================== */
 
-.navbar-toggler {
-  display: none;
-  width: 42px;
-  height: 38px;
-  padding: 7px;
-  border: 1px solid rgba(139, 92, 246, .35);
-  border-radius: 7px;
-  background: transparent;
-  cursor: pointer;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
-}
-
-.navbar-toggler span {
-  display: block;
-  width: 22px;
-  height: 2px;
-  border-radius: 2px;
-  background: #c084fc;
-}
-
-.navbar-toggler:focus {
-  outline: none;
-}
-
-
-/* ======================================================
-   MOBILE
-====================================================== */
-
-@media (max-width: 700px) {
+@media (max-width: 991.98px) {
 
   .custom-navbar {
     padding: 10px 15px;
   }
 
-
-  .custom-navbar .nav-container {
-    position: relative;
-    flex-wrap: wrap;
-  }
-
-
   .custom-navbar .navbar-toggler {
-    display: flex;
-    margin-left: auto;
+    border-color: rgba(139, 92, 246, .35);
   }
 
+  .custom-navbar .navbar-toggler:focus {
+    box-shadow: none;
+  }
 
-  /* HIDDEN BY DEFAULT */
+  .custom-navbar .navbar-toggler-icon {
+    filter: invert(1);
+  }
+
+  .custom-navbar .navbar-collapse {
+    margin-top: 10px;
+  }
 
   .custom-navbar .auth-nav {
-    display: none !important;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
     width: 100%;
     margin-left: 0 !important;
-    margin-top: 10px;
     padding-top: 10px;
     border-top: 1px solid rgba(139, 92, 246, .20);
   }
 
-
-  /* OPEN */
-
-  .custom-navbar .auth-nav.show {
-    display: grid !important;
-    grid-template-columns: 1fr;
-    gap: 8px !important;
-  }
-
-
   .custom-navbar .auth-nav .nav-item {
     width: 100%;
-    display: block;
   }
-
 
   .custom-navbar .auth-nav .nav-link {
     display: block;
     width: 100%;
-    padding: 11px 12px !important;
+    padding: 10px 12px !important;
     border-radius: 6px;
     background: rgba(139, 92, 246, .06);
-  }
-
-
-  .custom-navbar .auth-nav .nav-link:hover {
-    background: rgba(139, 92, 246, .12);
   }
 
 }
@@ -1440,7 +1394,7 @@ body {
     display: block;
 
     width: 94%;
-    padding: 18px 0;
+    padding: 78px 0 18px;
 
     min-height: 100vh;
   }
@@ -1635,7 +1589,7 @@ body {
 
   .shipping-workspace {
     width: 95%;
-    padding: 16px 0;
+    padding: 78px 0 18px;
   }
 
 
@@ -1797,7 +1751,7 @@ body {
 @media (max-width: 360px) {
 
   .shipping-workspace {
-    width: 96%;
+    max-width: 360px;
   }
 
   .workspace-header h1 {
