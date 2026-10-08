@@ -186,11 +186,9 @@ body {
   max-width: 100%;
 
   background:
-    linear-gradient(
-      145deg,
+    linear-gradient(145deg,
       #111827,
-      #0b101b
-    );
+      #0b101b);
 
   border: 1px solid rgba(139, 92, 246, .22);
   border-radius: 14px;
@@ -820,7 +818,7 @@ body {
   min-width: 0;
 }
 
-.document-top > div {
+.document-top>div {
   min-width: 0;
 }
 
@@ -922,7 +920,7 @@ body {
   min-width: 0;
 }
 
-.document-status-row > div {
+.document-status-row>div {
   min-width: 0;
   padding: 9px;
   border: 1px solid #e2e8f0;
@@ -1003,7 +1001,7 @@ body {
   min-width: 0;
 }
 
-.package-row > div {
+.package-row>div {
   min-width: 0;
 }
 
@@ -1312,7 +1310,8 @@ body {
   }
 
   .custom-navbar .navbar-toggler-icon {
-    filter: invert(1);
+    filter: none;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='%23c084fc' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
   }
 
   .custom-navbar .navbar-collapse {

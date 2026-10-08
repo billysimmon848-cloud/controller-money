@@ -2739,19 +2739,11 @@ function renderBoardingPasses() {
       );
 
 
-      item.appendChild(
-        profileButton
-      );
+      profileButton.appendChild(deleteButton);
 
+      item.appendChild(profileButton);
 
-      item.appendChild(
-        deleteButton
-      );
-
-
-      createdFlights.appendChild(
-        item
-      );
+      createdFlights.appendChild(item);
 
     }
   );
@@ -4163,7 +4155,24 @@ if (
     function () {
 
       authNav.classList.toggle(
-        "active"
+        "show"
+      );
+
+      const isOpen =
+        authNav.classList.contains(
+          "show"
+        );
+
+      navbarToggler.setAttribute(
+        "aria-expanded",
+        isOpen
+      );
+
+      navbarToggler.setAttribute(
+        "aria-label",
+        isOpen
+          ? "Close navigation"
+          : "Open navigation"
       );
 
     }
