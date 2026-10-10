@@ -124,12 +124,59 @@ const bankAccountSchema = new mongoose.Schema(
 
 
     // ======================================================
-    // PROFILE
+    // PROFILE PICTURE
     // ======================================================
 
     profilePicture: {
       type: String,
       default: ""
+    },
+
+
+    // ======================================================
+    // PERSONAL INFORMATION
+    // ======================================================
+
+    address: {
+      type: String,
+      default: "",
+      trim: true
+    },
+
+    occupation: {
+      type: String,
+      default: "",
+      trim: true
+    },
+
+    gender: {
+      type: String,
+      default: "",
+      trim: true
+    },
+
+    dateOfBirth: {
+      type: String,
+      default: "",
+      trim: true
+    },
+
+    phoneNumber: {
+      type: String,
+      default: "",
+      trim: true
+    },
+
+    country: {
+      type: String,
+      default: "",
+      trim: true
+    },
+
+    stateCity: {
+      type: String,
+      default: "",
+      trim: true
     },
 
 

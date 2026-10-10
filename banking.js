@@ -17,12 +17,31 @@ let selectedAccountNumberValue = null;
 
 let selectedBankingPlan = "free";
 
+let originalProfileImage = "";
+let selectedProfileImage = "";
 
+let profileImageCropper = null;
+let profileImageBaseZoom = 1;
+
+let profileImageTarget = "create";
 // =====================================================
 // DOM ELEMENTS
 // =====================================================
 
 // Main
+
+const profileImageCanvas =
+  document.getElementById("profileImageCanvas");
+
+const profileImageZoom =
+  document.getElementById("profileImageZoom");
+
+const profileImageZoomIn =
+  document.getElementById("profileImageZoomIn");
+
+const profileImageZoomOut =
+  document.getElementById("profileImageZoomOut");
+
 const bankingForm =
   document.getElementById("bankingForm");
 
@@ -41,7 +60,7 @@ const newAccountBtn =
 const bankingMessage =
   document.getElementById("bankingMessage");
 
-  const selectedBankLink =
+const selectedBankLink =
   document.getElementById("selectedBankLink");
 
 
@@ -71,6 +90,78 @@ const fullName =
 
 const email =
   document.getElementById("email");
+
+const address =
+  document.getElementById("address");
+
+const occupation =
+  document.getElementById("occupation");
+
+const gender =
+  document.getElementById("gender");
+
+const dateOfBirth =
+  document.getElementById("dateOfBirth");
+
+const phoneNumber =
+  document.getElementById("phoneNumber");
+
+const country =
+  document.getElementById("country");
+
+const stateCity =
+  document.getElementById("stateCity");
+
+
+// =====================================================
+// PROFILE IMAGE
+// =====================================================
+
+const profilePicture =
+  document.getElementById(
+    "profilePicture"
+  );
+
+const profileImagePreview =
+  document.getElementById(
+    "profileImagePreview"
+  );
+
+const profileImagePlaceholder =
+  document.getElementById(
+    "profileImagePlaceholder"
+  );
+
+const removeProfileImageBtn =
+  document.getElementById(
+    "removeProfileImageBtn"
+  );
+
+const editProfileImageBtn =
+  document.getElementById(
+    "editProfileImageBtn"
+  );
+
+const profileImageModal =
+  document.getElementById("profileImageModal");
+
+const profileImageEditPreview =
+  document.getElementById("profileImageEditPreview");
+
+const keepOriginalImageBtn =
+  document.getElementById("keepOriginalImageBtn");
+
+const removeBackgroundBtn =
+  document.getElementById("removeBackgroundBtn");
+
+const cancelProfileImageEditBtn =
+  document.getElementById("cancelProfileImageEditBtn");
+
+const saveProfileImageBtn =
+  document.getElementById("saveProfileImageBtn");
+
+const profileImageEditorMessage =
+  document.getElementById("profileImageEditorMessage");
 
 const accountType =
   document.getElementById("accountType");
@@ -153,6 +244,27 @@ const settingsEmail =
     "settingsEmail"
   );
 
+const settingsAddress =
+  document.getElementById("settingsAddress");
+
+const settingsOccupation =
+  document.getElementById("settingsOccupation");
+
+const settingsGender =
+  document.getElementById("settingsGender");
+
+const settingsDateOfBirth =
+  document.getElementById("settingsDateOfBirth");
+
+const settingsPhoneNumber =
+  document.getElementById("settingsPhoneNumber");
+
+const settingsCountry =
+  document.getElementById("settingsCountry");
+
+const settingsStateCity =
+  document.getElementById("settingsStateCity");
+
 const settingsAccountType =
   document.getElementById(
     "settingsAccountType"
@@ -183,6 +295,20 @@ const settingsWithdrawalErrorMessage =
     "settingsWithdrawalErrorMessage"
   );
 
+const settingsProfilePicture =
+  document.getElementById("settingsProfilePicture");
+
+const settingsProfileImagePreview =
+  document.getElementById("settingsProfileImagePreview");
+
+const settingsProfileImagePlaceholder =
+  document.getElementById("settingsProfileImagePlaceholder");
+
+const removeSettingsProfileImageBtn =
+  document.getElementById("removeSettingsProfileImageBtn");
+
+const editSettingsProfileImageBtn =
+  document.getElementById("editSettingsProfileImageBtn");
 
 // =====================================================
 // CUSTOMER ACCOUNT MESSAGE
@@ -283,6 +409,482 @@ const deleteAccountMessage =
   document.getElementById(
     "deleteAccountMessage"
   );
+
+
+/* =====================================================
+   PROFILE IMAGE EDITOR — CROPPER.JS
+===================================================== */
+
+function openProfileImageEditor(imageUrl) {
+  if (
+    !profileImageEditPreview ||
+    !profileImageModal ||
+    !profileImageCanvas ||
+    typeof Cropper === "undefined"
+  ) {
+    if (profileImageEditorMessage) {
+      profileImageEditorMessage.textContent =
+        "The image editor could not load. Please check the Cropper.js script.";
+    }
+    return;
+  }
+
+  if (profileImageCropper) {
+    profileImageCropper.destroy();
+    profileImageCropper = null;
+  }
+
+  if (profileImageEditorMessage) {
+    profileImageEditorMessage.textContent = "Loading image...";
+  }
+
+  profileImageModal.classList.add("show");
+  profileImageModal.setAttribute("aria-hidden", "false");
+
+  profileImageEditPreview.onload = function () {
+    profileImageCropper = new Cropper(
+      profileImageEditPreview,
+      {
+        aspectRatio: 1,
+        viewMode: 1,
+        dragMode: "move",
+        autoCropArea: 0.8,
+        responsive: true,
+        background: false,
+        guides: false,
+        center: true,
+        highlight: false,
+        movable: true,
+        zoomable: true,
+        zoomOnWheel: true,
+        cropBoxMovable: true,
+        cropBoxResizable: false,
+        toggleDragModeOnDblclick: false,
+
+        ready: function () {
+          const imageData =
+            profileImageCropper.getImageData();
+
+          profileImageBaseZoom =
+            imageData.ratio || 1;
+
+          if (profileImageZoom) {
+            profileImageZoom.value = "1";
+          }
+
+          if (profileImageEditorMessage) {
+            profileImageEditorMessage.textContent = "";
+          }
+        },
+
+        zoom: function (event) {
+          if (!profileImageZoom || !profileImageBaseZoom) {
+            return;
+          }
+
+          const ratio =
+            event.detail.ratio / profileImageBaseZoom;
+
+          profileImageZoom.value = String(
+            Math.max(1, Math.min(3, ratio))
+          );
+        }
+      }
+    );
+  };
+
+  profileImageEditPreview.onerror = function () {
+    if (profileImageEditorMessage) {
+      profileImageEditorMessage.textContent =
+        "Unable to load this image. Please try another.";
+    }
+  };
+
+  profileImageEditPreview.removeAttribute("src");
+  profileImageEditPreview.src = imageUrl;
+}
+
+
+/* =====================================================
+   UPLOAD IMAGE — OPEN CROP EDITOR AUTOMATICALLY
+===================================================== */
+
+if (profilePicture) {
+  profilePicture.addEventListener("change", function () {
+    const file = profilePicture.files[0];
+
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      if (profileImageEditorMessage) {
+        profileImageEditorMessage.textContent =
+          "Please select a valid image file.";
+      }
+
+      profilePicture.value = "";
+      return;
+    }
+
+    if (file.size > 10 * 1024 * 1024) {
+      if (profileImageEditorMessage) {
+        profileImageEditorMessage.textContent =
+          "Please select an image smaller than 10 MB.";
+      }
+
+      profilePicture.value = "";
+      return;
+    }
+
+    const reader = new FileReader();
+
+    reader.onload = function (event) {
+      const imageData = event.target.result;
+
+      if (!imageData) {
+        if (profileImageEditorMessage) {
+          profileImageEditorMessage.textContent =
+            "Unable to read the selected image.";
+        }
+        return;
+      }
+
+      originalProfileImage = imageData;
+
+      // Always open the crop editor after uploading.
+      openProfileImageEditor(imageData);
+    };
+
+    reader.onerror = function () {
+      if (profileImageEditorMessage) {
+        profileImageEditorMessage.textContent =
+          "Failed to read this image. Please try another.";
+      }
+    };
+
+    reader.readAsDataURL(file);
+  });
+}
+
+
+/* SETTINGS IMAGE UPLOAD — OPEN CROP EDITOR */
+
+if (settingsProfilePicture) {
+  settingsProfilePicture.addEventListener("change", function () {
+    const file = settingsProfilePicture.files[0];
+
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      showMessage("Please select a valid image file.", "error");
+      settingsProfilePicture.value = "";
+      return;
+    }
+
+    if (file.size > 10 * 1024 * 1024) {
+      showMessage("Please select an image smaller than 10 MB.", "error");
+      settingsProfilePicture.value = "";
+      return;
+    }
+
+    const reader = new FileReader();
+
+    reader.onload = function (event) {
+      const imageData = event.target.result;
+
+      if (!imageData) {
+        showMessage("Unable to read this image.", "error");
+        return;
+      }
+
+      profileImageTarget = "settings";
+      originalProfileImage = imageData;
+
+      openProfileImageEditor(imageData);
+    };
+
+    reader.onerror = function () {
+      showMessage("Unable to read this image. Please try another.", "error");
+    };
+
+    reader.readAsDataURL(file);
+  });
+}
+
+
+/* =====================================================
+   ZOOM SLIDER
+===================================================== */
+
+if (profileImageZoom) {
+  profileImageZoom.addEventListener("input", function () {
+    if (!profileImageCropper) return;
+
+    const multiplier =
+      Number(profileImageZoom.value);
+
+    profileImageCropper.zoomTo(
+      profileImageBaseZoom * multiplier
+    );
+  });
+}
+
+
+/* =====================================================
+   ZOOM IN
+===================================================== */
+
+if (profileImageZoomIn) {
+  profileImageZoomIn.addEventListener("click", function () {
+    if (!profileImageCropper) return;
+
+    profileImageCropper.zoom(0.1);
+  });
+}
+
+
+/* =====================================================
+   ZOOM OUT
+===================================================== */
+
+if (profileImageZoomOut) {
+  profileImageZoomOut.addEventListener("click", function () {
+    if (!profileImageCropper) return;
+
+    profileImageCropper.zoom(-0.1);
+  });
+}
+
+
+/* =====================================================
+   CLOSE EDITOR
+===================================================== */
+
+function closeProfileImageEditor() {
+  if (profileImageModal) {
+    // Remove focus before hiding the modal
+    if (profileImageModal.contains(document.activeElement)) {
+      document.activeElement.blur();
+    }
+
+    profileImageModal.classList.remove("show");
+    profileImageModal.setAttribute("aria-hidden", "true");
+  }
+
+  if (profileImageCropper) {
+    profileImageCropper.destroy();
+    profileImageCropper = null;
+  }
+}
+
+
+/* =====================================================
+   SAVE CROPPED IMAGE
+===================================================== */
+
+function saveCroppedProfileImage() {
+  if (!profileImageCropper) {
+    if (profileImageEditorMessage) {
+      profileImageEditorMessage.textContent =
+        "Please wait for the image editor to finish loading.";
+    }
+    return;
+  }
+
+  try {
+    const croppedCanvas =
+      profileImageCropper.getCroppedCanvas({
+        width: 256,
+        height: 256,
+        fillColor: "#ffffff",
+        imageSmoothingEnabled: true,
+        imageSmoothingQuality: "high"
+      });
+
+    if (!croppedCanvas) {
+      throw new Error("Unable to crop this image.");
+    }
+
+
+    const croppedImage =
+      croppedCanvas.toDataURL("image/png");
+
+    selectedProfileImage = croppedImage;
+
+    if (profileImageTarget === "settings") {
+      if (settingsProfileImagePreview) {
+        settingsProfileImagePreview.src = croppedImage;
+        settingsProfileImagePreview.style.display = "block";
+      }
+
+      if (settingsProfileImagePlaceholder) {
+        settingsProfileImagePlaceholder.style.display = "none";
+      }
+
+      if (settingsProfilePicture) {
+        settingsProfilePicture.value = "";
+      }
+    } else {
+      if (profileImagePreview) {
+        profileImagePreview.src = croppedImage;
+        profileImagePreview.style.display = "block";
+      }
+
+      if (profileImagePlaceholder) {
+        profileImagePlaceholder.style.display = "none";
+      }
+
+      if (profilePicture) {
+        profilePicture.value = "";
+      }
+    }
+
+    closeProfileImageEditor();
+
+    showMessage(
+      "Image cropped successfully. Click Save Changes to save it to the account.",
+      "success"
+    );
+
+    return;
+
+
+    closeProfileImageEditor();
+
+    if (profilePicture) {
+      profilePicture.value = "";
+    }
+
+    showMessage(
+      "Profile image cropped successfully. Save the account to keep your other changes.",
+      "success"
+    );
+
+  } catch (error) {
+    console.error("Profile image crop error:", error);
+
+    if (profileImageEditorMessage) {
+      profileImageEditorMessage.textContent =
+        "Unable to crop this image. Please try another image.";
+    }
+  }
+}
+
+
+/* =====================================================
+   SAVE BUTTON
+===================================================== */
+
+if (saveProfileImageBtn) {
+  saveProfileImageBtn.addEventListener(
+    "click",
+    saveCroppedProfileImage
+  );
+}
+
+
+/* =====================================================
+   KEEP ORIGINAL — USE DEFAULT SQUARE CROP
+===================================================== */
+
+if (keepOriginalImageBtn) {
+  keepOriginalImageBtn.addEventListener(
+    "click",
+    saveCroppedProfileImage
+  );
+}
+
+
+/* =====================================================
+   CANCEL EDITING
+===================================================== */
+
+if (cancelProfileImageEditBtn) {
+  cancelProfileImageEditBtn.addEventListener(
+    "click",
+    function () {
+      closeProfileImageEditor();
+
+      // Discard a newly uploaded image if none was saved.
+      if (!selectedProfileImage && profilePicture) {
+        profilePicture.value = "";
+      }
+    }
+  );
+}
+
+
+/* =====================================================
+   EDIT CURRENT PROFILE IMAGE
+===================================================== */
+
+if (editProfileImageBtn) {
+  editProfileImageBtn.addEventListener(
+    "click",
+    function () {
+      const imageToEdit =
+        selectedProfileImage ||
+        (
+          profileImagePreview &&
+          profileImagePreview.getAttribute("src")
+        );
+
+      if (imageToEdit) {
+        originalProfileImage = imageToEdit;
+        openProfileImageEditor(imageToEdit);
+      }
+    }
+  );
+}
+
+
+/* =====================================================
+   REMOVE PROFILE IMAGE
+===================================================== */
+
+if (removeProfileImageBtn) {
+  removeProfileImageBtn.addEventListener(
+    "click",
+    function () {
+      originalProfileImage = "";
+      selectedProfileImage = "";
+
+      if (profileImagePreview) {
+        profileImagePreview.removeAttribute("src");
+        profileImagePreview.style.display = "none";
+      }
+
+      if (profileImagePlaceholder) {
+        profileImagePlaceholder.style.display = "block";
+      }
+
+      if (profilePicture) {
+        profilePicture.value = "";
+      }
+
+      if (profileImageCropper) {
+        profileImageCropper.destroy();
+        profileImageCropper = null;
+      }
+    }
+  );
+}
+
+
+/* =====================================================
+   BACKGROUND REMOVAL — NOT IMPLEMENTED
+===================================================== */
+
+if (removeBackgroundBtn) {
+  removeBackgroundBtn.addEventListener(
+    "click",
+    function () {
+      if (profileImageEditorMessage) {
+        profileImageEditorMessage.textContent =
+          "Background removal requires a separate background-removal tool.";
+      }
+    }
+  );
+}
 
 
 // =====================================================
@@ -386,6 +988,26 @@ function showCreateAccountView() {
 
   selectedAccountNumberValue = null;
 
+
+  // Start a new account without the previous account's image.
+
+  selectedProfileImage = "";
+  originalProfileImage = "";
+
+  if (profileImagePreview) {
+    profileImagePreview.removeAttribute("src");
+    profileImagePreview.style.display = "none";
+  }
+
+  if (profileImagePlaceholder) {
+    profileImagePlaceholder.style.display = "block";
+  }
+
+  if (profilePicture) {
+    profilePicture.value = "";
+  }
+
+
 }
 
 
@@ -471,8 +1093,8 @@ async function loadBankingAccounts() {
     bankingAccounts =
       Array.isArray(data.accounts)
         ? data.accounts.map(
-            normalizeAccount
-          )
+          normalizeAccount
+        )
         : [];
 
 
@@ -610,9 +1232,9 @@ function renderAccounts() {
           <div class="account-card-name">
 
             ${escapeHtml(
-              account.fullName ||
-              "Bank Account"
-            )}
+        account.fullName ||
+        "Bank Account"
+      )}
 
           </div>
 
@@ -620,18 +1242,17 @@ function renderAccounts() {
           <div class="account-card-number">
 
             ${escapeHtml(
-              account.accountNumber ||
-              ""
-            )}
+        account.accountNumber ||
+        ""
+      )}
 
           </div>
 
 
           <div
-            class="account-card-plan ${
-              account.planStatus ||
-              "demo"
-            }"
+            class="account-card-plan ${account.planStatus ||
+        "demo"
+        }"
           >
 
             ${planLabel}
@@ -1253,7 +1874,6 @@ async function createBankAccountFromPlan() {
 
   }
 
-
   const payload = {
 
     fullName:
@@ -1281,7 +1901,35 @@ async function createBankAccountFromPlan() {
       true,
 
     withdrawalErrorMessage:
-      "Withdrawal is currently unavailable."
+      "Withdrawal is currently unavailable.",
+
+    // PERSONAL INFORMATION
+
+    address:
+      address ? address.value.trim() : "",
+
+    occupation:
+      occupation ? occupation.value.trim() : "",
+
+    gender:
+      gender ? gender.value : "",
+
+    dateOfBirth:
+      dateOfBirth ? dateOfBirth.value : "",
+
+    phoneNumber:
+      phoneNumber ? phoneNumber.value.trim() : "",
+
+    country:
+      country ? country.value.trim() : "",
+
+    stateCity:
+      stateCity ? stateCity.value.trim() : "",
+
+    // PROFILE IMAGE
+
+    profilePicture:
+      selectedProfileImage || ""
 
   };
 
@@ -1677,6 +2325,70 @@ function populateSettings(
 
   }
 
+
+  // PERSONAL INFORMATION
+
+  if (settingsAddress) {
+    settingsAddress.value = account.address || "";
+  }
+
+  if (settingsOccupation) {
+    settingsOccupation.value = account.occupation || "";
+  }
+
+  if (settingsGender) {
+    settingsGender.value = account.gender || "";
+  }
+
+  if (settingsDateOfBirth) {
+    settingsDateOfBirth.value = account.dateOfBirth || "";
+  }
+
+  if (settingsPhoneNumber) {
+    settingsPhoneNumber.value = account.phoneNumber || "";
+  }
+
+  if (settingsCountry) {
+    settingsCountry.value = account.country || "";
+  }
+
+  if (settingsStateCity) {
+    settingsStateCity.value = account.stateCity || "";
+  }
+
+
+  // LOAD SAVED PROFILE IMAGE
+
+  selectedProfileImage =
+    account.profilePicture || "";
+
+  originalProfileImage =
+    selectedProfileImage;
+
+  if (selectedProfileImage) {
+
+    if (profileImagePreview) {
+      profileImagePreview.src = selectedProfileImage;
+      profileImagePreview.style.display = "block";
+    }
+
+    if (profileImagePlaceholder) {
+      profileImagePlaceholder.style.display = "none";
+    }
+
+  } else {
+
+    if (profileImagePreview) {
+      profileImagePreview.removeAttribute("src");
+      profileImagePreview.style.display = "none";
+    }
+
+    if (profileImagePlaceholder) {
+      profileImagePlaceholder.style.display = "block";
+    }
+
+  }
+
 }
 
 
@@ -1789,6 +2501,7 @@ async function saveSettings() {
   // PAYLOAD
   // ===================================================
 
+
   const payload = {
 
     fullName:
@@ -1810,22 +2523,49 @@ async function saveSettings() {
       settingsAccountPin.value.trim(),
 
     withdrawalEnabled:
-      settingsWithdrawalEnabled.value ===
-      "true",
+      settingsWithdrawalEnabled.value === "true",
 
     withdrawalErrorMessage:
       settingsWithdrawalErrorMessage.value.trim(),
 
-    // -----------------------------------------------
     // CUSTOMER ACCOUNT MESSAGE
-    // -----------------------------------------------
 
     errorMessage:
       settingsErrorMessage
         ? settingsErrorMessage.value.trim()
-        : ""
+        : "",
+
+    // PERSONAL INFORMATION
+
+    address:
+      settingsAddress ? settingsAddress.value.trim() : "",
+
+    occupation:
+      settingsOccupation ? settingsOccupation.value.trim() : "",
+
+    gender:
+      settingsGender ? settingsGender.value : "",
+
+    dateOfBirth:
+      settingsDateOfBirth ? settingsDateOfBirth.value : "",
+
+    phoneNumber:
+      settingsPhoneNumber ? settingsPhoneNumber.value.trim() : "",
+
+    country:
+      settingsCountry ? settingsCountry.value.trim() : "",
+
+    stateCity:
+      settingsStateCity ? settingsStateCity.value.trim() : "",
+
+    // PROFILE IMAGE
+    // An empty string intentionally removes the saved image.
+
+    profilePicture:
+      selectedProfileImage || ""
 
   };
+
 
 
   try {
@@ -2128,9 +2868,9 @@ async function addTransaction() {
   const payload = {
 
     type:
-    transactionType.value === "credit"
-      ? "Credit"
-      : "Debit",
+      transactionType.value === "credit"
+        ? "Credit"
+        : "Debit",
 
     amount:
       amount,
@@ -2364,17 +3104,16 @@ function renderTransactions(
         <div class="transaction-main">
 
           <div
-            class="transaction-type ${
-              isCredit
-                ? "credit"
-                : "debit"
-            }"
+            class="transaction-type ${isCredit
+          ? "credit"
+          : "debit"
+        }"
           >
 
             ${escapeHtml(
-              transaction.type ||
-              ""
-            )}
+          transaction.type ||
+          ""
+        )}
 
           </div>
 
@@ -2384,10 +3123,10 @@ function renderTransactions(
           >
 
             ${escapeHtml(
-              transaction.description ||
-              transaction.narration ||
-              ""
-            )}
+          transaction.description ||
+          transaction.narration ||
+          ""
+        )}
 
           </div>
 
@@ -2395,11 +3134,10 @@ function renderTransactions(
 
 
         <div
-          class="transaction-amount ${
-            isCredit
-              ? "credit"
-              : "debit"
-          }"
+          class="transaction-amount ${isCredit
+          ? "credit"
+          : "debit"
+        }"
         >
 
           ${isCredit ? "+" : "-"}

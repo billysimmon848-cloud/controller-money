@@ -1,3 +1,4 @@
+
 const express = require("express");
 const mongoose = require("mongoose");
 
@@ -20,17 +21,6 @@ const CLEAN_BANKING_DURATION_DAYS = 30;
 // ======================================================
 // HELPER — NORMALIZE BOOLEAN
 // ======================================================
-//
-// This prevents values such as:
-// "false"
-// "true"
-// 0
-// 1
-//
-// from being accidentally treated incorrectly.
-//
-// Everything is converted into a real Boolean.
-//
 
 function normalizeBoolean(value, defaultValue = true) {
 
@@ -40,8 +30,7 @@ function normalizeBoolean(value, defaultValue = true) {
 
   if (typeof value === "string") {
 
-    const normalized =
-      value.trim().toLowerCase();
+    const normalized = value.trim().toLowerCase();
 
     if (normalized === "true") {
       return true;
@@ -50,7 +39,6 @@ function normalizeBoolean(value, defaultValue = true) {
     if (normalized === "false") {
       return false;
     }
-
   }
 
   if (typeof value === "number") {
@@ -62,10 +50,23 @@ function normalizeBoolean(value, defaultValue = true) {
     if (value === 0) {
       return false;
     }
-
   }
 
   return defaultValue;
+}
+
+
+// ======================================================
+// HELPER — REMOVE PIN FROM PUBLIC ACCOUNT RESPONSES
+// ======================================================
+
+function publicAccountData(account) {
+
+  const accountData = account.toObject();
+
+  delete accountData.accountPin;
+
+  return accountData;
 }
 
 
@@ -75,22 +76,18 @@ function normalizeBoolean(value, defaultValue = true) {
 
 function createSubscriptionDates() {
 
-  const startedAt =
-    new Date();
+  const startedAt = new Date();
 
-  const expiresAt =
-    new Date(startedAt);
+  const expiresAt = new Date(startedAt);
 
   expiresAt.setDate(
-    expiresAt.getDate() +
-    CLEAN_BANKING_DURATION_DAYS
+    expiresAt.getDate() + CLEAN_BANKING_DURATION_DAYS
   );
 
   return {
     startedAt,
     expiresAt
   };
-
 }
 
 
@@ -99,20 +96,15 @@ async function refreshPlanStatus(account) {
   if (
     account.plan === "clean" &&
     account.subscriptionExpiresAt &&
-    new Date(
-      account.subscriptionExpiresAt
-    ) <= new Date()
+    new Date(account.subscriptionExpiresAt) <= new Date()
   ) {
 
-    account.planStatus =
-      "expired";
+    account.planStatus = "expired";
 
     await account.save();
-
   }
 
   return account;
-
 }
 
 
@@ -127,21 +119,16 @@ async function generateAccountNumber() {
 
   while (exists) {
 
-    accountNumber =
-      Math.floor(
-        1000000000 +
-        Math.random() * 9000000000
-      ).toString();
+    accountNumber = Math.floor(
+      1000000000 + Math.random() * 9000000000
+    ).toString();
 
-    exists =
-      await BankAccount.exists({
-        accountNumber
-      });
-
+    exists = await BankAccount.exists({
+      accountNumber
+    });
   }
 
   return accountNumber;
-
 }
 
 
@@ -156,29 +143,19 @@ router.get(
 
     try {
 
-      const accounts =
-        await BankAccount.find({
-          user: req.userId
-        }).sort({
-          createdAt: -1
-        });
-
+      const accounts = await BankAccount.find({
+        user: req.userId
+      }).sort({
+        createdAt: -1
+      });
 
       for (const account of accounts) {
-
-        await refreshPlanStatus(
-          account
-        );
-
+        await refreshPlanStatus(account);
       }
 
-
       return res.json({
-
         success: true,
-
         accounts
-
       });
 
     }
@@ -190,16 +167,10 @@ router.get(
       );
 
       return res.status(500).json({
-
         success: false,
-
-        message:
-          "Failed to load Banking accounts."
-
+        message: "Failed to load Banking accounts."
       });
-
     }
-
   }
 );
 
@@ -216,7 +187,6 @@ router.post(
     try {
 
       const {
-
         accountPin,
         fullName,
         email,
@@ -225,7 +195,19 @@ router.post(
         transactionProcessingTime,
         withdrawalEnabled,
         withdrawalErrorMessage,
-        plan
+        plan,
+
+        // PERSONAL INFORMATION
+        address,
+        occupation,
+        gender,
+        dateOfBirth,
+        phoneNumber,
+        country,
+        stateCity,
+
+        // NEW — PROFILE IMAGE
+        profilePicture
 
       } = req.body;
 
@@ -243,38 +225,22 @@ router.post(
       ) {
 
         return res.status(400).json({
-
           success: false,
-
-          message:
-            "Please fill all required fields."
-
+          message: "Please fill all required fields."
         });
-
       }
 
 
-      if (
-        !/^\d{4}$/.test(
-          accountPin
-        )
-      ) {
+      if (!/^\d{4}$/.test(accountPin)) {
 
         return res.status(400).json({
-
           success: false,
-
-          message:
-            "Account PIN must be exactly 4 digits."
-
+          message: "Account PIN must be exactly 4 digits."
         });
-
       }
 
 
-      const selectedPlan =
-        plan || "free";
-
+      const selectedPlan = plan || "free";
 
       if (
         selectedPlan !== "free" &&
@@ -282,14 +248,9 @@ router.post(
       ) {
 
         return res.status(400).json({
-
           success: false,
-
-          message:
-            "Invalid Banking plan."
-
+          message: "Invalid Banking plan."
         });
-
       }
 
 
@@ -297,12 +258,10 @@ router.post(
       // NORMALIZE WITHDRAWAL SETTINGS
       // ==================================================
 
-      const normalizedWithdrawalEnabled =
-        normalizeBoolean(
-          withdrawalEnabled,
-          true
-        );
-
+      const normalizedWithdrawalEnabled = normalizeBoolean(
+        withdrawalEnabled,
+        true
+      );
 
       const normalizedWithdrawalErrorMessage =
         typeof withdrawalErrorMessage === "string"
@@ -314,8 +273,7 @@ router.post(
       // GENERATE ACCOUNT NUMBER
       // ==================================================
 
-      const accountNumber =
-        await generateAccountNumber();
+      const accountNumber = await generateAccountNumber();
 
 
       // ==================================================
@@ -324,125 +282,80 @@ router.post(
 
       let planPrice = 0;
 
-      let planStatus =
-        "demo";
+      let planStatus = "demo";
 
-      let subscriptionStartedAt =
-        null;
+      let subscriptionStartedAt = null;
 
-      let subscriptionExpiresAt =
-        null;
-
+      let subscriptionExpiresAt = null;
 
       let wallet = null;
 
-      let walletTransaction =
-        null;
+      let walletTransaction = null;
 
 
       // ==================================================
       // CLEAN PLAN
-      // ======================================================
+      // ==================================================
 
-      if (
-        selectedPlan === "clean"
-      ) {
+      if (selectedPlan === "clean") {
 
-        wallet =
-          await Wallet.findOne({
-            user: req.userId
-          });
-
+        wallet = await Wallet.findOne({
+          user: req.userId
+        });
 
         if (!wallet) {
 
           return res.status(400).json({
-
             success: false,
-
-            message:
-              "Wallet not found."
-
+            message: "Wallet not found."
           });
-
         }
 
-
-        if (
-          wallet.balance <
-          CLEAN_BANKING_PRICE
-        ) {
+        if (wallet.balance < CLEAN_BANKING_PRICE) {
 
           return res.status(400).json({
-
             success: false,
-
             message:
               `Insufficient wallet balance. $${CLEAN_BANKING_PRICE} is required for Clean Banking.`
-
           });
-
         }
 
 
-        // ----------------------------------------------
         // DEDUCT WALLET
-        // ----------------------------------------------
 
-        wallet.balance -=
-          CLEAN_BANKING_PRICE;
+        wallet.balance -= CLEAN_BANKING_PRICE;
 
         await wallet.save();
 
 
-        // ----------------------------------------------
         // CREATE WALLET TRANSACTION
-        // ----------------------------------------------
 
-        walletTransaction =
-          await Transaction.create({
+        walletTransaction = await Transaction.create({
 
-            user:
-              req.userId,
+          user: req.userId,
 
-            type:
-              "charge",
+          type: "charge",
 
-            amount:
-              CLEAN_BANKING_PRICE,
+          amount: CLEAN_BANKING_PRICE,
 
-            description:
-              "Clean Banking Subscription",
+          description: "Clean Banking Subscription",
 
-            source:
-              "banking"
+          source: "banking"
 
-          });
+        });
 
 
-        // ----------------------------------------------
         // SUBSCRIPTION DATES
-        // ----------------------------------------------
 
-        const subscriptionDates =
-          createSubscriptionDates();
+        const subscriptionDates = createSubscriptionDates();
 
+        planPrice = CLEAN_BANKING_PRICE;
 
-        planPrice =
-          CLEAN_BANKING_PRICE;
+        planStatus = "paid";
 
+        subscriptionStartedAt = subscriptionDates.startedAt;
 
-        planStatus =
-          "paid";
-
-
-        subscriptionStartedAt =
-          subscriptionDates.startedAt;
-
-
-        subscriptionExpiresAt =
-          subscriptionDates.expiresAt;
-
+        subscriptionExpiresAt = subscriptionDates.expiresAt;
       }
 
 
@@ -452,55 +365,73 @@ router.post(
 
       try {
 
-        const account =
-          await BankAccount.create({
+        const account = await BankAccount.create({
 
-            user:
-              req.userId,
+          user: req.userId,
 
-            accountNumber,
+          accountNumber,
 
-            accountPin,
+          accountPin,
 
-            fullName,
+          fullName,
 
-            email,
+          email,
 
-            accountType,
+          accountType,
 
-            accountCurrency,
+          accountCurrency,
 
-            transactionProcessingTime:
-              transactionProcessingTime ||
-              "0",
+          transactionProcessingTime:
+            transactionProcessingTime || "0",
 
-            withdrawalEnabled:
-              normalizedWithdrawalEnabled,
+          withdrawalEnabled:
+            normalizedWithdrawalEnabled,
 
-            withdrawalErrorMessage:
-              normalizedWithdrawalErrorMessage,
+          withdrawalErrorMessage:
+            normalizedWithdrawalErrorMessage,
 
-            errorMessage:
-              "",
+          errorMessage: "",
 
-            plan:
-              selectedPlan,
 
-            planPrice,
+          // PERSONAL INFORMATION
 
-            planStatus,
+          address: address || "",
 
-            subscriptionStartedAt,
+          occupation: occupation || "",
 
-            subscriptionExpiresAt,
+          gender: gender || "",
 
-            balance:
-              0,
+          dateOfBirth: dateOfBirth || "",
 
-            transactions:
-              []
+          phoneNumber: phoneNumber || "",
 
-          });
+          country: country || "",
+
+          stateCity: stateCity || "",
+
+
+          // NEW — SAVE PROFILE IMAGE IN MONGODB
+
+          profilePicture: profilePicture || "",
+
+
+          // PLAN SETTINGS
+
+          plan: selectedPlan,
+
+          planPrice,
+
+          planStatus,
+
+          subscriptionStartedAt,
+
+          subscriptionExpiresAt,
+
+          balance: 0,
+
+          transactions: []
+
+        });
 
 
         return res.status(201).json({
@@ -519,33 +450,24 @@ router.post(
       }
       catch (accountError) {
 
-        // ==================================================
         // ROLLBACK CLEAN PLAN PAYMENT
-        // ==================================================
 
         if (wallet) {
 
-          wallet.balance +=
-            CLEAN_BANKING_PRICE;
+          wallet.balance += CLEAN_BANKING_PRICE;
 
           await wallet.save();
-
         }
-
 
         if (walletTransaction) {
 
           await Transaction.findByIdAndDelete(
             walletTransaction._id
           );
-
         }
 
-
         throw accountError;
-
       }
-
 
     }
     catch (error) {
@@ -556,16 +478,10 @@ router.post(
       );
 
       return res.status(500).json({
-
         success: false,
-
-        message:
-          "Failed to create Banking account."
-
+        message: "Failed to create Banking account."
       });
-
     }
-
   }
 );
 
@@ -581,251 +497,142 @@ router.post(
 
     try {
 
-      const {
-        plan
-      } = req.body;
+      const { plan } = req.body;
 
-
-      if (
-        plan !== "free" &&
-        plan !== "clean"
-      ) {
+      if (plan !== "free" && plan !== "clean") {
 
         return res.status(400).json({
-
           success: false,
-
-          message:
-            "Invalid Banking plan."
-
+          message: "Invalid Banking plan."
         });
-
       }
 
-
-      if (
-        !mongoose.Types.ObjectId.isValid(
-          req.params.id
-        )
-      ) {
+      if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
 
         return res.status(400).json({
-
           success: false,
-
-          message:
-            "Invalid account ID."
-
+          message: "Invalid account ID."
         });
-
       }
 
-
-      const account =
-        await BankAccount.findOne({
-
-          _id:
-            req.params.id,
-
-          user:
-            req.userId
-
-        });
-
+      const account = await BankAccount.findOne({
+        _id: req.params.id,
+        user: req.userId
+      });
 
       if (!account) {
 
         return res.status(404).json({
-
           success: false,
-
-          message:
-            "Banking account not found."
-
+          message: "Banking account not found."
         });
-
       }
 
-
-      await refreshPlanStatus(
-        account
-      );
+      await refreshPlanStatus(account);
 
 
-      // ==================================================
       // SWITCH TO FREE
-      // ==================================================
 
-      if (
-        plan === "free"
-      ) {
+      if (plan === "free") {
 
-        account.plan =
-          "free";
+        account.plan = "free";
 
-        account.planPrice =
-          0;
+        account.planPrice = 0;
 
-        account.planStatus =
-          "demo";
+        account.planStatus = "demo";
 
-        account.subscriptionStartedAt =
-          null;
+        account.subscriptionStartedAt = null;
 
-        account.subscriptionExpiresAt =
-          null;
-
+        account.subscriptionExpiresAt = null;
 
         await account.save();
 
-
         return res.json({
-
           success: true,
-
-          message:
-            "Banking account switched to Free plan.",
-
+          message: "Banking account switched to Free plan.",
           account
-
         });
-
       }
 
 
-      // ==================================================
       // CLEAN ALREADY ACTIVE
-      // ==================================================
 
       if (
-
         account.plan === "clean" &&
-
         account.planStatus === "paid" &&
-
         account.subscriptionExpiresAt &&
-
-        new Date(
-          account.subscriptionExpiresAt
-        ) > new Date()
-
+        new Date(account.subscriptionExpiresAt) > new Date()
       ) {
 
         return res.json({
-
           success: true,
-
-          message:
-            "Clean Banking subscription is already active.",
-
+          message: "Clean Banking subscription is already active.",
           account
-
         });
-
       }
 
 
-      // ==================================================
       // FIND WALLET
-      // ==================================================
 
-      const wallet =
-        await Wallet.findOne({
-
-          user:
-            req.userId
-
-        });
-
+      const wallet = await Wallet.findOne({
+        user: req.userId
+      });
 
       if (!wallet) {
 
         return res.status(400).json({
-
           success: false,
-
-          message:
-            "Wallet not found."
-
+          message: "Wallet not found."
         });
-
       }
 
-
-      if (
-        wallet.balance <
-        CLEAN_BANKING_PRICE
-      ) {
+      if (wallet.balance < CLEAN_BANKING_PRICE) {
 
         return res.status(400).json({
-
           success: false,
-
           message:
             `Insufficient wallet balance. $${CLEAN_BANKING_PRICE} is required.`
-
         });
-
       }
 
 
-      // ==================================================
-      // DEDUCT $15
-      // ==================================================
+      // DEDUCT WALLET
 
-      wallet.balance -=
-        CLEAN_BANKING_PRICE;
+      wallet.balance -= CLEAN_BANKING_PRICE;
 
       await wallet.save();
 
-
       let walletTransaction;
-
 
       try {
 
         const description =
-
           account.plan === "clean" &&
           account.planStatus === "expired"
-
             ? "Clean Banking Subscription Renewal"
-
             : "Clean Banking Subscription";
 
+        walletTransaction = await Transaction.create({
 
-        walletTransaction =
-          await Transaction.create({
+          user: req.userId,
 
-            user:
-              req.userId,
+          type: "charge",
 
-            type:
-              "charge",
+          amount: CLEAN_BANKING_PRICE,
 
-            amount:
-              CLEAN_BANKING_PRICE,
+          description,
 
-            description,
+          source: "banking"
 
-            source:
-              "banking"
+        });
 
-          });
+        const subscriptionDates = createSubscriptionDates();
 
+        account.plan = "clean";
 
-        const subscriptionDates =
-          createSubscriptionDates();
+        account.planPrice = CLEAN_BANKING_PRICE;
 
-
-        account.plan =
-          "clean";
-
-        account.planPrice =
-          CLEAN_BANKING_PRICE;
-
-        account.planStatus =
-          "paid";
+        account.planStatus = "paid";
 
         account.subscriptionStartedAt =
           subscriptionDates.startedAt;
@@ -833,43 +640,30 @@ router.post(
         account.subscriptionExpiresAt =
           subscriptionDates.expiresAt;
 
-
         await account.save();
 
-
         return res.json({
-
           success: true,
-
-          message:
-            "Clean Banking subscription activated successfully.",
-
+          message: "Clean Banking subscription activated successfully.",
           account
-
         });
 
       }
       catch (accountError) {
 
-        wallet.balance +=
-          CLEAN_BANKING_PRICE;
+        wallet.balance += CLEAN_BANKING_PRICE;
 
         await wallet.save();
-
 
         if (walletTransaction) {
 
           await Transaction.findByIdAndDelete(
             walletTransaction._id
           );
-
         }
 
-
         throw accountError;
-
       }
-
 
     }
     catch (error) {
@@ -880,16 +674,10 @@ router.post(
       );
 
       return res.status(500).json({
-
         success: false,
-
-        message:
-          "Failed to update Banking plan."
-
+        message: "Failed to update Banking plan."
       });
-
     }
-
   }
 );
 
@@ -905,52 +693,29 @@ router.patch(
 
     try {
 
-      if (
-        !mongoose.Types.ObjectId.isValid(
-          req.params.id
-        )
-      ) {
+      if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
 
         return res.status(400).json({
-
           success: false,
-
-          message:
-            "Invalid account ID."
-
+          message: "Invalid account ID."
         });
-
       }
 
-
-      const account =
-        await BankAccount.findOne({
-
-          _id:
-            req.params.id,
-
-          user:
-            req.userId
-
-        });
-
+      const account = await BankAccount.findOne({
+        _id: req.params.id,
+        user: req.userId
+      });
 
       if (!account) {
 
         return res.status(404).json({
-
           success: false,
-
-          message:
-            "Banking account not found."
-
+          message: "Banking account not found."
         });
-
       }
 
 
       const {
-
         fullName,
         email,
         accountType,
@@ -959,167 +724,140 @@ router.patch(
         accountPin,
         withdrawalEnabled,
         withdrawalErrorMessage,
-        errorMessage
+        errorMessage,
+
+        // PERSONAL INFORMATION
+
+        address,
+        occupation,
+        gender,
+        dateOfBirth,
+        phoneNumber,
+        country,
+        stateCity,
+
+        // NEW — PROFILE IMAGE
+
+        profilePicture
 
       } = req.body;
 
 
-      // ==================================================
       // BASIC SETTINGS
-      // ==================================================
 
-      if (
-        fullName !== undefined
-      ) {
-
-        account.fullName =
-          fullName;
-
+      if (fullName !== undefined) {
+        account.fullName = fullName;
       }
 
-
-      if (
-        email !== undefined
-      ) {
-
-        account.email =
-          email;
-
+      if (email !== undefined) {
+        account.email = email;
       }
 
-
-      if (
-        accountType !== undefined
-      ) {
-
-        account.accountType =
-          accountType;
-
+      if (accountType !== undefined) {
+        account.accountType = accountType;
       }
 
-
-      if (
-        accountCurrency !== undefined
-      ) {
-
-        account.accountCurrency =
-          accountCurrency;
-
+      if (accountCurrency !== undefined) {
+        account.accountCurrency = accountCurrency;
       }
 
-
-      if (
-        transactionProcessingTime !==
-        undefined
-      ) {
-
+      if (transactionProcessingTime !== undefined) {
         account.transactionProcessingTime =
           transactionProcessingTime;
-
       }
 
 
-      // ==================================================
+      // PERSONAL INFORMATION
+
+      if (address !== undefined) {
+        account.address = address;
+      }
+
+      if (occupation !== undefined) {
+        account.occupation = occupation;
+      }
+
+      if (gender !== undefined) {
+        account.gender = gender;
+      }
+
+      if (dateOfBirth !== undefined) {
+        account.dateOfBirth = dateOfBirth;
+      }
+
+      if (phoneNumber !== undefined) {
+        account.phoneNumber = phoneNumber;
+      }
+
+      if (country !== undefined) {
+        account.country = country;
+      }
+
+      if (stateCity !== undefined) {
+        account.stateCity = stateCity;
+      }
+
+
+      // NEW — SAVE OR REMOVE PROFILE IMAGE
+
+      if (profilePicture !== undefined) {
+        account.profilePicture = profilePicture;
+      }
+
+
       // ACCOUNT PIN
-      // ==================================================
 
-      if (
-        accountPin !== undefined
-      ) {
+      if (accountPin !== undefined) {
 
-        if (
-          !/^\d{4}$/.test(
-            accountPin
-          )
-        ) {
+        if (!/^\d{4}$/.test(accountPin)) {
 
           return res.status(400).json({
-
             success: false,
-
-            message:
-              "Account PIN must be exactly 4 digits."
-
+            message: "Account PIN must be exactly 4 digits."
           });
-
         }
 
-
-        account.accountPin =
-          accountPin;
-
+        account.accountPin = accountPin;
       }
 
 
-      // ==================================================
       // WITHDRAWAL ENABLE / DISABLE
-      // ==================================================
 
-      if (
-        withdrawalEnabled !==
-        undefined
-      ) {
+      if (withdrawalEnabled !== undefined) {
 
-        account.withdrawalEnabled =
-          normalizeBoolean(
-            withdrawalEnabled,
-            account.withdrawalEnabled
-          );
-
+        account.withdrawalEnabled = normalizeBoolean(
+          withdrawalEnabled,
+          account.withdrawalEnabled
+        );
       }
 
 
-      // ==================================================
       // WITHDRAWAL ERROR MESSAGE
-      // ==================================================
 
-      if (
-        withdrawalErrorMessage !==
-        undefined
-      ) {
+      if (withdrawalErrorMessage !== undefined) {
 
         account.withdrawalErrorMessage =
-          String(
-            withdrawalErrorMessage
-          ).trim();
-
+          String(withdrawalErrorMessage).trim();
       }
 
 
-      // ==================================================
       // GENERAL CUSTOMER ACCOUNT MESSAGE
-      // ==================================================
 
-      if (
-        errorMessage !==
-        undefined
-      ) {
+      if (errorMessage !== undefined) {
 
         account.errorMessage =
-          String(
-            errorMessage
-          ).trim();
-
+          String(errorMessage).trim();
       }
 
 
-      await refreshPlanStatus(
-        account
-      );
-
+      await refreshPlanStatus(account);
 
       await account.save();
 
-
       return res.json({
-
         success: true,
-
-        message:
-          "Banking account updated successfully.",
-
+        message: "Banking account updated successfully.",
         account
-
       });
 
     }
@@ -1131,16 +869,10 @@ router.patch(
       );
 
       return res.status(500).json({
-
         success: false,
-
-        message:
-          "Failed to update Banking account."
-
+        message: "Failed to update Banking account."
       });
-
     }
-
   }
 );
 
@@ -1156,65 +888,34 @@ router.delete(
 
     try {
 
-      if (
-        !mongoose.Types.ObjectId.isValid(
-          req.params.id
-        )
-      ) {
+      if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
 
         return res.status(400).json({
-
           success: false,
-
-          message:
-            "Invalid Banking account ID."
-
+          message: "Invalid Banking account ID."
         });
-
       }
 
-
-      const account =
-        await BankAccount.findOne({
-
-          _id:
-            req.params.id,
-
-          user:
-            req.userId
-
-        });
-
+      const account = await BankAccount.findOne({
+        _id: req.params.id,
+        user: req.userId
+      });
 
       if (!account) {
 
         return res.status(404).json({
-
           success: false,
-
-          message:
-            "Banking account not found."
-
+          message: "Banking account not found."
         });
-
       }
 
-
       await BankAccount.deleteOne({
-
-        _id:
-          account._id
-
+        _id: account._id
       });
 
-
       return res.json({
-
         success: true,
-
-        message:
-          "Banking profile deleted successfully."
-
+        message: "Banking profile deleted successfully."
       });
 
     }
@@ -1226,16 +927,10 @@ router.delete(
       );
 
       return res.status(500).json({
-
         success: false,
-
-        message:
-          "Failed to delete Banking profile."
-
+        message: "Failed to delete Banking profile."
       });
-
     }
-
   }
 );
 
@@ -1251,192 +946,99 @@ router.post(
 
     try {
 
-      if (
-        !mongoose.Types.ObjectId.isValid(
-          req.params.id
-        )
-      ) {
+      if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
 
         return res.status(400).json({
-
           success: false,
-
-          message:
-            "Invalid account ID."
-
+          message: "Invalid account ID."
         });
-
       }
 
-
       const {
-
         type,
         amount,
         description,
         date
-
       } = req.body;
 
-
-      if (
-        type !== "Credit" &&
-        type !== "Debit"
-      ) {
+      if (type !== "Credit" && type !== "Debit") {
 
         return res.status(400).json({
-
           success: false,
-
-          message:
-            "Transaction type must be Credit or Debit."
-
+          message: "Transaction type must be Credit or Debit."
         });
-
       }
 
-
-      const numericAmount =
-        Number(amount);
-
+      const numericAmount = Number(amount);
 
       if (
-        !Number.isFinite(
-          numericAmount
-        ) ||
+        !Number.isFinite(numericAmount) ||
         numericAmount <= 0
       ) {
 
         return res.status(400).json({
-
           success: false,
-
-          message:
-            "Transaction amount must be greater than zero."
-
+          message: "Transaction amount must be greater than zero."
         });
-
       }
 
-
-      const account =
-        await BankAccount.findOne({
-
-          _id:
-            req.params.id,
-
-          user:
-            req.userId
-
-        });
-
+      const account = await BankAccount.findOne({
+        _id: req.params.id,
+        user: req.userId
+      });
 
       if (!account) {
 
         return res.status(404).json({
-
           success: false,
-
-          message:
-            "Banking account not found."
-
+          message: "Banking account not found."
         });
-
       }
 
-
-      await refreshPlanStatus(
-        account
-      );
+      await refreshPlanStatus(account);
 
 
-      // ==================================================
       // CREDIT
-      // ==================================================
 
-      if (
-        type === "Credit"
-      ) {
-
-        account.balance +=
-          numericAmount;
-
+      if (type === "Credit") {
+        account.balance += numericAmount;
       }
 
 
-      // ==================================================
       // DEBIT
-      // ==================================================
 
-      if (
-        type === "Debit"
-      ) {
+      if (type === "Debit") {
 
-        if (
-          account.balance <
-          numericAmount
-        ) {
+        if (account.balance < numericAmount) {
 
           return res.status(400).json({
-
             success: false,
-
-            message:
-              "Insufficient account balance."
-
+            message: "Insufficient account balance."
           });
-
         }
 
-
-        account.balance -=
-          numericAmount;
-
+        account.balance -= numericAmount;
       }
 
 
-      // ==================================================
       // CREATE TRANSACTION
-      // ==================================================
 
       const transaction = {
-
         type,
-
-        amount:
-          numericAmount,
-
-        description:
-          description || "",
-
-        date:
-          date
-            ? new Date(date)
-            : new Date(),
-
-        balanceAfter:
-          account.balance
-
+        amount: numericAmount,
+        description: description || "",
+        date: date ? new Date(date) : new Date(),
+        balanceAfter: account.balance
       };
 
-
-      account.transactions.unshift(
-        transaction
-      );
-
+      account.transactions.unshift(transaction);
 
       await account.save();
 
-
       return res.json({
-
         success: true,
-
-        message:
-          `${type} transaction completed successfully.`,
-
+        message: `${type} transaction completed successfully.`,
         account
-
       });
 
     }
@@ -1448,16 +1050,10 @@ router.post(
       );
 
       return res.status(500).json({
-
         success: false,
-
-        message:
-          "Failed to process transaction."
-
+        message: "Failed to process transaction."
       });
-
     }
-
   }
 );
 
@@ -1472,155 +1068,92 @@ router.post(
 
     try {
 
-      const {
-        amount
-      } = req.body;
+      const { amount } = req.body;
 
-
-      const numericAmount =
-        Number(amount);
-
+      const numericAmount = Number(amount);
 
       if (
-        !Number.isFinite(
-          numericAmount
-        ) ||
+        !Number.isFinite(numericAmount) ||
         numericAmount <= 0
       ) {
 
         return res.status(400).json({
-
           success: false,
-
-          message:
-            "Withdrawal amount must be greater than zero."
-
+          message: "Withdrawal amount must be greater than zero."
         });
-
       }
 
-
-      const account =
-        await BankAccount.findOne({
-
-          accountNumber:
-            req.params.accountNumber
-
-        });
-
+      const account = await BankAccount.findOne({
+        accountNumber: req.params.accountNumber
+      });
 
       if (!account) {
 
         return res.status(404).json({
-
           success: false,
-
-          message:
-            "Banking account not found."
-
+          message: "Banking account not found."
         });
-
       }
 
+      await refreshPlanStatus(account);
 
-      await refreshPlanStatus(
-        account
+
+      // NORMALIZE EXISTING DATABASE VALUE
+
+      account.withdrawalEnabled = normalizeBoolean(
+        account.withdrawalEnabled,
+        true
       );
 
 
-      // ==================================================
-      // NORMALIZE EXISTING DATABASE VALUE
-      // ==================================================
-
-      account.withdrawalEnabled =
-        normalizeBoolean(
-          account.withdrawalEnabled,
-          true
-        );
-
-
-      // ==================================================
       // WITHDRAWAL DISABLED
-      // ==================================================
 
-      if (
-        account.withdrawalEnabled === false
-      ) {
+      if (account.withdrawalEnabled === false) {
 
         return res.status(400).json({
-
           success: false,
-
           message:
             account.withdrawalErrorMessage ||
             "Withdrawal is currently unavailable."
-
         });
-
       }
 
 
-      // ==================================================
       // BALANCE CHECK
-      // ==================================================
 
-      if (
-        account.balance <
-        numericAmount
-      ) {
+      if (account.balance < numericAmount) {
 
         return res.status(400).json({
-
           success: false,
-
-          message:
-            "Insufficient account balance."
-
+          message: "Insufficient account balance."
         });
-
       }
 
 
-      // ==================================================
       // DEDUCT BALANCE
-      // ==================================================
 
-      account.balance -=
-        numericAmount;
-
+      account.balance -= numericAmount;
 
       account.transactions.unshift({
 
-        type:
-          "Debit",
+        type: "Debit",
 
-        amount:
-          numericAmount,
+        amount: numericAmount,
 
-        description:
-          "Withdrawal",
+        description: "Withdrawal",
 
-        date:
-          new Date(),
+        date: new Date(),
 
-        balanceAfter:
-          account.balance
+        balanceAfter: account.balance
 
       });
 
-
       await account.save();
 
-
       return res.json({
-
         success: true,
-
-        message:
-          "Withdrawal successful.",
-
-        account
-
+        message: "Withdrawal successful.",
+        account: publicAccountData(account)
       });
 
     }
@@ -1632,16 +1165,10 @@ router.post(
       );
 
       return res.status(500).json({
-
         success: false,
-
-        message:
-          "Failed to process withdrawal."
-
+        message: "Failed to process withdrawal."
       });
-
     }
-
   }
 );
 
@@ -1656,54 +1183,33 @@ router.get(
 
     try {
 
-      const account =
-        await BankAccount.findOne({
-
-          accountNumber:
-            req.params.accountNumber
-
-        });
-
+      const account = await BankAccount.findOne({
+        accountNumber: req.params.accountNumber
+      });
 
       if (!account) {
 
         return res.status(404).json({
-
           success: false,
-
-          message:
-            "Banking account not found."
-
+          message: "Banking account not found."
         });
-
       }
 
-
-      await refreshPlanStatus(
-        account
-      );
+      await refreshPlanStatus(account);
 
 
-      // ==================================================
       // NORMALIZE WITHDRAWAL VALUE
-      // ==================================================
 
-      account.withdrawalEnabled =
-        normalizeBoolean(
-          account.withdrawalEnabled,
-          true
-        );
-
+      account.withdrawalEnabled = normalizeBoolean(
+        account.withdrawalEnabled,
+        true
+      );
 
       await account.save();
 
-
       return res.json({
-
         success: true,
-
-        account
-
+        account: publicAccountData(account)
       });
 
     }
@@ -1715,16 +1221,10 @@ router.get(
       );
 
       return res.status(500).json({
-
         success: false,
-
-        message:
-          "Failed to load Banking account."
-
+        message: "Failed to load Banking account."
       });
-
     }
-
   }
 );
 
@@ -1740,97 +1240,54 @@ router.post(
     try {
 
       const {
-
         accountNumber,
         accountPin
-
       } = req.body;
 
-
-      if (
-        !accountNumber ||
-        !accountPin
-      ) {
+      if (!accountNumber || !accountPin) {
 
         return res.status(400).json({
-
           success: false,
-
-          message:
-            "Account number and PIN are required."
-
+          message: "Account number and PIN are required."
         });
-
       }
 
-
-      const account =
-        await BankAccount.findOne({
-
-          accountNumber
-
-        });
-
+      const account = await BankAccount.findOne({
+        accountNumber
+      });
 
       if (!account) {
 
         return res.status(401).json({
-
           success: false,
-
-          message:
-            "Invalid account number or PIN."
-
+          message: "Invalid account number or PIN."
         });
-
       }
 
-
-      if (
-        account.accountPin !==
-        accountPin
-      ) {
+      if (account.accountPin !== accountPin) {
 
         return res.status(401).json({
-
           success: false,
-
-          message:
-            "Invalid account number or PIN."
-
+          message: "Invalid account number or PIN."
         });
-
       }
 
-
-      await refreshPlanStatus(
-        account
-      );
+      await refreshPlanStatus(account);
 
 
-      // ==================================================
       // NORMALIZE WITHDRAWAL VALUE
-      // ==================================================
 
-      account.withdrawalEnabled =
-        normalizeBoolean(
-          account.withdrawalEnabled,
-          true
-        );
-
+      account.withdrawalEnabled = normalizeBoolean(
+        account.withdrawalEnabled,
+        true
+      );
 
       await account.save();
 
-
       return res.json({
-
         success: true,
-
-        message:
-          "Banking login successful.",
-
-        account
-
+        message: "Banking login successful.",
+        account: publicAccountData(account)
       });
 
     }
@@ -1842,16 +1299,10 @@ router.post(
       );
 
       return res.status(500).json({
-
         success: false,
-
-        message:
-          "Banking login failed."
-
+        message: "Banking login failed."
       });
-
     }
-
   }
 );
 

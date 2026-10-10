@@ -1209,19 +1209,46 @@ UPLOAD AREA
 
   border-color: #8b5cf6;
 
-  color: #ffffff;
+  color: #222;
 }
-
 
 /* =========================================================
-HIDE FILE INPUTS
+PROFILE PICTURE INPUT
 ========================================================= */
 
-#profilePicture,
-#settingsProfilePicture {
-  display: none;
+#profilePicture {
+  display: block !important;
+  width: 100% !important;
+  height: 40px !important;
+  padding: 6px 10px !important;
+
+  background: #080d16 !important;
+  color: #f3f4f6 !important;
+
+  border: 1px solid #293244 !important;
+  border-radius: 7px !important;
+
+  opacity: 1 !important;
+  visibility: visible !important;
+
+  cursor: pointer !important;
 }
 
+#profilePicture::file-selector-button {
+  height: 32px;
+
+  margin-right: 12px;
+  padding: 0 12px;
+
+  border: 0;
+  border-radius: 5px;
+
+  background: #8b5cf6;
+  color: #222;
+
+  cursor: pointer;
+  font-weight: 700;
+}
 
 /* =========================================================
 FORM ACTIONS
@@ -2232,13 +2259,7 @@ PLAN PAYMENT NOTE
   line-height: 1.4;
 }
 
-.account-card-image {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  overflow: hidden;
-  flex-shrink: 0;
-}
+
 
 .account-card-image img {
   width: 100%;
@@ -2888,4 +2909,247 @@ EXTRA SMALL
   .plan-modal-header h2 {
     font-size: 16px;
   }
+}
+
+/* =========================================================
+   PROFILE IMAGE EDITOR MODAL
+========================================================= */
+
+.profile-image-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.75);
+}
+
+.profile-image-modal-overlay.show {
+  display: flex;
+}
+
+.profile-image-modal {
+  width: 100%;
+  max-width: 520px;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 25px;
+  background: #0d1420;
+  border: 1px solid #293244;
+  border-radius: 12px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+}
+
+.profile-image-modal-header {
+  margin-bottom: 20px;
+}
+
+.profile-image-modal-header h2 {
+  margin: 6px 0 8px;
+  color: #ffffff;
+}
+
+.profile-image-modal-header p {
+  margin: 0;
+  color: #9ca3af;
+  font-size: 14px;
+}
+
+/* =========================================================
+   CROPPER.JS EDITOR
+========================================================= */
+
+.profile-image-editor-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+
+.profile-image-canvas {
+  position: relative;
+  width: 300px;
+  height: 300px;
+  max-width: 100%;
+  overflow: hidden;
+  background: #050911;
+  border: 1px solid #293244;
+  border-radius: 8px;
+}
+
+
+/* Cropper.js controls the image positioning */
+
+#profileImageEditPreview {
+  display: block;
+  max-width: 100%;
+}
+
+.profile-image-canvas .cropper-container {
+  width: 100%;
+  height: 100%;
+}
+
+
+.profile-image-canvas .cropper-view-box {
+  border-radius: 50%;
+  outline: 2px solid #ffffff;
+  outline-color: rgba(255, 255, 255, 0.95);
+}
+
+.profile-image-canvas .cropper-face {
+  border-radius: 50%;
+}
+
+.profile-image-canvas .cropper-dashed {
+  display: none;
+}
+
+
+.profile-image-canvas .cropper-line,
+.profile-image-canvas .cropper-point {
+  background-color: #a78bfa;
+}
+
+.profile-image-canvas .cropper-point {
+  width: 8px;
+  height: 8px;
+}
+
+/* =========================================================
+   ZOOM CONTROLS
+========================================================= */
+
+.profile-image-zoom {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  max-width: 420px;
+}
+
+#profileImagePreview {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.profile-image-zoom input[type="range"] {
+  flex: 1;
+  width: 100%;
+  cursor: pointer;
+  accent-color: #8b5cf6;
+}
+
+.zoom-btn {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  background: #1f2937;
+  border: 1px solid #374151;
+  border-radius: 7px;
+  color: #ffffff;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.zoom-btn:hover {
+  background: #312e81;
+  border-color: #8b5cf6;
+}
+
+/* =========================================================
+   EDITOR ACTIONS
+========================================================= */
+
+.profile-image-editor-actions {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+}
+
+.profile-image-editor-actions button {
+  flex: 1;
+  min-height: 42px;
+}
+
+/* =========================================================
+   MOBILE EDITOR
+========================================================= */
+
+@media (max-width: 575.98px) {
+  .profile-image-modal {
+    padding: 20px;
+    max-height: 92vh;
+  }
+
+  .profile-image-canvas {
+    width: min(320px, 100%);
+    height: auto;
+    aspect-ratio: 1 / 1;
+  }
+
+  .profile-image-zoom {
+    max-width: 320px;
+  }
+
+  .profile-image-editor-actions {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 380px) {
+  .profile-image-modal {
+    padding: 15px;
+  }
+
+  .profile-image-canvas {
+    width: 100%;
+  }
+
+  .profile-image-zoom {
+    max-width: 280px;
+  }
+}
+
+
+/* =====================================================
+   RESPONSIVE PROFILE PHOTO
+===================================================== */
+
+#profileImagePreview {
+  display: block;
+  width: 60px;
+  height: 60px;
+  max-width: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+/* Smaller screens */
+@media (max-width: 576px) {
+  #profileImagePreview {
+    width: 48px;
+    height: 48px;
+  }
+}
+
+/* SETTINGS PROFILE IMAGE */
+#settingsProfileImagePreview {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 50%;
+  display: block;
 }
