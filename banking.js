@@ -2359,12 +2359,16 @@ function populateSettings(
 
   // LOAD SAVED PROFILE IMAGE
 
+  
+  // LOAD SAVED PROFILE IMAGE
+
   selectedProfileImage =
     account.profilePicture || "";
 
   originalProfileImage =
     selectedProfileImage;
 
+  // Update the CREATE profile preview
   if (selectedProfileImage) {
 
     if (profileImagePreview) {
@@ -2388,6 +2392,32 @@ function populateSettings(
     }
 
   }
+
+  // Update the SETTINGS profile preview
+  if (selectedProfileImage) {
+
+    if (settingsProfileImagePreview) {
+      settingsProfileImagePreview.src = selectedProfileImage;
+      settingsProfileImagePreview.style.display = "block";
+    }
+
+    if (settingsProfileImagePlaceholder) {
+      settingsProfileImagePlaceholder.style.display = "none";
+    }
+
+  } else {
+
+    if (settingsProfileImagePreview) {
+      settingsProfileImagePreview.removeAttribute("src");
+      settingsProfileImagePreview.style.display = "none";
+    }
+
+    if (settingsProfileImagePlaceholder) {
+      settingsProfileImagePlaceholder.style.display = "block";
+    }
+
+  }
+
 
 }
 
