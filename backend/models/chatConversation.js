@@ -1,6 +1,10 @@
 
 const mongoose = require("mongoose");
 
+// =====================================================
+// CHAT MESSAGE SCHEMA
+// =====================================================
+
 const chatMessageSchema = new mongoose.Schema(
   {
     senderType: {
@@ -30,8 +34,13 @@ const chatMessageSchema = new mongoose.Schema(
   }
 );
 
+// =====================================================
+// CHAT CONVERSATION SCHEMA
+// =====================================================
+
 const chatConversationSchema = new mongoose.Schema(
   {
+    // JustDoks user who owns the Banking profile.
     owner: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
@@ -39,6 +48,15 @@ const chatConversationSchema = new mongoose.Schema(
       index: true
     },
 
+    // Specific Banking profile this conversation belongs to.
+    bankingAccount: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "BankAccount",
+      required: true,
+      index: true
+    },
+
+    // Website where the conversation originated.
     website: {
       type: String,
       required: true,
@@ -46,6 +64,7 @@ const chatConversationSchema = new mongoose.Schema(
       maxlength: 120
     },
 
+    // Customer information.
     customerName: {
       type: String,
       trim: true,
@@ -61,6 +80,8 @@ const chatConversationSchema = new mongoose.Schema(
       default: ""
     },
 
+    // Hash of the customer's private chat access token.
+    // The original token is never stored in this field.
     publicTokenHash: {
       type: String,
       required: true,
@@ -68,6 +89,7 @@ const chatConversationSchema = new mongoose.Schema(
       select: false
     },
 
+    // Conversation status.
     status: {
       type: String,
       enum: ["open", "closed"],
@@ -75,11 +97,13 @@ const chatConversationSchema = new mongoose.Schema(
       index: true
     },
 
+    // Messages belonging to this conversation.
     messages: {
       type: [chatMessageSchema],
       default: []
     },
 
+    // Time of the most recent message.
     lastMessageAt: {
       type: Date,
       default: Date.now,
@@ -91,10 +115,25 @@ const chatConversationSchema = new mongoose.Schema(
   }
 );
 
+// =====================================================
+// DATABASE INDEXES
+// =====================================================
+
+// Quickly retrieve an owner's conversations by recent activity.
 chatConversationSchema.index({
   owner: 1,
   lastMessageAt: -1
 });
+
+// Quickly retrieve conversations for a specific Banking profile.
+chatConversationSchema.index({
+  bankingAccount: 1,
+  lastMessageAt: -1
+});
+
+// =====================================================
+// EXPORT MODEL
+// =====================================================
 
 module.exports = mongoose.model(
   "ChatConversation",

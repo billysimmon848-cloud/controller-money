@@ -4,6 +4,7 @@ const crypto = require("crypto");
 const mongoose = require("mongoose");
 
 const ChatConversation = require("../models/chatConversation");
+const BankAccount = require("../models/BankAccount");
 const User = require("../models/user");
 const auth = require("../middleware/auth");
 
@@ -55,10 +56,19 @@ function getSupportName(website) {
 }
 
 
+// Verify the customer's private chat token.
 async function getPublicConversation(req) {
   const token = req.get("x-chat-token");
 
-  if (!token || token.length > 200) {
+  if (
+    typeof token !== "string" ||
+    !token ||
+    token.length > 200
+  ) {
+    return null;
+  }
+
+  if (!validConversationId(req.params.conversationId)) {
     return null;
   }
 
@@ -70,16 +80,32 @@ async function getPublicConversation(req) {
     return null;
   }
 
-  const suppliedHash = hashToken(token);
-
   const savedHash = conversation.publicTokenHash;
 
   if (
-    !savedHash ||
-    suppliedHash.length !== savedHash.length ||
+    typeof savedHash !== "string" ||
+    !/^[a-f0-9]{64}$/i.test(savedHash)
+  ) {
+    return null;
+  }
+
+  const suppliedHash = hashToken(token);
+
+  const suppliedBuffer = Buffer.from(
+    suppliedHash,
+    "hex"
+  );
+
+  const savedBuffer = Buffer.from(
+    savedHash,
+    "hex"
+  );
+
+  if (
+    suppliedBuffer.length !== savedBuffer.length ||
     !crypto.timingSafeEqual(
-      Buffer.from(suppliedHash, "hex"),
-      Buffer.from(savedHash, "hex")
+      suppliedBuffer,
+      savedBuffer
     )
   ) {
     return null;
@@ -92,6 +118,14 @@ async function getPublicConversation(req) {
 // ======================================================
 // START CUSTOMER CONVERSATION
 // POST /api/chat/public/conversations
+//
+// Expected body:
+// {
+//   "accountNumber": "1234567890",
+//   "message": "I need help with my account"
+// }
+//
+// The server determines the profile owner.
 // ======================================================
 
 router.post(
@@ -99,29 +133,22 @@ router.post(
   async (req, res) => {
     try {
       const {
-        ownerId,
-        website,
-        customerName,
-        customerEmail,
+        accountNumber,
         message
       } = req.body;
 
       if (
-        !ownerId ||
-        !mongoose.isValidObjectId(ownerId)
+        typeof accountNumber !== "string" ||
+        !accountNumber.trim()
       ) {
         return res.status(400).json({
-          message: "A valid website owner is required"
+          message: "Banking account number is required"
         });
       }
 
-      if (
-        typeof website !== "string" ||
-        !website.trim() ||
-        website.trim().length > 120
-      ) {
+      if (accountNumber.trim().length > 50) {
         return res.status(400).json({
-          message: "Website is required"
+          message: "Invalid Banking account number"
         });
       }
 
@@ -131,73 +158,66 @@ router.post(
         });
       }
 
-      if (
-        customerName !== undefined &&
-        (
-          typeof customerName !== "string" ||
-          customerName.trim().length > 100
-        )
-      ) {
-        return res.status(400).json({
-          message: "Customer name is too long or invalid"
+      // Find the real Banking profile.
+      const bankingAccount = await BankAccount.findOne({
+        accountNumber: accountNumber.trim()
+      }).select(
+        "_id user fullName email accountNumber"
+      );
+
+      if (!bankingAccount) {
+        return res.status(404).json({
+          message: "Banking account not found"
         });
       }
 
-      if (
-        customerEmail !== undefined &&
-        (
-          typeof customerEmail !== "string" ||
-          customerEmail.trim().length > 254
-        )
-      ) {
-        return res.status(400).json({
-          message: "Customer email is too long or invalid"
-        });
-      }
-
-      const owner = await User.findById(ownerId)
-        .select("_id isDisabled");
+      // Find the profile's actual JustDoks owner.
+      const owner = await User.findById(
+        bankingAccount.user
+      ).select("_id isDisabled");
 
       if (!owner || owner.isDisabled) {
         return res.status(404).json({
-          message: "Chat account is unavailable"
+          message: "Support is currently unavailable"
         });
       }
 
+      // Generate a private token for this customer conversation.
       const publicToken = crypto
         .randomBytes(32)
         .toString("hex");
 
+      const customerName =
+        bankingAccount.fullName || "Visitor";
+
+      const customerEmail =
+        bankingAccount.email || "";
+
+      const now = new Date();
+
       const conversation = await ChatConversation.create({
         owner: owner._id,
 
-        website: website.trim(),
+        bankingAccount: bankingAccount._id,
 
-        customerName:
-          customerName && customerName.trim()
-            ? customerName.trim()
-            : "Visitor",
+        website: "ZenitCU",
 
-        customerEmail:
-          customerEmail
-            ? customerEmail.trim().toLowerCase()
-            : "",
+        customerName,
+
+        customerEmail,
 
         publicTokenHash: hashToken(publicToken),
 
         messages: [
           {
             senderType: "customer",
-            senderName:
-              customerName && customerName.trim()
-                ? customerName.trim()
-                : "Visitor",
+            senderName: customerName,
             text: message.trim(),
-            createdAt: new Date()
+            createdAt: now
           }
         ],
 
-        lastMessageAt: new Date()
+        lastMessageAt: now
       });
 
       return res.status(201).json({
@@ -241,7 +261,8 @@ router.get(
         });
       }
 
-      const conversation = await getPublicConversation(req);
+      const conversation =
+        await getPublicConversation(req);
 
       if (!conversation) {
         return res.status(404).json({
@@ -281,7 +302,7 @@ router.post(
         });
       }
 
-      const { text, customerName } = req.body;
+      const { text } = req.body;
 
       if (!validText(text)) {
         return res.status(400).json({
@@ -289,7 +310,8 @@ router.post(
         });
       }
 
-      const conversation = await getPublicConversation(req);
+      const conversation =
+        await getPublicConversation(req);
 
       if (!conversation) {
         return res.status(404).json({
@@ -303,16 +325,11 @@ router.post(
         });
       }
 
-      const senderName =
-        customerName &&
-        typeof customerName === "string" &&
-        customerName.trim()
-          ? customerName.trim().slice(0, 100)
-          : conversation.customerName;
-
+      // Use the saved customer name instead of accepting
+      // a different identity from each message request.
       conversation.messages.push({
         senderType: "customer",
-        senderName,
+        senderName: conversation.customerName,
         text: text.trim(),
         createdAt: new Date()
       });
@@ -323,6 +340,7 @@ router.post(
 
       return res.status(201).json({
         message: "Message sent",
+
         chatMessage:
           conversation.messages[
             conversation.messages.length - 1
@@ -342,6 +360,11 @@ router.post(
 // ======================================================
 // CONTROLLER INBOX
 // GET /api/chat/inbox
+//
+// Optional filter:
+// GET /api/chat/inbox?bankingAccount=PROFILE_ID
+//
+// Requires JustDoks authentication.
 // ======================================================
 
 router.get(
@@ -349,11 +372,30 @@ router.get(
   auth,
   async (req, res) => {
     try {
-      const conversations = await ChatConversation.find({
+      const filter = {
         owner: req.userId
-      })
+      };
+
+      if (req.query.bankingAccount) {
+        if (
+          !mongoose.isValidObjectId(
+            req.query.bankingAccount
+          )
+        ) {
+          return res.status(400).json({
+            message: "Invalid Banking profile ID"
+          });
+        }
+
+        filter.bankingAccount =
+          req.query.bankingAccount;
+      }
+
+      const conversations = await ChatConversation.find(
+        filter
+      )
         .select(
-          "website customerName customerEmail status lastMessageAt createdAt messages"
+          "bankingAccount website customerName customerEmail status lastMessageAt createdAt messages"
         )
         .sort({
           lastMessageAt: -1
@@ -361,23 +403,39 @@ router.get(
         .limit(100)
         .lean();
 
-      const inbox = conversations.map(conversation => {
-        const messages = conversation.messages || [];
+      const inbox = conversations.map(
+        conversation => {
+          const messages =
+            conversation.messages || [];
 
-        return {
-          id: conversation._id,
-          website: conversation.website,
-          customerName: conversation.customerName,
-          customerEmail: conversation.customerEmail,
-          status: conversation.status,
-          createdAt: conversation.createdAt,
-          lastMessageAt: conversation.lastMessageAt,
-          lastMessage:
-            messages.length
-              ? messages[messages.length - 1]
-              : null
-        };
-      });
+          return {
+            id: conversation._id,
+
+            bankingAccount:
+              conversation.bankingAccount,
+
+            website: conversation.website,
+
+            customerName:
+              conversation.customerName,
+
+            customerEmail:
+              conversation.customerEmail,
+
+            status: conversation.status,
+
+            createdAt: conversation.createdAt,
+
+            lastMessageAt:
+              conversation.lastMessageAt,
+
+            lastMessage:
+              messages.length
+                ? messages[messages.length - 1]
+                : null
+          };
+        }
+      );
 
       return res.json({
         conversations: inbox
@@ -423,10 +481,20 @@ router.get(
       return res.json({
         conversation: {
           id: conversation._id,
+
+          bankingAccount:
+            conversation.bankingAccount,
+
           website: conversation.website,
-          customerName: conversation.customerName,
-          customerEmail: conversation.customerEmail,
+
+          customerName:
+            conversation.customerName,
+
+          customerEmail:
+            conversation.customerEmail,
+
           status: conversation.status,
+
           messages: conversation.messages
         }
       });
@@ -484,7 +552,9 @@ router.post(
 
       conversation.messages.push({
         senderType: "support",
-        senderName: getSupportName(conversation.website),
+        senderName: getSupportName(
+          conversation.website
+        ),
         text: text.trim(),
         createdAt: new Date()
       });
@@ -495,6 +565,7 @@ router.post(
 
       return res.status(201).json({
         message: "Reply sent",
+
         chatMessage:
           conversation.messages[
             conversation.messages.length - 1
@@ -535,18 +606,19 @@ router.patch(
         });
       }
 
-      const conversation = await ChatConversation.findOneAndUpdate(
-        {
-          _id: req.params.conversationId,
-          owner: req.userId
-        },
-        {
-          $set: { status }
-        },
-        {
-          new: true
-        }
-      ).select("-publicTokenHash");
+      const conversation =
+        await ChatConversation.findOneAndUpdate(
+          {
+            _id: req.params.conversationId,
+            owner: req.userId
+          },
+          {
+            $set: { status }
+          },
+          {
+            new: true
+          }
+        ).select("-publicTokenHash");
 
       if (!conversation) {
         return res.status(404).json({
