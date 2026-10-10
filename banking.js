@@ -2236,6 +2236,17 @@ function populateSettings(
   account
 ) {
 
+    // SUPPORT INBOX LINK FOR THE SELECTED PROFILE
+
+  const bankingSupportInboxLink =
+    document.getElementById("bankingSupportInboxLink");
+
+  if (bankingSupportInboxLink) {
+    bankingSupportInboxLink.href =
+      `support-inbox.html?account=${encodeURIComponent(account.id)}`;
+  }
+  
+
   if (settingsFullName) {
 
     settingsFullName.value =

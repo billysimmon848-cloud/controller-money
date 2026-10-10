@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Support Inbox | JustDoks</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f7fb;
+      color: #243447;
+    }
+
+    .header {
+      background: #fff;
+      border-bottom: 1px solid #e5eaf0;
+      padding: 18px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+    }
+
+    .header h1 {
+      margin: 0;
+      font-size: 21px;
+    }
+
+    .header a {
+      color: #287b55;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .page {
+      max-width: 1200px;
+      margin: 25px auto;
+      padding: 0 16px;
+    }
+
+    .notice {
+      padding: 12px;
+      border-radius: 8px;
+      background: #fff;
+      margin-bottom: 15px;
+      font-size: 14px;
+      overflow-wrap: anywhere;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 350px minmax(0, 1fr);
+      gap: 18px;
+      min-height: 560px;
+    }
+
+    .panel {
+      background: #fff;
+      border: 1px solid #e4eaf0;
+      border-radius: 12px;
+      overflow: hidden;
+      min-width: 0;
+    }
+
+    .panel-heading {
+      padding: 18px;
+      border-bottom: 1px solid #e9edf2;
+    }
+
+    .panel-heading h2 {
+      font-size: 17px;
+      margin: 0 0 6px;
+    }
+
+    .panel-heading p {
+      margin: 0;
+      color: #6b7785;
+      font-size: 13px;
+    }
+
+    .conversation-list {
+      max-height: 650px;
+      overflow-y: auto;
+    }
+
+    .conversation-item {
+      display: block;
+      width: 100%;
+      padding: 16px;
+      text-align: left;
+      border: 0;
+      border-bottom: 1px solid #edf0f4;
+      background: #fff;
+      cursor: pointer;
+      color: inherit;
+    }
+
+    .conversation-item:hover,
+    .conversation-item.active {
+      background: #f0f8f4;
+    }
+
+    .conversation-item strong {
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .conversation-item p {
+      margin: 0 0 8px;
+      color: #667382;
+      font-size: 13px;
+      overflow-wrap: anywhere;
+    }
+
+    .conversation-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      font-size: 11px;
+      color: #748091;
+    }
+
+    .status {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 20px;
+      background: #e5f6eb;
+      color: #217447;
+      font-size: 11px;
+      text-transform: capitalize;
+    }
+
+    .status.closed {
+      background: #edf0f4;
+      color: #606b78;
+    }
+
+    .chat-panel {
+      display: flex;
+      flex-direction: column;
+      min-height: 560px;
+    }
+
+    .chat-header {
+      padding: 18px;
+      border-bottom: 1px solid #e9edf2;
+    }
+
+    .chat-header h2 {
+      margin: 0 0 6px;
+      font-size: 18px;
+      overflow-wrap: anywhere;
+    }
+
+    .chat-header p {
+      margin: 0;
+      color: #6b7785;
+      font-size: 13px;
+      overflow-wrap: anywhere;
+    }
+
+    .chat-actions {
+      margin-top: 12px;
+    }
+
+    .messages {
+      padding: 20px;
+      flex: 1;
+      min-height: 250px;
+      max-height: 480px;
+      overflow-y: auto;
+      background: #fafbfd;
+    }
+
+    .message {
+      max-width: 85%;
+      margin-bottom: 16px;
+      padding: 12px;
+      border-radius: 10px;
+      background: #fff;
+      border: 1px solid #e5eaf0;
+      overflow-wrap: anywhere;
+      white-space: pre-wrap;
+    }
+
+    .message.support {
+      margin-left: auto;
+      background: #eaf7ef;
+      border-color: #d2ebdb;
+    }
+
+    .message strong {
+      display: block;
+      font-size: 12px;
+      margin-bottom: 6px;
+    }
+
+    .message p {
+      margin: 0;
+      line-height: 1.5;
+    }
+
+    .message time {
+      display: block;
+      margin-top: 8px;
+      color: #778392;
+      font-size: 11px;
+    }
+
+    .reply-area {
+      padding: 16px;
+      border-top: 1px solid #e9edf2;
+    }
+
+    .reply-area textarea {
+      display: block;
+      width: 100%;
+      min-height: 100px;
+      resize: vertical;
+      padding: 12px;
+      border: 1px solid #d8e0e8;
+      border-radius: 8px;
+      font: inherit;
+      margin-bottom: 12px;
+    }
+
+    .button {
+      display: inline-block;
+      border: 0;
+      border-radius: 7px;
+      padding: 11px 15px;
+      background: #287b55;
+      color: #fff;
+      cursor: pointer;
+      font-weight: bold;
+      text-decoration: none;
+    }
+
+    .button.secondary {
+      background: #e8edf2;
+      color: #354354;
+    }
+
+    .button:disabled {
+      opacity: .55;
+      cursor: not-allowed;
+    }
+
+    .empty {
+      padding: 28px 18px;
+      text-align: center;
+      color: #748091;
+      line-height: 1.6;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    @media (max-width: 760px) {
+      .header {
+        padding: 16px;
+      }
+
+      .page {
+        margin-top: 15px;
+        padding: 0 10px;
+      }
+
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .conversation-list {
+        max-height: 300px;
+      }
+
+      .chat-panel {
+        min-height: 460px;
+      }
+
+      .messages {
+        min-height: 220px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header class="header">
+    <h1>Support Inbox</h1>
+    <a href="banking.html">Back to Banking</a>
+  </header>
+
+  <main class="page">
+
+    <div id="pageNotice" class="notice">
+      Loading your support conversations...
+    </div>
+
+    <div class="layout">
+
+      <section class="panel">
+        <div class="panel-heading">
+          <h2>Conversations</h2>
+          <p id="profileLabel">Selected Banking profile</p>
+        </div>
+
+        <div id="conversationList" class="conversation-list">
+          <div class="empty">Loading conversations...</div>
+        </div>
+      </section>
+
+      <section class="panel chat-panel">
+
+        <div id="chatHeader" class="chat-header">
+          <h2>Select a conversation</h2>
+          <p>Choose a customer message from the list.</p>
+        </div>
+
+        <div id="messages" class="messages">
+          <div class="empty">
+            Customer messages will appear here.
+          </div>
+        </div>
+
+        <form id="replyForm" class="reply-area hidden">
+          <textarea id="replyText" maxlength="5000" placeholder="Write your reply..." required></textarea>
+
+          <button id="sendReplyButton" class="button" type="submit">
+            Send Reply
+          </button>
+
+          <button id="deleteConversationButton" class="button secondary" type="button"
+            style="background:#fee2e2;color:#b91c1c;margin-left:8px;">
+            Delete Conversation
+          </button>
+
+        </form>
+
+      </section>
+
+    </div>
+  </main>
+
+  <script>
+    // ================================================
+    // CONFIGURATION
+    // ================================================
+
+    const API_URL = "https://api.justdoks.com/api";
+
+    const token = localStorage.getItem("token");
+
+    const params = new URLSearchParams(
+      window.location.search
+    );
+
+    const bankingAccountId = params.get("account");
+
+    let conversations = [];
+    let selectedConversationId = null;
+
+    // ================================================
+    // ELEMENTS
+    // ================================================
+
+    const pageNotice =
+      document.getElementById("pageNotice");
+
+    const profileLabel =
+      document.getElementById("profileLabel");
+
+    const conversationList =
+      document.getElementById("conversationList");
+
+    const chatHeader =
+      document.getElementById("chatHeader");
+
+    const messagesContainer =
+      document.getElementById("messages");
+
+    const replyForm =
+      document.getElementById("replyForm");
+
+    const replyText =
+      document.getElementById("replyText");
+
+    const sendReplyButton =
+      document.getElementById("sendReplyButton");
+
+    const deleteConversationButton =
+      document.getElementById("deleteConversationButton");
+
+    // ================================================
+    // HELPERS
+    // ================================================
+
+    function showNotice(message) {
+      pageNotice.textContent = message;
+    }
+
+    function escapeText(value) {
+      return String(value ?? "");
+    }
+
+    function formatDate(value) {
+      if (!value) return "";
+
+      const date = new Date(value);
+
+      if (Number.isNaN(date.getTime())) {
+        return "";
+      }
+
+      return date.toLocaleString();
+    }
+
+    async function apiRequest(path, options = {}) {
+      const response = await fetch(API_URL + path, {
+        ...options,
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + token,
+          ...(options.headers || {})
+        }
+      });
+
+      const data = await response.json().catch(() => ({}));
+
+      if (response.status === 401) {
+        throw new Error(
+          "Your login session has expired. Please sign in again."
+        );
+      }
+
+      if (!response.ok) {
+        throw new Error(
+          data.message || "The request could not be completed."
+        );
+      }
+
+      return data;
+    }
+
+    // ================================================
+    // LOAD CONVERSATIONS FOR THIS PROFILE
+    // ================================================
+
+    async function loadConversations() {
+      if (!token) {
+        showNotice(
+          "Please sign in to JustDoks before opening the Support Inbox."
+        );
+
+        conversationList.innerHTML = "";
+        return;
+      }
+
+      if (!bankingAccountId) {
+        showNotice(
+          "No Banking profile was selected. Open Support Inbox from that profile's Settings."
+        );
+
+        conversationList.innerHTML = "";
+        return;
+      }
+
+      profileLabel.textContent =
+        "Conversations for the selected profile";
+
+      try {
+        const data = await apiRequest(
+          "/chat/inbox?bankingAccount=" +
+          encodeURIComponent(bankingAccountId)
+        );
+
+        conversations = data.conversations || [];
+
+        renderConversations();
+
+        showNotice(
+          conversations.length
+            ? conversations.length + " conversation(s) loaded."
+            : "No support conversations have been received for this profile yet."
+        );
+
+      } catch (error) {
+        showNotice(error.message);
+        conversationList.innerHTML = "";
+      }
+    }
+
+    // ================================================
+    // DISPLAY CONVERSATION LIST
+    // ================================================
+
+    function renderConversations() {
+      conversationList.replaceChildren();
+
+      if (!conversations.length) {
+        const empty = document.createElement("div");
+        empty.className = "empty";
+        empty.textContent =
+          "No conversations yet. New customer messages will appear here.";
+
+        conversationList.appendChild(empty);
+        return;
+      }
+
+      conversations.forEach(conversation => {
+        const button = document.createElement("button");
+
+        button.type = "button";
+        button.className = "conversation-item";
+
+        if (conversation.id === selectedConversationId) {
+          button.classList.add("active");
+        }
+
+        const name = document.createElement("strong");
+        name.textContent =
+          escapeText(conversation.customerName) ||
+          "Customer";
+
+        const preview = document.createElement("p");
+        preview.textContent =
+          escapeText(conversation.lastMessage?.text) ||
+          "No messages";
+
+        const meta = document.createElement("div");
+        meta.className = "conversation-meta";
+
+        const status = document.createElement("span");
+        status.className =
+          "status" +
+          (conversation.status === "closed" ? " closed" : "");
+        status.textContent = conversation.status || "open";
+
+        const date = document.createElement("span");
+        date.textContent =
+          formatDate(conversation.lastMessageAt);
+
+        meta.append(status, date);
+        button.append(name, preview, meta);
+
+        button.addEventListener("click", () => {
+          openConversation(conversation.id);
+        });
+
+        conversationList.appendChild(button);
+      });
+    }
+
+    // ================================================
+    // OPEN A CONVERSATION
+    // ================================================
+
+    async function openConversation(conversationId) {
+      selectedConversationId = conversationId;
+      renderConversations();
+
+      chatHeader.textContent = "Loading conversation...";
+      messagesContainer.replaceChildren();
+      replyForm.classList.add("hidden");
+
+      try {
+        const data = await apiRequest(
+          "/chat/" +
+          encodeURIComponent(conversationId) +
+          "/messages"
+        );
+
+        const conversation = data.conversation;
+
+        const heading = document.createElement("h2");
+        heading.textContent =
+          escapeText(conversation.customerName) ||
+          "Customer";
+
+        const details = document.createElement("p");
+        details.textContent =
+          escapeText(conversation.customerEmail) +
+          " · " +
+          escapeText(conversation.website);
+
+        chatHeader.replaceChildren(heading, details);
+
+        renderMessages(conversation.messages || []);
+
+        replyForm.classList.remove("hidden");
+
+        // Customers and support can continue using the same conversation.
+        replyText.disabled = false;
+        sendReplyButton.disabled = false;
+
+        deleteConversationButton.disabled = false;
+
+        showNotice("You can reply to this customer or delete the conversation.");
+
+      } catch (error) {
+        chatHeader.textContent = "Unable to open conversation";
+        messagesContainer.textContent = error.message;
+      }
+    }
+
+    // ================================================
+    // DISPLAY MESSAGES
+    // ================================================
+
+    function renderMessages(messages) {
+      messagesContainer.replaceChildren();
+
+      if (!messages.length) {
+        messagesContainer.textContent = "No messages yet.";
+        return;
+      }
+
+      messages.forEach(message => {
+        const item = document.createElement("div");
+
+        item.className =
+          "message" +
+          (message.senderType === "support" ? " support" : "");
+
+        const sender = document.createElement("strong");
+        sender.textContent =
+          escapeText(message.senderName) ||
+          (message.senderType === "support"
+            ? "Support"
+            : "Customer");
+
+        const text = document.createElement("p");
+        text.textContent = escapeText(message.text);
+
+        const time = document.createElement("time");
+        time.textContent = formatDate(message.createdAt);
+
+        item.append(sender, text, time);
+        messagesContainer.appendChild(item);
+      });
+
+      messagesContainer.scrollTop =
+        messagesContainer.scrollHeight;
+    }
+
+    // ================================================
+    // SEND A REPLY
+    // ================================================
+
+    replyForm.addEventListener("submit", async event => {
+      event.preventDefault();
+
+      if (!selectedConversationId) return;
+
+      const text = replyText.value.trim();
+
+      if (!text) return;
+
+      sendReplyButton.disabled = true;
+
+      try {
+        await apiRequest(
+          "/chat/" +
+          encodeURIComponent(selectedConversationId) +
+          "/messages",
+          {
+            method: "POST",
+            body: JSON.stringify({ text })
+          }
+        );
+
+        replyText.value = "";
+
+        await loadConversations();
+
+        await openConversation(selectedConversationId);
+
+        showNotice("Your reply has been sent.");
+
+      } catch (error) {
+        showNotice(error.message);
+      } finally {
+        sendReplyButton.disabled =
+          replyText.disabled;
+      }
+    });
+    // ================================================
+    // DELETE A CONVERSATION AND ITS MESSAGE HISTORY
+    // ================================================
+
+    deleteConversationButton.addEventListener("click", async () => {
+      if (!selectedConversationId) {
+        return;
+      }
+
+      const confirmed = window.confirm(
+        "Permanently delete this conversation and all its messages? This cannot be undone."
+      );
+
+      if (!confirmed) {
+        return;
+      }
+
+      const conversationId = selectedConversationId;
+
+      deleteConversationButton.disabled = true;
+      sendReplyButton.disabled = true;
+      replyText.disabled = true;
+
+      try {
+        await apiRequest(
+          "/chat/" + encodeURIComponent(conversationId),
+          {
+            method: "DELETE"
+          }
+        );
+
+        conversations = conversations.filter(
+          item => item.id !== conversationId
+        );
+
+        selectedConversationId = null;
+
+        renderConversations();
+
+        chatHeader.replaceChildren();
+
+        const heading = document.createElement("h2");
+        heading.textContent = "Select a conversation";
+
+        const details = document.createElement("p");
+        details.textContent = "Choose a customer message from the list.";
+
+        chatHeader.append(heading, details);
+
+        messagesContainer.replaceChildren();
+
+        const empty = document.createElement("div");
+        empty.className = "empty";
+        empty.textContent = "Customer messages will appear here.";
+
+        messagesContainer.appendChild(empty);
+
+        replyForm.classList.add("hidden");
+        replyText.value = "";
+
+        showNotice("Conversation and message history deleted.");
+
+      } catch (error) {
+        showNotice(error.message);
+
+        replyText.disabled = false;
+        sendReplyButton.disabled = false;
+
+      } finally {
+        deleteConversationButton.disabled = false;
+      }
+    });
+
+    // ================================================
+    // START
+    // ================================================
+
+    loadConversations();
+  </script>
+
+</body>
+
+</html>

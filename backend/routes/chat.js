@@ -319,11 +319,6 @@ router.post(
         });
       }
 
-      if (conversation.status === "closed") {
-        return res.status(403).json({
-          message: "This conversation is closed"
-        });
-      }
 
       // Use the saved customer name instead of accepting
       // a different identity from each message request.
@@ -544,12 +539,6 @@ router.post(
         });
       }
 
-      if (conversation.status === "closed") {
-        return res.status(403).json({
-          message: "This conversation is closed"
-        });
-      }
-
       conversation.messages.push({
         senderType: "support",
         senderName: getSupportName(
@@ -582,43 +571,33 @@ router.post(
 );
 
 
-// ======================================================
-// OPEN OR CLOSE CONVERSATION
-// PATCH /api/chat/:conversationId/status
-// ======================================================
 
-router.patch(
-  "/:conversationId/status",
+ // ======================================================
+ // DELETE CONVERSATION AND ALL ITS MESSAGES
+ // DELETE /api/chat/:conversationId
+ //
+ // Requires JustDoks authentication.
+ // Only the conversation's owner can delete it.
+ // ======================================================
+
+router.delete(
+  "/:conversationId",
   auth,
   async (req, res) => {
     try {
-      if (!validConversationId(req.params.conversationId)) {
+      const { conversationId } = req.params;
+
+      if (!validConversationId(conversationId)) {
         return res.status(400).json({
           message: "Invalid conversation ID"
         });
       }
 
-      const { status } = req.body;
-
-      if (!["open", "closed"].includes(status)) {
-        return res.status(400).json({
-          message: "Status must be open or closed"
-        });
-      }
-
       const conversation =
-        await ChatConversation.findOneAndUpdate(
-          {
-            _id: req.params.conversationId,
-            owner: req.userId
-          },
-          {
-            $set: { status }
-          },
-          {
-            new: true
-          }
-        ).select("-publicTokenHash");
+        await ChatConversation.findOneAndDelete({
+          _id: conversationId,
+          owner: req.userId
+        });
 
       if (!conversation) {
         return res.status(404).json({
@@ -627,14 +606,13 @@ router.patch(
       }
 
       return res.json({
-        message: "Conversation status updated",
-        status: conversation.status
+        message: "Conversation and message history deleted"
       });
     } catch (error) {
-      console.error("UPDATE CHAT STATUS ERROR:", error);
+      console.error("DELETE CHAT ERROR:", error);
 
       return res.status(500).json({
-        message: "Unable to update conversation status"
+        message: "Unable to delete conversation"
       });
     }
   }
@@ -642,3 +620,5 @@ router.patch(
 
 
 module.exports = router;
+
+
