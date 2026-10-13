@@ -11,6 +11,7 @@ const walletRoutes = require("./routes/wallet");
 const bankingRoutes = require("./routes/banking");
 const adminRoutes = require("./routes/admin");
 const flightRoutes = require("./routes/flight");
+const cargo1Routes = require("./routes/cargo1");
 const chatRoutes = require("./routes/chat");
 const boardingPassRoutes = require("./routes/boardingPass");
 const bnbRoutes = require("./routes/bnb");
@@ -108,6 +109,11 @@ app.use(
 app.use(
   "/api/chat",
   chatRoutes
+);
+
+app.use(
+  "/api/cargo1", 
+  cargo1Routes
 );
 
 // ======================================================
