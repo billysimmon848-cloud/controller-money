@@ -322,7 +322,7 @@ router.post("/", auth, async (req, res) => {
           type: "charge",
           amount: -CLEAN_SHIPPING_PRICE,
           description: `Cargo 1 Clean Shipping - ${trackingNumber}`,
-          source: "cargo",
+          source: "cargo1",
           reference: trackingNumber
         }],
         { session }
@@ -717,7 +717,7 @@ router.patch("/:trackingNumber/upgrade", auth, async (req, res) => {
         type: "charge",
         amount: -CLEAN_SHIPPING_PRICE,
         description: `Cargo 1 Remove Watermark - ${trackingNumber}`,
-        source: "cargo",
+        source: "cargo1",
         reference: trackingNumber
       }],
       { session }

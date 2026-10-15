@@ -133,6 +133,8 @@ const transactionSchema = new mongoose.Schema(
 
         "cargo",
 
+        "cargo1",
+
         "banking",
 
         "flight",
