@@ -1,0 +1,25 @@
+
+{
+    admin off
+    persist_config off
+    auto_https off
+    log {
+        format json
+    }
+}
+
+:{$PORT:8080} {
+    root * .
+
+    @htmlFiles {
+        path_regexp htmlFiles ^/(.+)$
+        not path_regexp htmlFiles \.(html|css|js|png|jpg|jpeg|gif|svg|ico|webp|woff2?|ttf|json|pdf|xml|txt|map)$
+    }
+
+    rewrite @htmlFiles {http.request.uri.path}.html
+
+    file_server {
+        hide .git
+        hide .env*
+    }
+}
