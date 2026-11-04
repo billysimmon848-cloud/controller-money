@@ -1,0 +1,322 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JustDoks Cargo</title>
+
+  <link rel="icon" href="images/fav-ico.png" type="image/png">
+
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Cropper -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css">
+
+  <!-- Cargo Styles -->
+  <link rel="stylesheet" href="graphics.css">
+</head>
+
+<body>
+
+<!-- NAVIGATION -->
+<nav class="navbar navbar-expand-lg fixed-top custom-navbar">
+  <div class="container nav-container">
+
+    <a class="navbar-brand" href="index.html">
+      JustDoks<span class="brand-dot">.</span>
+    </a>
+
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navbarContent"
+      aria-controls="navbarContent"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarContent">
+
+      <div class="auth-nav ms-auto" id="authNav">
+
+        <div class="nav-item">
+          <a href="#" class="nav-link username-link" id="navbarUserName">
+            User
+          </a>
+        </div>
+
+        <div class="nav-item">
+          <span class="nav-link wallet-balance" id="navbarWalletBalance">
+            $0.00
+          </span>
+        </div>
+
+        <div class="nav-item">
+          <a href="#" class="nav-link" id="navbarLogout">
+            Logout
+          </a>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</nav>
+
+
+
+<main class="app">
+
+  <div class="workspace" id="workspace">
+
+    <!-- =================================
+         LEFT: CREATED DOCUMENTS
+    ================================== -->
+
+    <aside class="documents-panel" id="documents-panel">
+
+      <div class="documents-header">
+        <h2>Created Documents</h2>
+      </div>
+
+      <div class="documents-list" id="documents-list">
+
+        <p class="empty-documents" id="empty-documents">
+          Your created documents will appear here.
+        </p>
+
+      </div>
+
+    </aside>
+
+
+    <!-- =================================
+         MIDDLE: CREATE FORM
+    ================================== -->
+
+    <section class="sidebar create-panel" id="create-panel">
+
+      <div class="create-header">
+        <h2>Create Graphics</h2>
+        <p>Prepare your design below.</p>
+      </div>
+
+      <section class="control-section">
+
+        <h2 class="section-heading">Choose a background</h2>
+
+        <select class="background-select" id="background-select"
+          aria-label="Choose a background">
+
+          <option value="table">Table</option>
+          <option value="brown-bed">Brown Bed</option>
+          <option value="red-bed">Red Bed</option>
+          <option value="blue-bed">Blue Bed</option>
+
+        </select>
+
+        <p class="helper">
+          The card keeps the same size and position on every background.
+        </p>
+
+      </section>
+
+
+      <section class="control-section" aria-label="Details">
+
+        <div class="field-group">
+
+          <label class="field-label" for="name">Name</label>
+
+          <input class="text-input" id="name" name="name"
+            type="text" placeholder="Enter name">
+
+        </div>
+
+        <div class="field-group">
+
+          <label class="field-label" for="number">Number</label>
+
+          <input class="text-input" id="number" name="number"
+            type="text" placeholder="Enter number">
+
+        </div>
+
+        <p class="helper">
+          Name and number are shown on the cutout.
+        </p>
+
+      </section>
+
+
+      <section class="control-section" aria-label="Signature">
+
+        <div class="signature-heading">
+
+          <h2 class="section-heading">Add signature</h2>
+
+          <button class="clear-signature" id="clear-signature"
+            type="button">
+            Clear
+          </button>
+
+        </div>
+
+        <canvas class="signature-canvas" id="signature-canvas"
+          width="780" height="260"
+          aria-label="Signature pad. Draw your signature here.">
+        </canvas>
+
+        <div class="signature-actions">
+
+          <p class="helper">
+            Draw your signature, then add it to the cutout.
+          </p>
+
+          <button class="add-signature" id="add-signature"
+            type="button" disabled>
+            Add to cutout
+          </button>
+
+        </div>
+
+      </section>
+
+
+      <!-- CREATE ACTIONS -->
+
+      <div class="create-actions">
+
+        <button id="preview-button" type="button" disabled>
+          Preview
+        </button>
+
+        <button id="create" type="button">
+          Create
+        </button>
+
+      </div>
+
+    </section>
+
+
+    <!-- =================================
+         RIGHT: PREVIEW
+    ================================== -->
+
+    <section class="preview-panel" id="preview-panel"
+      aria-label="Created document preview" hidden>
+
+      <div class="preview-header">
+
+        <h2>Preview</h2>
+
+        <button id="back-to-create" type="button">
+          Back to Create
+        </button>
+
+      </div>
+
+      <div class="stage">
+
+        <canvas id="canvas"
+          aria-label="Created graphics preview">
+        </canvas>
+
+      </div>
+
+      <div class="preview-footer">
+
+  <span id="scene-size">Preparing scene…</span>
+
+  <div class="preview-actions">
+
+    <button id="remove-watermark-preview" type="button" hidden>
+      Remove Watermark — $3
+    </button>
+
+    <button class="download" id="download" type="button">
+      Download PNG
+    </button>
+
+  </div>
+
+</div>
+
+    </section>
+
+  </div>
+
+</main>
+
+
+
+<!-- GRAPHICS DOWNLOAD MODAL -->
+<div class="download-modal" id="download-modal" aria-hidden="true">
+  <div class="download-modal-backdrop" id="download-modal-backdrop"></div>
+
+  <div class="download-modal-content" role="dialog" aria-modal="true"
+       aria-labelledby="download-modal-title">
+
+    <button class="modal-close" id="modal-close" type="button"
+            aria-label="Close">&times;</button>
+
+    <div class="modal-icon">↓</div>
+
+    <h2 id="download-modal-title">Download your image</h2>
+
+    <p class="modal-description">
+      Choose how you want to download your graphics.
+    </p>
+
+    <button class="download-option free-option" id="free-download"
+            type="button">
+      <span>
+        <strong>Free download</strong>
+        <small>Includes JUSTDOKS.COM watermark</small>
+      </span>
+      <span class="option-price">FREE</span>
+    </button>
+
+    <button class="download-option clean-option" id="clean-download"
+            type="button">
+      <span>
+        <strong>Clean download</strong>
+        <small>Download without watermark</small>
+      </span>
+      <span class="option-price">$3.00</span>
+    </button>
+
+    <p class="download-message" id="download-message" role="status"></p>
+
+    <p class="modal-footnote">
+      Clean downloads are charged directly to your JustDoks wallet.
+    </p>
+
+  </div>
+</div>
+
+<!-- SCRIPTS -->
+
+<!-- Cropper -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
+
+<!-- Bootstrap -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- jsPDF -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<!-- JustDoks Shared Authentication -->
+<script src="index.js"></script>
+
+<!-- Graphics Application -->
+<script src="graphics.js"></script>
+
+</body>
+</html>
