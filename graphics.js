@@ -1,4 +1,3 @@
-
 // ======================================================
 // JUSTDOKS GRAPHICS
 // ======================================================
@@ -133,6 +132,8 @@ const backToCreateButton =
 const removeWatermarkPreviewButton =
   document.querySelector("#remove-watermark-preview");
 
+const deleteDocumentButton =
+  document.querySelector("#delete-document");
 
 // ======================================================
 // CREATED DOCUMENTS
@@ -227,7 +228,6 @@ async function graphicsRequest(endpoint, options = {}) {
     }
   );
 
-
   let data;
 
   try {
@@ -241,7 +241,6 @@ async function graphicsRequest(endpoint, options = {}) {
     );
 
   }
-
 
   if (!response.ok || !data.success) {
 
@@ -272,7 +271,6 @@ async function getGraphicsImage(imageUrl) {
 
   }
 
-
   // Backend image URLs begin with /api.
   // API_URL already ends with /api.
 
@@ -287,7 +285,6 @@ async function getGraphicsImage(imageUrl) {
       }
     }
   );
-
 
   if (!response.ok) {
 
@@ -304,7 +301,6 @@ async function getGraphicsImage(imageUrl) {
     throw new Error(message);
 
   }
-
 
   const blob = await response.blob();
 
@@ -1299,7 +1295,6 @@ async function loadDocumentImage(doc) {
 
   }
 
-
   const imageBlobUrl =
     await getGraphicsImage(doc.imageUrl);
 
@@ -1483,7 +1478,15 @@ removeWatermarkPreviewButton.addEventListener(
   "click",
   () => {
 
-    if (!activeDocumentId) return;
+    console.log("REMOVE WATERMARK BUTTON CLICKED");
+
+    console.log("ACTIVE DOCUMENT ID:", activeDocumentId);
+
+    if (!activeDocumentId) {
+      console.log("No active document selected.");
+      return;
+    }
+
 
     removeDocumentWatermark(activeDocumentId);
 
@@ -1554,7 +1557,6 @@ downloadButton.addEventListener(
       return;
 
     }
-
 
     try {
 
@@ -1746,6 +1748,11 @@ async function createDocument(type) {
     // CLOSE MODAL AND SHOW SAVED DOCUMENT
     // ==================================================
 
+    // Allow the modal to close before calling
+    // closeDownloadModal().
+
+    isProcessingPayment = false;
+
     closeDownloadModal();
 
     await showPreview(savedDocument.id);
@@ -1812,6 +1819,8 @@ cleanDownloadButton.addEventListener(
 // ======================================================
 
 async function removeDocumentWatermark(documentId) {
+
+  console.log("REMOVE WATERMARK FUNCTION STARTED:", documentId);
 
   if (
     isProcessingPayment ||
@@ -1911,6 +1920,76 @@ async function removeDocumentWatermark(documentId) {
 
 
 // ======================================================
+// DELETE SAVED GRAPHICS DOCUMENT
+// ======================================================
+
+deleteDocumentButton.addEventListener(
+  "click",
+  async () => {
+
+    if (!activeDocumentId || isProcessingPayment || isCreatingDocument) {
+      return;
+    }
+
+    const documentId = activeDocumentId;
+
+    const doc = getDocumentById(documentId);
+
+    if (!doc) return;
+
+    const confirmed = confirm(
+      `Are you sure you want to delete "${doc.name}"? This action cannot be undone.`
+    );
+
+    if (!confirmed) return;
+
+    deleteDocumentButton.disabled = true;
+    deleteDocumentButton.textContent = "Deleting...";
+
+    try {
+
+      await graphicsRequest(
+        `/graphics/${encodeURIComponent(documentId)}`,
+        {
+          method: "DELETE"
+        }
+      );
+
+      // Revoke cached image URL.
+
+      if (doc.imageBlobUrl) {
+        URL.revokeObjectURL(doc.imageBlobUrl);
+      }
+
+      // Remove document from local list.
+
+      createdDocuments = createdDocuments.filter(
+        (item) => String(item.id) !== String(documentId)
+      );
+
+      renderDocuments();
+
+      // Return to Create if the active document was deleted.
+
+      showCreate();
+
+    } catch (error) {
+
+      console.error("DELETE GRAPHICS ERROR:", error);
+
+      alert(error.message || "Unable to delete document.");
+
+    } finally {
+
+      deleteDocumentButton.disabled = false;
+      deleteDocumentButton.textContent = "Delete Document";
+
+    }
+
+  }
+);
+
+// ======================================================
 // INITIAL RENDER
 // ======================================================
 
@@ -1920,5 +1999,7 @@ render();
 // ======================================================
 // LOAD SAVED DOCUMENTS WHEN GRAPHICS OPENS
 // ======================================================
+
+renderDocuments();
 
 loadMyDocuments();

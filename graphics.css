@@ -778,6 +778,25 @@
 
 }
 
+#delete-document {
+  background: #fff;
+  color: #dc3545;
+  border: 1px solid #dc3545;
+  padding: 10px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+#delete-document:hover {
+  background: #dc3545;
+  color: #fff;
+}
+
+#delete-document:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 /* RESPONSIVE */
 
 @media (max-width: 800px) {

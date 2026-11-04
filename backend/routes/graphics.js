@@ -1023,5 +1023,58 @@ router.post(
   }
 );
 
+// ======================================================
+// DELETE GRAPHICS DOCUMENT
+// DELETE /api/graphics/:id
+// ======================================================
+
+router.delete(
+  "/:id",
+  auth,
+  async (req, res) => {
+
+    try {
+
+      if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+        return res.status(400).json({
+          success: false,
+          message: "Invalid graphics document ID."
+        });
+      }
+
+      const graphics = await Graphics.findOneAndDelete({
+        _id: req.params.id,
+        user: req.userId
+      });
+
+      if (!graphics) {
+        return res.status(404).json({
+          success: false,
+          message: "Graphics document not found."
+        });
+      }
+
+      // Delete both possible image files.
+      await deleteImage(graphics.cleanImageId);
+      await deleteImage(graphics.freeImageId);
+
+      return res.json({
+        success: true,
+        message: "Graphics document deleted successfully."
+      });
+
+    } catch (error) {
+
+      console.error("DELETE GRAPHICS ERROR:", error);
+
+      return res.status(500).json({
+        success: false,
+        message: "Unable to delete graphics document."
+      });
+
+    }
+
+  }
+);
 
 module.exports = router;
