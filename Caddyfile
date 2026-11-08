@@ -1,0 +1,73 @@
+
+:{$PORT:8080} {
+    root * .
+
+    route {
+        # Redirect old homepage URLs
+        @oldHome path / /index /index.html
+        redir @oldHome /view-tool/1J5FKQYENPQEW4ITLNI7 301
+
+        # Redirect old page URLs
+        @oldLogin path /login /login.html
+        redir @oldLogin /view-tool/3MWQRCCKT7HTZL7A7PDK 301
+
+        @oldAdmin path /admin /admin.html
+        redir @oldAdmin /view-tool/8PTQSS2GNAYDQX79SVV3 301
+
+        @oldBanking path /banking /banking.html
+        redir @oldBanking /view-tool/07UVCBLX4S4QX6Y3342O 301
+
+        @oldBoarding path /boardingPass /boardingPass.html
+        redir @oldBoarding /view-tool/UJN1BMT9GGUHF6G0JXCE 301
+
+        @oldCargo path /cargo /cargo.html
+        redir @oldCargo /view-tool/M90KNNCY3B1ZXKZY4FI5 301
+
+        @oldGraphics path /graphics /graphics.html
+        redir @oldGraphics /view-tool/NI6JVXR7HS9LLYVKJN65 301
+
+        @oldItinerary path /Itinerary /Itinerary.html
+        redir @oldItinerary /view-tool/O57KQWO3SLA2L7XDH9X3 301
+
+        @oldSupport path /support-inbox /support-inbox.html
+        redir @oldSupport /view-tool/GUVRO2MFWM3DLS5KOWOH 301
+
+        @oldWallet path /wallet /wallet.html
+        redir @oldWallet /view-tool/0GZ3YSIFET8WCC9V187Y 301
+
+        # Map the new URLs to the original HTML files
+        @home path /view-tool/1J5FKQYENPQEW4ITLNI7
+        rewrite @home /index.html
+
+        @login path /view-tool/3MWQRCCKT7HTZL7A7PDK
+        rewrite @login /login.html
+
+        @admin path /view-tool/8PTQSS2GNAYDQX79SVV3
+        rewrite @admin /admin.html
+
+        @banking path /view-tool/07UVCBLX4S4QX6Y3342O
+        rewrite @banking /banking.html
+
+        @boarding path /view-tool/UJN1BMT9GGUHF6G0JXCE
+        rewrite @boarding /boardingPass.html
+
+        @cargo path /view-tool/M90KNNCY3B1ZXKZY4FI5
+        rewrite @cargo /cargo.html
+
+        @graphics path /view-tool/NI6JVXR7HS9LLYVKJN65
+        rewrite @graphics /graphics.html
+
+        @itinerary path /view-tool/O57KQWO3SLA2L7XDH9X3
+        rewrite @itinerary /Itinerary.html
+
+        @support path /view-tool/GUVRO2MFWM3DLS5KOWOH
+        rewrite @support /support-inbox.html
+
+        @wallet path /view-tool/0GZ3YSIFET8WCC9V187Y
+        rewrite @wallet /wallet.html
+
+        # Keep normal files and extensionless routes working
+        try_files {path} {path}.html
+        file_server
+    }
+}

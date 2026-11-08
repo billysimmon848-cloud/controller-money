@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+  <base href="/">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>JustDoks Cargo</title>
@@ -96,7 +97,6 @@
 
         <div class="create-header">
           <h2>Create Graphics</h2>
-          <p>Prepare your design below.</p>
         </div>
 
         <section class="control-section">
@@ -111,10 +111,6 @@
             <option value="blue-bed">Blue Bed</option>
 
           </select>
-
-          <p class="helper">
-            The card keeps the same size and position on every background.
-          </p>
 
         </section>
 
@@ -134,11 +130,11 @@
             <label class="field-label" for="number">Number</label>
 
             <input class="text-input" id="number" name="number" type="text" placeholder="Enter number">
-
+            <small class="field-hint">Format: 805-99-9090</small>
           </div>
 
           <p class="helper">
-            Name and number are shown on the cutout.
+            Name, Number & Signature are shown on the cutout.
           </p>
 
         </section>
