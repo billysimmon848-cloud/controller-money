@@ -839,25 +839,6 @@ canvas {
   min-height: 42px;
 }
 
-/* Mobile */
-
-@media (max-width: 480px) {
-
-  .preview-footer {
-    align-items: flex-start;
-  }
-
-  .preview-actions {
-    width: 100%;
-    justify-content: stretch;
-  }
-
-  .preview-actions button {
-    flex: 1;
-  }
-
-}
-
 #delete-document {
   background: #111827;
   color: #fca5a5;
@@ -877,7 +858,33 @@ canvas {
   cursor: not-allowed;
 }
 
+.modal-footnote {
+  margin-top: 10px;
+  color: #94a3b8;
+  font-size: 10px;
+  line-height: 1.5;
+}
+
 /* RESPONSIVE */
+
+/* Mobile */
+
+@media (max-width: 480px) {
+
+  .preview-footer {
+    align-items: flex-start;
+  }
+
+  .preview-actions {
+    width: 100%;
+    justify-content: stretch;
+  }
+
+  .preview-actions button {
+    flex: 1;
+  }
+
+}
 
 @media (max-width: 800px) {
 
@@ -918,11 +925,56 @@ canvas {
 }
 
 
-.modal-footnote {
-  margin-top: 10px;
-  color: #94a3b8;
-  font-size: 10px;
-  line-height: 1.5;
+/* ======================================================
+   MOBILE NAVBAR
+====================================================== */
+
+@media (max-width: 991.98px) {
+
+  .custom-navbar {
+    padding: 10px 15px;
+  }
+
+  .custom-navbar .navbar-toggler {
+    border-color: rgba(139, 92, 246, .35);
+  }
+
+  .custom-navbar .navbar-toggler:focus {
+    box-shadow: none;
+  }
+
+  .custom-navbar .navbar-toggler-icon {
+    filter: none;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='%23c084fc' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+  }
+
+  .custom-navbar .navbar-collapse {
+    margin-top: 10px;
+  }
+
+  .custom-navbar .auth-nav {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    width: 100%;
+    margin-left: 0 !important;
+    padding-top: 10px;
+    border-top: 1px solid rgba(139, 92, 246, .20);
+  }
+
+  .custom-navbar .auth-nav .nav-item {
+    width: 100%;
+  }
+
+  .custom-navbar .auth-nav .nav-link {
+    display: block;
+    width: 100%;
+    padding: 10px 12px !important;
+    border-radius: 6px;
+    background: rgba(139, 92, 246, .06);
+  }
+
 }
 
 @media (max-width: 480px) {
@@ -936,6 +988,7 @@ canvas {
   .app {
     width: min(100% - 32px, 640px);
     padding-top: 24px;
+    margin: 40px auto;
   }
 
   .workspace {
@@ -956,6 +1009,7 @@ canvas {
   .app {
     width: calc(100% - 24px);
     padding-top: 18px;
+    margin: 60px auto;
   }
 
   .topbar {
