@@ -858,7 +858,7 @@ body{
     height:220px;
 
     object-fit:cover;
-
+    object-position: top;
     border-radius:12px;
 
     background:
@@ -1133,7 +1133,7 @@ body{
 
 
     .tool-card img{
-
+        object-position: top;
         height:260px;
 
     }
@@ -1409,7 +1409,7 @@ body{
         height:190px;
 
         object-fit:cover;
-
+        object-position: top;
         border-radius:11px;
 
     }
@@ -1528,9 +1528,8 @@ body{
     .tool-card img{
 
         height:165px;
-
+        object-position: top;
         border-radius:9px;
-
     }
 
 }
