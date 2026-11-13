@@ -3,6 +3,7 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
+const path = require("path");
 
 const trackingRoutes = require("./routes/tracking");
 const shipmentRoutes = require("./routes/shipment");
@@ -32,6 +33,13 @@ app.use(
   express.json({
     limit: "10mb"
   })
+);
+
+app.use(
+  "/images/logo",
+  express.static(
+    path.join(__dirname, "..", "images", "logo")
+  )
 );
 
 

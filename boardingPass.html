@@ -1,1180 +1,1789 @@
 <!DOCTYPE html>
-
 <html lang="en">
 
 <head>
-<base href="/">
+  <base href="/">
   <meta charset="UTF-8">
-
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>
-    JustDoks BoardingPass Generator
-  </title>
+  <title>JustDoks BoardingPass Generator</title>
 
   <link rel="icon" href="images/fav-ico.png" type="image/png">
-
   <link rel="stylesheet" href="boardingPass.css">
-
+  <link rel="stylesheet" href="bd.css">
 </head>
 
 <body>
 
-  <!-- ======================================================
-       NAVBAR
-  ======================================================= -->
-
+  <!-- NAVBAR -->
   <nav class="navbar custom-navbar">
-
     <div class="container nav-container">
 
-
-      <a class="navbar-brand" href="index">
-        JustDoks
-      </a>
-
-
-
-      <!-- MOBILE HAMBURGER -->
+      <a class="navbar-brand" href="index">JustDoks</a>
 
       <button type="button" class="navbar-toggler" id="navbarToggler" aria-label="Open navigation"
         aria-expanded="false">
-
         <span></span>
         <span></span>
         <span></span>
-
       </button>
-
-
-
-      <!-- NAVIGATION -->
 
       <div class="auth-nav" id="authNav">
 
-
         <div class="nav-item">
-
           <a href="#" class="nav-link username-link" id="navbarUserName">
             User
           </a>
-
         </div>
 
-
-
         <div class="nav-item">
-
           <span class="nav-link wallet-balance" id="navbarWalletBalance">
             $0.00
           </span>
-
         </div>
 
-
-
         <div class="nav-item">
-
           <a href="#" class="nav-link" id="navbarLogout">
             Logout
           </a>
-
         </div>
 
-
       </div>
-
     </div>
-
   </nav>
 
-  <!-- =========================================================
-       MAIN PAGE
-  ========================================================== -->
 
+  <!-- MAIN PAGE -->
   <main class="page">
 
-    <!-- =====================================================
-     HERO
-====================================================== -->
-
+    <!-- HERO -->
     <section class="hero">
 
-      <p class="hero-tag">
-        BOARDING PASS
-      </p>
+      <p class="hero-tag">BOARDING PASS</p>
 
-
-      <h1>
-        Create your flight document
-      </h1>
-
-
-      <p class="hero-text">
-        Enter the details below and generate your flight document.
-      </p>
+      <h1>Create your flight document</h1>
 
     </section>
 
 
-
-    <!-- =====================================================
-     BOARDING PASS MANAGEMENT
-     
-     LEFT:
-     SAVED PROFILES
-
-     RIGHT:
-     CREATE FORM OR SELECTED PROFILE
-====================================================== -->
-
+    <!-- MAIN WORKSPACE -->
     <section class="flight-management" id="flightManagement">
 
-
-      <!-- =================================================
-       LEFT SIDE
-       
-       THIS ALWAYS STAYS VISIBLE
-  ================================================== -->
-
+      <!-- LEFT: SAVED PROFILES -->
       <aside class="flight-profiles-panel">
 
-
         <div id="createdFlights" class="created-flights"></div>
-
 
       </aside>
 
 
-
-      <!-- =================================================
-       RIGHT SIDE
-       
-       THIS CHANGES BETWEEN:
-       
-       1. CREATE FORM
-       2. SELECTED PROFILE
-  ================================================== -->
-
+      <!-- RIGHT: MAIN CONTENT -->
       <div class="flight-profile-content">
 
 
-        <!-- ===============================================
-         CREATE BOARDING PASS VIEW
-    ================================================ -->
+        <!-- =========================================
+             CREATE BOARDING PASS VIEW
+        ========================================== -->
 
-        <div id="createFlightView" class="flight-create-view" style="display: none;">
+        <div id="createFlightView" class="flight-create-view">
 
-
-          <!-- =============================================
-           CREATE FORM
-      ============================================== -->
-
-          <section class="form-card">
-
+          <div class="form-card">
 
             <form id="bedspreadForm" autocomplete="off">
 
 
-              <!-- =========================================
-               PASSENGER INFORMATION
-          ========================================== -->
-
+              <!-- PASSENGER INFORMATION -->
               <div class="form-section">
-
 
                 <div class="section-heading">
 
-                  <span class="section-number">
-                    01
-                  </span>
-
+                  <span class="section-number">01</span>
 
                   <div>
-
-                    <h2>
-                      Passenger Information
-                    </h2>
-
-
-                    <p>
-                      Enter the passenger details.
-                    </p>
-
+                    <h2>Passenger Information</h2>
+                    <p>Enter the passenger details.</p>
                   </div>
 
                 </div>
 
-
-
                 <div class="form-grid">
 
-
                   <div class="field">
-
-                    <label for="name">
-                      Passenger Name
-                    </label>
-
+                    <label for="name">Passenger Name</label>
 
                     <input type="text" id="name" name="name" placeholder="Enter passenger name" maxlength="21" required>
-
                   </div>
 
-
-
                   <div class="field">
-
-                    <label for="class">
-                      Class
-                    </label>
-
+                    <label for="class">Class</label>
 
                     <select id="class" name="class" required>
-
                       <option value="" selected disabled>
                         Select class
                       </option>
-
-
-                      <option value="Economy">
-                        Economy
-                      </option>
-
-
-                      <option value="First Class">
-                        First Class
-                      </option>
-
+                      <option value="Economy">Economy</option>
+                      <option value="First Class">First Class</option>
+                      <option value="Business">Business</option>
                     </select>
-
                   </div>
 
-
                 </div>
-
               </div>
 
 
-
-              <!-- =========================================
-               ROUTE INFORMATION
-          ========================================== -->
-
+              <!-- ROUTE INFORMATION -->
               <div class="form-section">
-
 
                 <div class="section-heading">
 
-                  <span class="section-number">
-                    02
-                  </span>
-
+                  <span class="section-number">02</span>
 
                   <div>
-
-                    <h2>
-                      Route Information
-                    </h2>
-
-
-                    <p>
-                      Enter the departure and destination details.
-                    </p>
-
+                    <h2>Route Information</h2>
+                    <p>Enter the departure and destination details.</p>
                   </div>
 
                 </div>
-
-
 
                 <div class="form-grid">
 
-
                   <div class="field">
-
-                    <label for="from">
-                      From
-                    </label>
-
+                    <label for="from">From</label>
 
                     <input type="text" id="from" name="from" placeholder="Departure" required>
-
                   </div>
-
-
 
                   <div class="field">
-
-                    <label for="to">
-                      To
-                    </label>
-
+                    <label for="to">To</label>
 
                     <input type="text" id="to" name="to" placeholder="Destination" required>
-
                   </div>
 
-
                 </div>
-
               </div>
 
 
-
-              <!-- =========================================
-               BOARDING DETAILS
-          ========================================== -->
-
+              <!-- BOARDING DETAILS -->
               <div class="form-section">
-
 
                 <div class="section-heading">
 
-                  <span class="section-number">
-                    03
-                  </span>
-
+                  <span class="section-number">03</span>
 
                   <div>
-
-                    <h2>
-                      Boarding Details
-                    </h2>
-
-
+                    <h2>Boarding Details</h2>
                     <p>
                       Select the date, departure time, and flight duration.
                     </p>
-
                   </div>
 
                 </div>
-
-
 
                 <div class="form-grid">
 
-
                   <div class="field">
-
-                    <label for="date">
-                      Date
-                    </label>
-
+                    <label for="date">Date</label>
 
                     <input type="date" id="date" name="date" required>
-
                   </div>
 
-
-
                   <div class="field">
-
-                    <label for="time">
-                      Time
-                    </label>
-
+                    <label for="time">Time</label>
 
                     <input type="time" id="time" name="time" required>
-
                   </div>
-
-
 
                   <div class="field">
-
-                    <label for="duration">
-                      Flight Duration
-                    </label>
-
+                    <label for="duration">Flight Duration</label>
 
                     <input type="text" id="duration" name="duration" placeholder="e.g. 2hours 30mins." required>
-
                   </div>
 
-
                 </div>
-
               </div>
 
 
-
-              <!-- =========================================
-               PRICE
-          ========================================== -->
-
+              <!-- PRICE -->
               <div class="form-section">
-
 
                 <div class="section-heading">
 
-                  <span class="section-number">
-                    04
-                  </span>
-
+                  <span class="section-number">04</span>
 
                   <div>
-
-                    <h2>
-                      Price
-                    </h2>
-
-
+                    <h2>Price</h2>
                     <p>
                       Enter the currency and price shown on the boarding pass.
                     </p>
+                  </div>
 
+                </div>
+
+                <div class="form-grid">
+
+                  <div class="field">
+                    <label for="currency">Currency</label>
+
+                    <select id="currency" name="currency" required>
+                      <option value="" selected disabled>
+                        Select currency
+                      </option>
+                      <option value="USD">USD</option>
+                      <option value="EUR">EUR</option>
+                      <option value="GBP">GBP</option>
+                      <option value="NGN">NGN</option>
+                      <option value="CAD">CAD</option>
+                      <option value="AUD">AUD</option>
+                    </select>
+                  </div>
+
+                  <div class="field">
+                    <label for="price">Price</label>
+
+                    <input type="number" id="price" name="price" placeholder="Enter price" min="0" step="0.01" required>
+                  </div>
+
+                </div>
+              </div>
+
+
+              <!-- SCENE STUDIO SETTINGS -->
+              <div class="form-section scene-settings-section">
+
+                <div class="section-heading">
+
+                  <span class="section-number">05</span>
+
+                  <div>
+                    <h2>Scene Studio</h2>
+                    <p>
+                      Customize the background, hand, and airline logo.
+                    </p>
                   </div>
 
                 </div>
 
 
-
                 <div class="form-grid">
 
-
                   <div class="field">
-
-                    <label for="currency">
-                      Currency
+                    <label for="background-select">
+                      Choose a Background
                     </label>
 
+                    <select class="background-select" id="background-select">
 
-                    <select id="currency" name="currency" required>
-
-                      <option value="" selected disabled>
-                        Select currency
-                      </option>
-
-
-                      <option value="USD">
-                        USD
-                      </option>
-
-
-                      <option value="EUR">
-                        EUR
-                      </option>
-
-
-                      <option value="GBP">
-                        GBP
-                      </option>
-
-
-                      <option value="NGN">
-                        NGN
-                      </option>
-
-
-                      <option value="CAD">
-                        CAD
-                      </option>
-
-
-                      <option value="AUD">
-                        AUD
-                      </option>
+                      <option value="b1">Background 1</option>
+                      <option value="b2">Background 2</option>
+                      <option value="b3">Background 3</option>
+                      <option value="b4">Background 4</option>
+                      <option value="b5">Background 5</option>
+                      <option value="b6">Background 6</option>
+                      <option value="b7">Background 7</option>
 
                     </select>
-
                   </div>
-
 
 
                   <div class="field">
+                    <label for="hand-select">Choose a Hand</label>
 
-                    <label for="price">
-                      Price
-                    </label>
+                    <select class="background-select" id="hand-select">
 
+                      <option value="female-nil">Female Nil</option>
+                      <option value="female-white">Female White</option>
+                      <option value="male-hand">Male Hand</option>
+                      <option value="F-Lilac">F-Lilac</option>
+                      <option value="F-Orange">F-Orange</option>
+                      <option value="F-Pink">F-Pink</option>
+                      <option value="F-Wine">F-Wine</option>
+                      <option value="U-White">Unisex White</option>
+                      <option value="M1">M1</option>
+                      <option value="M2">M2</option>
+                      <option value="M3">M3</option>
+                      <option value="M4">M4</option>
 
-                    <input type="number" id="price" name="price" placeholder="Enter price" min="0" step="0.01" required>
-
+                    </select>
                   </div>
 
 
+                  <div class="field">
+                    <label for="logo-select">
+                      Choose an Airline Logo
+                    </label>
+
+                    <select class="background-select" id="logo-select">
+
+                      <option value="icon1">KLM</option>
+                      <option value="icon2">Jetstar</option>
+                      <option value="icon3">Air France</option>
+                      <option value="icon4">Ethiopian Airlines</option>
+                      <option value="icon5">American Airlines</option>
+                      <option value="icon6">Boeing</option>
+                      <option value="icon7">Frontier Airlines</option>
+                      <option value="icon8">Airbus</option>
+                      <option value="icon9">Air Canada</option>
+                      <option value="icon10">Alaska Airlines</option>
+                      <option value="icon11">ANA</option>
+                      <option value="icon12">British Airways</option>
+                      <option value="icon13">Cathay Pacific</option>
+                      <option value="icon14">Iberia</option>
+                      <option value="icon15">Lufthansa</option>
+                      <option value="icon16">Ryanair</option>
+                      <option value="icon17">Qatar Airways</option>
+                      <option value="icon18">Singapore Airlines</option>
+                      <option value="icon19">SriLankan Airlines</option>
+                      <option value="icon20">SWISS</option>
+                      <option value="icon21">United Airlines</option>
+
+                    </select>
+                  </div>
+
+                  <!-- PREVIEW AND DOWNLOAD ACTIONS -->
+                  <div class="workspace-actions">
+
+                    <button type="button" id="previewSceneBtn" class="preview-scene-button">
+                      Preview
+                    </button>
+
+                  </div>
                 </div>
 
               </div>
 
 
-
-              <!-- =========================================
-               GENERATE
-          ========================================== -->
-
+              <!-- FORM ACTIONS -->
               <div class="generate-area">
-
 
                 <button type="submit" id="generate" class="generate-button">
                   Generate Document
                 </button>
 
-
               </div>
-
 
             </form>
 
-
-          </section>
-
+          </div>
 
         </div>
 
 
+        <!-- =========================================
+             SCENE PREVIEW VIEW
+        ========================================== -->
 
-        <!-- ===============================================
-         SELECTED BOARDING PASS VIEW
-    ================================================ -->
+        <section id="scenePreviewView" class="scene-preview-view" hidden>
 
-        <div id="selectedFlightView" class="selected-flight-view">
+          <div class="scene-preview-card">
+
+            <div class="preview-header">
+
+              <div>
+                <p class="eyebrow">SCENE PREVIEW</p>
+                <h2>Your Boarding Pass Scene</h2>
+              </div>
+
+              <button type="button" id="backToFormBtn" class="back-to-form-btn">
+                Back to Form
+              </button>
+
+            </div>
 
 
-          <!-- =============================================
-           SELECTED BOARDING PASS HEADER
-      ============================================== -->
+            <div class="stage">
+
+              <canvas id="canvas" aria-label="Boarding pass scene preview">
+              </canvas>
+
+            </div>
+
+
+            <div class="preview-footer">
+
+              <span id="scene-size" role="status" aria-live="polite">
+                Preparing scene…
+              </span>
+
+              <span>PNG export</span>
+
+            </div>
+
+            <p class="scene-info-notice">
+              Note: Some details, including your gate, seat, sequence number and tracking number, will be automatically
+              generated when you create your boarding pass.
+            </p>
+
+          </div>
+
+        </section>
+
+
+        <!-- =========================================
+             SELECTED BOARDING PASS PROFILE
+        ========================================== -->
+
+        <div id="selectedFlightView" class="selected-flight-view" hidden>
 
           <div class="selected-flight-header">
 
-
             <div>
-
-
-              <p class="eyebrow">
-                BOARDING PASS PROFILE
-              </p>
-
+              <p class="eyebrow">BOARDING PASS PROFILE</p>
 
               <h2 id="selectedFlightName">
                 Passenger Name
               </h2>
 
-
               <p id="selectedFlightTracking" class="selected-flight-tracking">
                 Tracking Number
               </p>
-
-
             </div>
-
-
 
             <button type="button" id="newFlightBtn" class="new-flight-btn">
               Create New Boarding Pass
             </button>
 
-
           </div>
 
 
+          <div id="flightProfileActions" class="flight-profile-actions">
+          </div>
 
-          <div id="flightProfileActions" class="flight-profile-actions"></div>
 
-
-
-          <!-- =============================================
-           BOARDING PASS INFORMATION
-      ============================================== -->
-
+          <!-- PROFILE DETAILS -->
           <div class="flight-profile-details">
 
-
             <div class="flight-detail-row">
-
-              <span>
-                Class
-              </span>
-
-
-              <strong id="profileClass">
-                —
-              </strong>
-
+              <span>Class</span>
+              <strong id="profileClass">—</strong>
             </div>
 
-
-
             <div class="flight-detail-row">
-
-              <span>
-                From
-              </span>
-
-
-              <strong id="profileFrom">
-                —
-              </strong>
-
+              <span>From</span>
+              <strong id="profileFrom">—</strong>
             </div>
 
-
-
             <div class="flight-detail-row">
-
-              <span>
-                To
-              </span>
-
-
-              <strong id="profileTo">
-                —
-              </strong>
-
+              <span>To</span>
+              <strong id="profileTo">—</strong>
             </div>
 
-
-
             <div class="flight-detail-row">
-
-              <span>
-                Date
-              </span>
-
-
-              <strong id="profileDate">
-                —
-              </strong>
-
+              <span>Date</span>
+              <strong id="profileDate">—</strong>
             </div>
 
-
-
             <div class="flight-detail-row">
-
-              <span>
-                Time
-              </span>
-
-
-              <strong id="profileTime">
-                —
-              </strong>
-
+              <span>Time</span>
+              <strong id="profileTime">—</strong>
             </div>
 
-
-
             <div class="flight-detail-row">
-
-              <span>
-                Duration
-              </span>
-
-
-              <strong id="profileDuration">
-                —
-              </strong>
-
+              <span>Duration</span>
+              <strong id="profileDuration">—</strong>
             </div>
 
-
-
             <div class="flight-detail-row">
-
-              <span>
-                Gate
-              </span>
-
-
-              <strong id="profileGate">
-                —
-              </strong>
-
+              <span>Gate</span>
+              <strong id="profileGate">—</strong>
             </div>
 
-
-
             <div class="flight-detail-row">
-
-              <span>
-                Seat
-              </span>
-
-
-              <strong id="profileSeat">
-                —
-              </strong>
-
+              <span>Seat</span>
+              <strong id="profileSeat">—</strong>
             </div>
 
-
-
             <div class="flight-detail-row">
-
-              <span>
-                Sequence
-              </span>
-
-
-              <strong id="profileSequence">
-                —
-              </strong>
-
+              <span>Sequence</span>
+              <strong id="profileSequence">—</strong>
             </div>
 
-
-
             <div class="flight-detail-row">
-
-              <span>
-                Price
-              </span>
-
-
-              <strong id="profilePrice">
-                —
-              </strong>
-
+              <span>Price</span>
+              <strong id="profilePrice">—</strong>
             </div>
 
-
-
             <div class="flight-detail-row">
-
-              <span>
-                Taxes
-              </span>
-
-
-              <strong id="profileTaxes">
-                —
-              </strong>
-
+              <span>Taxes</span>
+              <strong id="profileTaxes">—</strong>
             </div>
 
-
-
             <div class="flight-detail-row">
-
-              <span>
-                Total
-              </span>
-
-
-              <strong id="profileTotal">
-                —
-              </strong>
-
+              <span>Total</span>
+              <strong id="profileTotal">—</strong>
             </div>
-
 
           </div>
 
 
-
-          <!-- =============================================
-           BOARDING PASS STATUS
-      ============================================== -->
-
+          <!-- STATUS CONTROL -->
           <div class="flight-control-section">
-
 
             <div class="flight-control-heading">
 
-
-              <span class="section-number">
-                01
-              </span>
-
+              <span class="section-number">01</span>
 
               <div>
-
-
-                <h3>
-                  Boarding Pass Status
-                </h3>
-
-
-                <p>
-                  Change the current status of this boarding pass.
-                </p>
-
-
+                <h3>Boarding Pass Status</h3>
+                <p>Change the current status of this boarding pass.</p>
               </div>
-
 
             </div>
 
-
-
             <div class="flight-status-control">
-
 
               <select id="flightStatusSelect">
 
-
-                <option value="Processing">
-                  Processing
-                </option>
-
-
-                <option value="Confirmed">
-                  Confirmed
-                </option>
-
-
-                <option value="Checked In">
-                  Checked In
-                </option>
-
-
-                <option value="Boarding">
-                  Boarding
-                </option>
-
-
-                <option value="Departed">
-                  Departed
-                </option>
-
-
-                <option value="In Transit">
-                  In Transit
-                </option>
-
-
-                <option value="Arrived">
-                  Arrived
-                </option>
-
-
-                <option value="Completed">
-                  Completed
-                </option>
-
-
-                <option value="Delayed">
-                  Delayed
-                </option>
-
-
-                <option value="Cancelled">
-                  Cancelled
-                </option>
-
-
-                <option value="Refunded">
-                  Refunded
-                </option>
-
+                <option value="Processing">Processing</option>
+                <option value="Confirmed">Confirmed</option>
+                <option value="Checked In">Checked In</option>
+                <option value="Boarding">Boarding</option>
+                <option value="Departed">Departed</option>
+                <option value="In Transit">In Transit</option>
+                <option value="Arrived">Arrived</option>
+                <option value="Completed">Completed</option>
+                <option value="Delayed">Delayed</option>
+                <option value="Cancelled">Cancelled</option>
+                <option value="Refunded">Refunded</option>
 
               </select>
-
-
 
               <button type="button" id="changeFlightStatusBtn" class="flight-action-btn">
                 Change Status
               </button>
 
-
             </div>
-
 
           </div>
 
 
-
-          <!-- =============================================
-           DOCUMENT CONTROL
-      ============================================== -->
-
+          <!-- DOCUMENT CONTROL -->
           <div class="flight-control-section">
-
 
             <div class="flight-control-heading">
 
-
-              <span class="section-number">
-                02
-              </span>
-
+              <span class="section-number">02</span>
 
               <div>
-
-
-                <h3>
-                  Document
-                </h3>
-
-
-                <p>
-                  Manage the document version.
-                </p>
-
-
+                <h3>Document</h3>
+                <p>Manage the document version.</p>
               </div>
-
 
             </div>
 
-
-
             <div class="boarding-pass-document-actions">
-
 
               <button type="button" id="profileDownloadBtn" class="flight-action-btn">
                 Download Document
               </button>
 
-
-              <div id="flightWatermarkAction" class="flight-watermark-action"></div>
-
+              <div id="flightWatermarkAction" class="flight-watermark-action">
+              </div>
 
             </div>
-
 
           </div>
 
 
-
-          <!-- =============================================
-           TRACKING
-      ============================================== -->
-
+          <!-- TRACKING -->
           <div class="flight-control-section">
-
 
             <div class="flight-control-heading">
 
-
-              <span class="section-number">
-                03
-              </span>
-
+              <span class="section-number">03</span>
 
               <div>
-
-
-                <h3>
-                  Boarding Pass Tracking
-                </h3>
-
-
+                <h3>Boarding Pass Tracking</h3>
                 <p>
                   Track this boarding pass using its tracking number.
                 </p>
-
-
               </div>
-
 
             </div>
 
-
-
             <div class="flight-tracking-box">
 
-
               <div>
-
-
-                <span>
-                  TRACKING NUMBER
-                </span>
-
-
-                <strong id="profileTrackingNumber">
-                  —
-                </strong>
-
-
+                <span>TRACKING NUMBER</span>
+                <strong id="profileTrackingNumber">—</strong>
               </div>
-
-
 
               <a href="#" id="trackFlightBtn" class="track-flight-btn">
                 Track This Boarding Pass
               </a>
 
-
             </div>
-
 
           </div>
 
-
         </div>
 
-
       </div>
-
 
     </section>
 
 
-
-    <!-- =====================================================
-     GENERATED DOCUMENT
-====================================================== -->
+    <!-- EXISTING GENERATED DOCUMENT
+         Retained for existing boardingPass.js compatibility -->
 
     <section class="generated-document" id="generatedDocument">
 
-
       <div class="document-header">
 
-
         <div>
-
-
-          <p class="eyebrow">
-            GENERATED DOCUMENT
-          </p>
-
-
-          <h2>
-            Boarding Pass
-          </h2>
-
-
+          <p class="eyebrow">GENERATED DOCUMENT</p>
+          <h2>Boarding Pass</h2>
         </div>
-
-
 
         <button type="button" id="editButton" class="edit-button">
           Edit Details
         </button>
 
-
       </div>
-
-
 
       <div class="pdf" id="pdf">
-
-
         <img src="images/bedspread.png" alt="Generated boarding pass">
-
-
       </div>
-
-
-
-      <!-- DOWNLOAD AREA -->
 
       <div class="download-area">
 
-
         <div>
-
-
-          <h3>
-            Download your document
-          </h3>
-
-
-          <p>
-            Choose the format you want to download.
-          </p>
-
-
+          <h3>Download your document</h3>
+          <p>Download your boarding pass.</p>
         </div>
-
-
 
         <button type="button" id="downloadButton" class="download-button">
           Download Now
         </button>
 
-
       </div>
-
 
     </section>
 
   </main>
 
-  <!-- =====================================================
-       DOWNLOAD MODAL
-  ====================================================== -->
+
+  <!-- EXISTING DOWNLOAD MODAL
+       Retained temporarily for existing JS compatibility -->
 
   <div class="download-modal" id="downloadModal" aria-hidden="true">
 
-    <div class="modal-overlay" id="modalOverlay"></div>
-
-
+    <div class="modal-overlay" id="modalOverlay">
+    </div>
 
     <div class="modal-box" role="dialog" aria-modal="true">
-
 
       <button type="button" class="modal-close" id="closeModal" aria-label="Close">
         ×
       </button>
 
+      <p class="modal-tag">DOWNLOAD</p>
 
-
-      <p class="modal-tag">
-        DOWNLOAD
-      </p>
-
-
-      <h2>
-        Choose a format
-      </h2>
-
+      <h2>Choose a format</h2>
 
       <p class="modal-text">
         Select how you would like to save your flight document.
       </p>
 
-
-
       <div class="download-options">
 
-
-        <!-- JPG -->
-
         <button type="button" id="downloadJpg" class="format-button">
-
-
-          <strong>
-            JPG
-          </strong>
-
-
-          <span>
-            Download as an image
-          </span>
-
-
+          <strong>JPG</strong>
+          <span>Download as an image</span>
         </button>
-
-
-
-        <!-- PDF -->
 
         <button type="button" id="downloadPdf" class="format-button">
-
-
-          <strong>
-            PDF
-          </strong>
-
-
-          <span>
-            Download as a PDF document
-          </span>
-
-
+          <strong>PDF</strong>
+          <span>Download as a PDF document</span>
         </button>
 
-
       </div>
-
 
     </div>
 
   </div>
 
-  <!-- =====================================================
-       LIBRARIES
-  ====================================================== -->
 
+
+  <!-- LIBRARIES -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
   <script src="boardingPass.js"></script>
+
+
+  <script>
+    (() => {
+
+      /* =========================================================
+         SCENE STUDIO ELEMENTS
+      ========================================================= */
+
+      const canvas = document.querySelector("#canvas");
+      const context = canvas.getContext("2d");
+
+      const sceneSize = document.querySelector("#scene-size");
+
+      const backgroundSelect =
+        document.querySelector("#background-select");
+
+      const handSelect =
+        document.querySelector("#hand-select");
+
+      const logoSelect =
+        document.querySelector("#logo-select");
+
+      const downloadButton =
+        document.querySelector("#download");
+
+      const previewDownloadButton =
+        document.querySelector("#previewDownloadBtn");
+
+      const previewSceneBtn =
+        document.querySelector("#previewSceneBtn");
+
+      const backToFormBtn =
+        document.querySelector("#backToFormBtn");
+
+      const scenePreviewView =
+        document.querySelector("#scenePreviewView");
+
+      const createFlightView =
+        document.querySelector("#createFlightView");
+
+      const selectedFlightView =
+        document.querySelector("#selectedFlightView");
+
+
+      /* =========================================================
+         RENDER CONTROL
+      ========================================================= */
+
+      let sceneRenderVersion = 0;
+
+      function setDownloadDisabled(disabled) {
+
+        if (downloadButton) {
+          downloadButton.disabled = disabled;
+        }
+
+        if (previewDownloadButton) {
+          previewDownloadButton.disabled = disabled;
+        }
+
+      }
+
+
+      function waitForImage(image) {
+
+        if (image.complete) {
+          return image.naturalWidth
+            ? Promise.resolve()
+            : Promise.reject(
+              new Error("A selected scene image could not be loaded.")
+            );
+        }
+
+        return new Promise((resolve, reject) => {
+
+          function cleanup() {
+            image.removeEventListener("load", handleLoad);
+            image.removeEventListener("error", handleError);
+          }
+
+          function handleLoad() {
+            cleanup();
+
+            if (image.naturalWidth) {
+              resolve();
+            } else {
+              reject(
+                new Error("A selected scene image has no dimensions.")
+              );
+            }
+          }
+
+          function handleError() {
+            cleanup();
+            reject(
+              new Error("A selected scene image could not be loaded.")
+            );
+          }
+
+          image.addEventListener("load", handleLoad, { once: true });
+          image.addEventListener("error", handleError, { once: true });
+
+        });
+
+      }
+
+
+      /* =========================================================
+         BACKGROUNDS
+      ========================================================= */
+
+      const backgrounds = Object.fromEntries(
+        ["b1", "b2", "b3", "b4", "b5", "b6", "b7"].map((id) => {
+
+          const image = new Image();
+
+          image.src = `/images/bg/bg${id.slice(1)}.jpeg`;
+
+          return [id, image];
+
+        })
+      );
+
+
+      /* =========================================================
+         HANDS
+      ========================================================= */
+
+      const hands = {
+
+        "female-nil": {
+          label: "Female Nil",
+          src: "/images/hands/FemaleNil.jpg"
+        },
+
+        "female-white": {
+          label: "Female White",
+          src: "/images/hands/FemaleWhite.jpg"
+        },
+
+        "male-hand": {
+          label: "Male Hand",
+          src: "/images/hands/maleHand.jpg"
+        },
+
+        "F-Lilac": {
+          label: "F-Lilac",
+          src: "/images/hands/F_Lilac.jpg"
+        },
+
+        "F-Orange": {
+          label: "F-Orange",
+          src: "/images/hands/F_Orange.jpg"
+        },
+
+        "F-Pink": {
+          label: "F-Pink",
+          src: "/images/hands/F_Pink.jpg"
+        },
+
+        "F-Wine": {
+          label: "F-Wine",
+          src: "/images/hands/F_Wine.jpg"
+        },
+
+        "U-White": {
+          label: "Unisex White",
+          src: "/images/hands/U_White.jpg"
+        },
+
+        M1: {
+          label: "M1",
+          src: "/images/hands/M1.jpg"
+        },
+
+        M2: {
+          label: "M2",
+          src: "/images/hands/M2.jpg"
+        },
+
+        M3: {
+          label: "M3",
+          src: "/images/hands/M3.jpg"
+        },
+
+        M4: {
+          label: "M4",
+          src: "/images/hands/M4.jpg"
+        }
+
+      };
+
+
+      const handImages = Object.fromEntries(
+        Object.entries(hands).map(([id, hand]) => {
+
+          const image = new Image();
+
+          image.src = hand.src;
+
+          return [id, image];
+
+        })
+      );
+
+
+      /* =========================================================
+         AIRLINE LOGO LAYOUTS
+         ORIGINAL VALUES PRESERVED
+      ========================================================= */
+
+      const logoLayouts = {
+
+        icon1: {
+          x: -0.60,
+          y: -0.95,
+          width: 0.58,
+          height: 0.96
+        },
+
+        icon2: {
+          x: -0.48,
+          y: -0.96,
+          width: 0.62,
+          height: 0.98
+        },
+
+        icon3: {
+          x: -0.45,
+          y: -1.02,
+          width: 0.63,
+          height: 1.08
+        },
+
+        icon4: {
+          x: -0.45,
+          y: -0.93,
+          width: 0.62,
+          height: 0.98
+        },
+
+        icon5: {
+          x: -0.45,
+          y: -1.18,
+          width: 0.80,
+          height: 1.40
+        },
+
+        icon6: {
+          x: -0.45,
+          y: -1.04,
+          width: 0.70,
+          height: 1.05
+        },
+
+        icon7: {
+          x: -0.45,
+          y: -0.93,
+          width: 0.62,
+          height: 0.98
+        },
+
+        icon8: {
+          x: -0.58,
+          y: -0.62,
+          width: 0.52,
+          height: 0.38
+        },
+
+        icon9: {
+          x: -0.48,
+          y: -1.30,
+          width: 0.75,
+          height: 1.60
+        },
+
+        icon10: {
+          x: -0.59,
+          y: -0.93,
+          width: 0.62,
+          height: 0.98
+        },
+
+        icon11: {
+          x: -0.43,
+          y: -0.70,
+          width: 0.44,
+          height: 0.50
+        },
+
+        icon12: {
+          x: -0.55,
+          y: -0.93,
+          width: 0.62,
+          height: 0.98
+        },
+
+        icon13: {
+          x: -0.47,
+          y: -1.18,
+          width: 0.56,
+          height: 1.40
+        },
+
+        icon14: {
+          x: -0.45,
+          y: -1.26,
+          width: 0.68,
+          height: 1.48
+        },
+
+        icon15: {
+          x: -0.49,
+          y: -0.93,
+          width: 0.62,
+          height: 0.98
+        },
+
+        icon16: {
+          x: -0.49,
+          y: -0.97,
+          width: 0.62,
+          height: 0.98
+        },
+
+        icon17: {
+          x: -0.45,
+          y: -0.93,
+          width: 0.62,
+          height: 0.98
+        },
+
+        icon18: {
+          x: -0.45,
+          y: -0.93,
+          width: 0.62,
+          height: 0.98
+        },
+
+        icon19: {
+          x: -0.52,
+          y: -0.93,
+          width: 0.62,
+          height: 0.98
+        },
+
+        icon20: {
+          x: -0.45,
+          y: -0.93,
+          width: 0.62,
+          height: 0.98
+        },
+
+        icon21: {
+          x: -0.45,
+          y: -0.92,
+          width: 0.62,
+          height: 0.98
+        }
+
+      };
+
+
+      /* =========================================================
+         AIRLINE LOGOS
+      ========================================================= */
+
+      const logoFiles = {
+
+        icon1: "KLM.png",
+        icon2: "Jetstar.png",
+        icon3: "AirFrance.png",
+        icon4: "Ethiopia.png",
+        icon5: "AmericanAirlines.png",
+        icon6: "Boeing.png",
+        icon7: "Frontier.png",
+        icon8: "Airbus.png",
+        icon9: "AirCanada.png",
+        icon10: "AlaskaAirlines.png",
+        icon11: "ANA.png",
+        icon12: "BritishAirways.png",
+        icon13: "Cathay.png",
+        icon14: "Iberia.png",
+        icon15: "Luftansa.png",
+        icon16: "RyanAir.png",
+        icon17: "Qatar.png",
+        icon18: "Singapore.png",
+        icon19: "SriLankan.png",
+        icon20: "sWISS.png",
+        icon21: "UnitedAirlines.png"
+
+      };
+
+
+      const logoImages = Object.fromEntries(
+        Array.from(logoSelect.options).map((option) => {
+
+          const id = option.value;
+
+          const image = new Image();
+
+          image.src = `/images/logo/${logoFiles[id]}`;
+
+          return [id, image];
+
+        })
+      );
+
+      logoSelect.dataset.logoFile =
+        logoFiles[logoSelect.value] || "";
+
+
+      /* =========================================================
+         ACTIVE SELECTIONS
+      ========================================================= */
+
+      let activeLogo = logoSelect.value;
+
+      let activeBackground = backgroundSelect.value;
+
+      let activeHand = handSelect.value;
+
+
+      /* =========================================================
+         FAILED IMAGE TRACKING
+      ========================================================= */
+
+      const failedLogos = new Set();
+
+      const failedBackgrounds = new Set();
+
+      const failedHands = new Set();
+
+
+      /* =========================================================
+         ORIGINAL HAND POSITIONING
+         VALUES PRESERVED
+      ========================================================= */
+
+      const handLayout = {
+
+        x: 0.28,
+
+        cardVerticalPosition: 0.75,
+
+        verticalOffset: 0,
+
+        scale: 0.85,
+
+        cardRatio: 0.46,
+
+        handPadding: 0.35
+
+      };
+
+
+      const sceneSizePixels = {
+        width: 2000,
+        height: 1276
+      };
+
+
+      /* =========================================================
+         RENDER SCENE
+      ========================================================= */
+
+      async function render() {
+
+        const currentVersion = ++sceneRenderVersion;
+
+        const background = backgrounds[activeBackground];
+
+        const hand = handImages[activeHand];
+
+        const logo = logoImages[activeLogo];
+
+
+        /* Check image errors */
+
+        if (failedBackgrounds.has(activeBackground)) {
+
+          sceneSize.textContent =
+            `Could not load bg${activeBackground.slice(1)}.jpeg.`;
+
+          setDownloadDisabled(true);
+
+          return;
+
+        }
+
+
+        if (failedHands.has(activeHand)) {
+
+          sceneSize.textContent =
+            `Could not load ${hands[activeHand].label}.`;
+
+          setDownloadDisabled(true);
+
+          return;
+
+        }
+
+
+        if (failedLogos.has(activeLogo)) {
+
+          sceneSize.textContent =
+            "Could not load selected airline logo.";
+
+          setDownloadDisabled(true);
+
+          return;
+
+        }
+
+
+        sceneSize.textContent = "Preparing boarding pass scene…";
+
+        setDownloadDisabled(true);
+
+
+        try {
+
+          await Promise.all([
+            waitForImage(background),
+            waitForImage(hand),
+            waitForImage(logo)
+          ]);
+
+          if (currentVersion !== sceneRenderVersion) {
+            return false;
+          }
+
+          /* =====================================================
+             GET THE CURRENT BOARDING PASS
+          ===================================================== */
+
+          const includeWatermark =
+            typeof selectedBoardingPass !== "undefined" &&
+              selectedBoardingPass
+              ? selectedBoardingPass.watermarkEnabled !== false
+              : typeof bedspreadWatermarkEnabled !== "undefined"
+                ? bedspreadWatermarkEnabled
+                : true;
+
+
+          /* Prevent an older render replacing a newer selection */
+
+          if (currentVersion !== sceneRenderVersion) {
+            return;
+          }
+
+          const { width, height } = sceneSizePixels;
+
+
+          canvas.width = width;
+
+          canvas.height = height;
+
+          context.clearRect(0, 0, width, height);
+
+
+          /* =====================================================
+             1. DRAW BACKGROUND
+          ===================================================== */
+
+          const targetAspect = width / height;
+
+          let sourceWidth = background.naturalWidth;
+
+          let sourceHeight = background.naturalHeight;
+
+          let sourceX = 0;
+
+          let sourceY = 0;
+
+
+          if (sourceWidth / sourceHeight > targetAspect) {
+
+            sourceWidth = sourceHeight * targetAspect;
+
+            sourceX =
+              (background.naturalWidth - sourceWidth) / 2;
+
+          } else {
+
+            sourceHeight = sourceWidth / targetAspect;
+
+            sourceY =
+              (background.naturalHeight - sourceHeight) / 2;
+
+          }
+
+
+          context.drawImage(
+            background,
+            sourceX,
+            sourceY,
+            sourceWidth,
+            sourceHeight,
+            0,
+            0,
+            width,
+            height
+          );
+
+
+          /* =====================================================
+             2. CALCULATE BOARDING PASS POSITION
+          ===================================================== */
+
+          const cardWidth = width * 0.31;
+
+          const cardHeight =
+            cardWidth * handLayout.cardRatio;
+
+          const cardX =
+            width * handLayout.x;
+
+          const cardY =
+            height * handLayout.cardVerticalPosition -
+            cardHeight * 0.5 +
+            height * handLayout.verticalOffset * 0.13;
+
+
+          /* =====================================================
+             3. DRAW HAND
+          ===================================================== */
+
+          const handWidth =
+            width * handLayout.scale;
+
+          const handHeight =
+            handWidth *
+            hand.naturalHeight /
+            hand.naturalWidth;
+
+          const handX =
+            cardX -
+            handWidth * handLayout.handPadding;
+
+          const handY =
+            cardY -
+            handHeight * 0.32;
+
+
+          context.save();
+
+          context.shadowColor =
+            "rgba(20, 15, 10, 0.35)";
+
+          context.shadowBlur =
+            width * 0.012;
+
+          context.shadowOffsetY =
+            height * 0.012;
+
+          context.drawImage(
+            hand,
+            handX,
+            handY,
+            handWidth,
+            handHeight
+          );
+
+          context.restore();
+
+
+          /* =====================================================
+             4. DRAW BOARDING-PASS TEXT
+          ===================================================== */
+
+          if (
+            typeof window.drawBoardingPassOnHand !==
+            "function"
+          ) {
+            throw new Error(
+              "Boarding-pass canvas drawing is not available."
+            );
+          }
+
+          window.drawBoardingPassOnHand(
+            context,
+            handX,
+            handY,
+            handWidth,
+            handHeight,
+            includeWatermark,
+            { drawWatermark: false }
+          );
+
+
+          /* =====================================================
+             5. DRAW AIRLINE LOGO
+          ===================================================== */
+
+          const logoLayout =
+            logoLayouts[activeLogo];
+
+          const logoBoxX =
+            cardX + cardWidth * logoLayout.x;
+
+          const logoBoxY =
+            cardY + cardHeight * logoLayout.y;
+
+          const logoBoxWidth =
+            cardWidth * logoLayout.width;
+
+          const logoBoxHeight =
+            cardHeight * logoLayout.height;
+
+          const logoRatio =
+            logo.naturalWidth / logo.naturalHeight;
+
+          let logoWidth = logoBoxWidth;
+
+          let logoHeight =
+            logoWidth / logoRatio;
+
+
+          if (logoHeight > logoBoxHeight) {
+
+            logoHeight = logoBoxHeight;
+
+            logoWidth =
+              logoHeight * logoRatio;
+
+          }
+
+
+          const logoX =
+            logoBoxX +
+            (logoBoxWidth - logoWidth) / 2;
+
+          const logoY =
+            logoBoxY +
+            (logoBoxHeight - logoHeight) / 2;
+
+
+          context.drawImage(
+            logo,
+            logoX,
+            logoY,
+            logoWidth,
+            logoHeight
+          );
+
+
+          window.drawBoardingPassOnHand(
+            context,
+            handX,
+            handY,
+            handWidth,
+            handHeight,
+            includeWatermark,
+            { drawText: false }
+          );
+
+
+          /* =====================================================
+             6. FINISH
+          ===================================================== */
+
+          if (currentVersion !== sceneRenderVersion) {
+            return;
+          }
+
+          sceneSize.textContent =
+            `${width} × ${height} px`;
+
+          setDownloadDisabled(false);
+
+          return true;
+
+        } catch (error) {
+
+          if (currentVersion !== sceneRenderVersion) {
+            return false;
+          }
+
+          console.error(
+            "SCENE RENDER ERROR:",
+            error
+          );
+
+          sceneSize.textContent =
+            "Unable to prepare boarding pass scene.";
+
+          setDownloadDisabled(true);
+
+          return false;
+
+        }
+
+      }
+
+
+      /* =========================================================
+         IMAGE LOAD EVENTS
+      ========================================================= */
+
+      Object.entries(backgrounds).forEach(([id, image]) => {
+
+        image.addEventListener("load", render);
+
+        image.addEventListener("error", () => {
+
+          failedBackgrounds.add(id);
+
+          if (id === activeBackground) {
+
+            sceneSize.textContent =
+              `Could not load bg${id.slice(1)}.jpeg.`;
+
+            setDownloadDisabled(true);
+
+          }
+
+          render();
+
+        });
+
+      });
+
+
+      Object.entries(handImages).forEach(([id, image]) => {
+
+        image.addEventListener("load", render);
+
+        image.addEventListener("error", () => {
+
+          failedHands.add(id);
+
+          if (id === activeHand) {
+
+            sceneSize.textContent =
+              `Could not load ${hands[id].label}.`;
+
+            setDownloadDisabled(true);
+
+          }
+
+          render();
+
+        });
+
+      });
+
+
+      Object.entries(logoImages).forEach(([id, image]) => {
+
+        image.addEventListener("load", render);
+
+        image.addEventListener("error", () => {
+
+          failedLogos.add(id);
+
+          if (id === activeLogo) {
+
+            sceneSize.textContent =
+              `Could not load ${id}.`;
+
+            setDownloadDisabled(true);
+
+          }
+
+          render();
+
+        });
+
+      });
+
+
+      /* =========================================================
+         SELECTION EVENTS
+      ========================================================= */
+
+      backgroundSelect.addEventListener("change", () => {
+
+        activeBackground = backgroundSelect.value;
+
+        render();
+
+      });
+
+
+      handSelect.addEventListener("change", () => {
+
+        activeHand = handSelect.value;
+
+        render();
+
+      });
+
+
+      logoSelect.addEventListener("change", () => {
+
+        activeLogo = logoSelect.value;
+        logoSelect.dataset.logoFile =
+          logoFiles[activeLogo] || "";
+
+        render();
+
+      });
+
+      /* =========================================================
+         PREVIEW BUTTON
+      ========================================================= */
+
+      previewSceneBtn?.addEventListener("click", async () => {
+
+        if (createFlightView) {
+          createFlightView.style.display = "none";
+        }
+
+        if (selectedFlightView) {
+          selectedFlightView.style.display = "none";
+        }
+
+        if (scenePreviewView) {
+          scenePreviewView.hidden = false;
+          scenePreviewView.style.display = "block";
+        }
+
+        await render();
+
+      });
+
+
+      /* =========================================================
+         BACK TO FORM BUTTON
+      ========================================================= */
+
+      backToFormBtn?.addEventListener("click", () => {
+
+        if (scenePreviewView) {
+          scenePreviewView.hidden = true;
+          scenePreviewView.style.display = "none";
+        }
+
+        if (createFlightView) {
+          createFlightView.style.display = "block";
+        }
+
+        if (selectedFlightView) {
+          selectedFlightView.style.display = "none";
+        }
+
+      });
+      /* =========================================================
+         DOWNLOAD SCENE PNG
+         SAME CROP SETTINGS PRESERVED
+      ========================================================= */
+
+      async function downloadScenePNG() {
+
+        let rendered = false;
+
+        while (!rendered) {
+
+          const requestedVersion =
+            sceneRenderVersion + 1;
+
+          rendered =
+            await render();
+
+          if (
+            !rendered &&
+            sceneRenderVersion === requestedVersion
+          ) {
+            return false;
+          }
+
+        }
+
+        if (
+          !canvas.width ||
+          !canvas.height
+        ) {
+          return false;
+        }
+
+
+        const width = canvas.width;
+
+        const height = canvas.height;
+
+
+        // Reduce only the top space
+
+        const cropTop = 150;
+
+
+        const exportCanvas =
+          document.createElement("canvas");
+
+        exportCanvas.width = width;
+
+        exportCanvas.height = height - cropTop;
+
+
+        const exportContext =
+          exportCanvas.getContext("2d");
+
+
+        exportContext.drawImage(
+          canvas,
+          0,
+          cropTop,
+          width,
+          height - cropTop,
+          0,
+          0,
+          width,
+          height - cropTop
+        );
+
+
+        const link =
+          document.createElement("a");
+
+        link.download =
+          `scene-${activeBackground}.png`;
+
+        link.href =
+          exportCanvas.toDataURL("image/png");
+
+
+        document.body.appendChild(link);
+
+        link.click();
+
+        link.remove();
+
+        return true;
+
+      }
+
+
+      /* =========================================================
+         DOWNLOAD BUTTONS
+      ========================================================= */
+
+      downloadButton?.addEventListener(
+        "click",
+        downloadScenePNG
+      );
+
+      previewDownloadButton?.addEventListener(
+        "click",
+        downloadScenePNG
+      );
+
+
+      /* =========================================================
+         CONNECT TO BOARDING PASS JS
+      ========================================================= */
+
+      window.renderBoardingPassScene = render;
+
+      window.downloadScenePNG = downloadScenePNG;
+
+
+      /* =========================================================
+         INITIAL RENDER
+      ========================================================= */
+
+      document.addEventListener("DOMContentLoaded", () => {
+
+        render();
+
+      });
+
+
+    })();
+  </script>
 
 </body>
 

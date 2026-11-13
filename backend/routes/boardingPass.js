@@ -621,6 +621,8 @@ router.post(
 
         class: boardingClass,
 
+        airlineLogo,
+
         boardingPassType,
 
         from,
@@ -657,6 +659,11 @@ router.post(
       const selectedClass =
         boardingClass ||
         boardingPassType;
+
+      const normalizedClass =
+        String(selectedClass).trim() === "Business Class"
+          ? "Business"
+          : String(selectedClass).trim();
 
 
       /* ===================================================
@@ -830,7 +837,12 @@ router.post(
 
             class:
 
-              String(selectedClass).trim(),
+              normalizedClass,
+
+            airlineLogo:
+              typeof airlineLogo === "string"
+                ? airlineLogo.trim()
+                : "",
 
             from:
 

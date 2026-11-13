@@ -50,6 +50,11 @@ const boardingPassSchema =
         trim: true
       },
 
+      airlineLogo: {
+        type: String,
+        trim: true
+      },
+
 
       /* =====================================================
          ROUTE

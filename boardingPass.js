@@ -154,6 +154,12 @@ const selectedFlightView =
     "selectedFlightView"
   );
 
+const flightProfileActions =
+  document.getElementById(
+    "flightProfileActions"
+  );
+
+
 const selectedFlightName =
   document.getElementById(
     "selectedFlightName"
@@ -169,6 +175,8 @@ const newFlightBtn =
     "newFlightBtn"
   );
 
+const scenePreviewView =
+  document.getElementById("scenePreviewView");
 
 /* =========================================================
    PROFILE FIELDS
@@ -349,6 +357,9 @@ let savedBoardingPasses =
 let selectedBoardingPass =
   null;
 
+let boardingPassCreationInProgress =
+  false;
+
 
 /* =========================================================
    CURRENCY
@@ -371,14 +382,14 @@ const currencySymbols = {
 const textPositions = {
 
   name: {
-    left: 23.7,
-    top: 37,
+    left: 26.5,
+    top: 29,
     width: 38
   },
 
   name2: {
-    left: 70.2,
-    top: 41.8,
+    left: 76.4,
+    top: 34.8,
     width: 24
   },
 
@@ -388,8 +399,8 @@ const textPositions = {
   */
 
   boardingPass: {
-    left: 48.8,
-    top: 19.4,
+    left: 53.8,
+    top: 10.4,
     width: 25
   },
 
@@ -399,81 +410,81 @@ const textPositions = {
   */
 
   boardingPass2: {
-    left: 74,
-    top: 19.2,
+    left: 82,
+    top: 9.5,
     width: 25
   },
 
 
   from: {
-    left: 23.7,
-    top: 46.3,
+    left: 26.5,
+    top: 39.6,
     width: 50
   },
 
   from2: {
-    left: 70.4,
-    top: 48.8,
+    left: 76.4,
+    top: 42.3,
     width: 16
   },
 
   to: {
-    left: 23.7,
-    top: 55.8,
+    left: 26.5,
+    top: 50,
     width: 50
   },
 
   to2: {
-    left: 70.4,
-    top: 56.1,
+    left: 76.4,
+    top: 50,
     width: 24
   },
 
   date: {
-    left: 23.8,
-    top: 64.5,
+    left: 26.5,
+    top: 60,
     width: 16
   },
 
   date2: {
-    left: 70.6,
-    top: 64,
+    left: 76.6,
+    top: 60,
     width: 16
   },
 
   time: {
-    left: 36,
-    top: 64.5,
+    left: 40,
+    top: 60,
     width: 14
   },
 
   time2: {
-    left: 79.3,
-    top: 64,
+    left: 88.3,
+    top: 60,
     width: 15
   },
 
   gate: {
-    left: 49.7,
-    top: 64.7,
+    left: 54.2,
+    top: 60,
     width: 12
   },
 
   gate2: {
-    left: 70.6,
-    top: 72,
+    left: 76.6,
+    top: 68.8,
     width: 12
   },
 
   seat: {
-    left: 56.7,
-    top: 64.5,
+    left: 61.5,
+    top: 60,
     width: 12
   },
 
   seat2: {
-    left: 78.4,
-    top: 72,
+    left: 85.2,
+    top: 68.8,
     width: 12
   },
 
@@ -483,38 +494,38 @@ const textPositions = {
   */
 
   taxes: {
-    left: 80.9,
-    top: 29.5,
+    left: 84.9,
+    top: 21.4,
     width: 17
   },
 
   amount: {
-    left: 80.8,
-    top: 26,
+    left: 84.9,
+    top: 18,
     width: 15
   },
 
   total: {
-    left: 80.9,
-    top: 33,
+    left: 84.9,
+    top: 25,
     width: 22
   },
 
   trackingNumber1: {
-    left: 32,
-    top: 81.2,
+    left: 40,
+    top: 78.5,
     width: 14
   },
 
   trackingNumber2: {
-    left: 75,
-    top: 82.1,
+    left: 80.8,
+    top: 79.8,
     width: 14
   },
 
   sequence: {
-    left: 49,
-    top: 80.8,
+    left: 60.2,
+    top: 77.8,
     width: 14
   }
 
@@ -774,6 +785,18 @@ function getClassValue() {
 }
 
 
+function normalizeBoardingPassClass(value) {
+
+  const className =
+    String(value || "").trim();
+
+  return className === "Business Class"
+    ? "Business"
+    : className;
+
+}
+
+
 function getCurrency() {
 
   if (!formInputs[7]) {
@@ -925,13 +948,7 @@ function getAutomaticValue(
    UPDATE DOCUMENT VALUES
 ========================================================= */
 
-function updateDocumentValues() {
-
-  if (!pdf) {
-    return;
-  }
-
-
+function getBoardingPassTextValues() {
   const name =
     getDisplayValue(
       formInputs[0]?.value
@@ -1000,7 +1017,7 @@ function updateDocumentValues() {
       name,
 
     name2:
-      to.split(/\s+/)[0],
+      name.split(/\s+/)[0],
 
 
     /*
@@ -1103,6 +1120,18 @@ function updateDocumentValues() {
 
   };
 
+  return values;
+}
+
+
+function updateDocumentValues() {
+
+  if (!pdf) {
+    return;
+  }
+
+  const values =
+    getBoardingPassTextValues();
 
   Object.keys(
     textPositions
@@ -1127,6 +1156,105 @@ function updateDocumentValues() {
   );
 
 }
+
+
+function drawBoardingPassOnHand(
+  context,
+  handX,
+  handY,
+  handWidth,
+  handHeight,
+  includeWatermark,
+  options = {}
+) {
+
+  if (!context) {
+    throw new Error("Scene canvas context is not available.");
+  }
+
+  const {
+    drawText = true,
+    drawWatermark = true
+  } = options;
+
+  context.save();
+
+  try {
+
+    context.translate(
+      handX,
+      handY
+    );
+
+    context.scale(
+      handWidth / 1080,
+      handHeight / 447
+    );
+
+    if (drawText) {
+
+      const values =
+        getBoardingPassTextValues();
+
+      context.font =
+        `600 16px ${documentFont}`;
+
+      context.fillStyle =
+        documentTextColor;
+
+      context.textBaseline =
+        "top";
+
+      Object.keys(
+        textPositions
+      ).forEach(
+        function (key) {
+
+          const text =
+            values[key] ?? "";
+
+          if (!text) {
+            return;
+          }
+
+          const position =
+            textPositions[key];
+
+          context.fillText(
+            String(text),
+            position.left * 10.8,
+            position.top * 4.47,
+            position.width * 10.8
+          );
+
+        }
+      );
+
+    }
+
+    if (
+      includeWatermark &&
+      drawWatermark
+    ) {
+
+      drawCanvasWatermark(
+        context,
+        1080,
+        447
+      );
+
+    }
+
+  } finally {
+    context.restore();
+  }
+
+}
+
+
+window.drawBoardingPassOnHand =
+  drawBoardingPassOnHand;
+
 
 /* =========================================================
    BUILD DOCUMENT
@@ -1444,6 +1572,9 @@ function createDocument() {
 
   createWatermark();
 
+  if (typeof window.renderBoardingPassScene === "function") {
+    window.renderBoardingPassScene();
+  }
 }
 
 /* =========================================================
@@ -1543,18 +1674,6 @@ function createDocumentCanvas(
           );
 
 
-        /*
-          1. DRAW ORIGINAL CARD
-        */
-
-        ctx.drawImage(
-          background,
-          0,
-          0,
-          width,
-          height
-        );
-
 
         /*
           2. DRAW TEXT
@@ -1593,11 +1712,11 @@ function createDocumentCanvas(
 
 
             /*
-              Use the exact same 14px
+              Use the exact same 16px
               base size used by the document.
             */
 
-            const fontSize = 14;
+            const fontSize = 16;
 
 
             ctx.font =
@@ -1628,10 +1747,14 @@ function createDocumentCanvas(
               height;
 
 
+            const maxWidth =
+              (position.width / 100) * width;
+
             ctx.fillText(
               text,
               x,
-              y
+              y,
+              maxWidth
             );
 
           }
@@ -2209,12 +2332,190 @@ function createFormatModal(
    CREATE BOARDING PASS
 ========================================================= */
 
+function showBoardingPassCreationModal() {
+
+  const existing =
+    document.getElementById(
+      "boardingPassCreationModal"
+    );
+
+  if (existing) {
+    existing.remove();
+  }
+
+  const overlay =
+    document.createElement(
+      "div"
+    );
+
+  overlay.id =
+    "boardingPassCreationModal";
+
+  overlay.setAttribute(
+    "role",
+    "presentation"
+  );
+
+  overlay.style.position =
+    "fixed";
+
+  overlay.style.inset =
+    "0";
+
+  overlay.style.zIndex =
+    "99999";
+
+  overlay.style.display =
+    "flex";
+
+  overlay.style.alignItems =
+    "center";
+
+  overlay.style.justifyContent =
+    "center";
+
+  overlay.style.padding =
+    "20px";
+
+  overlay.style.background =
+    "rgba(0, 0, 0, .68)";
+
+  const modal =
+    document.createElement(
+      "div"
+    );
+
+  modal.setAttribute(
+    "role",
+    "dialog"
+  );
+
+  modal.setAttribute(
+    "aria-modal",
+    "true"
+  );
+
+  modal.setAttribute(
+    "aria-labelledby",
+    "boardingPassCreationTitle"
+  );
+
+  modal.style.width =
+    "min(440px, 100%)";
+
+  modal.style.padding =
+    "24px";
+
+  modal.style.border =
+    "1px solid rgba(139, 92, 246, .3)";
+
+  modal.style.borderRadius =
+    "14px";
+
+  modal.style.background =
+    "#111827";
+
+  modal.style.color =
+    "#f8fafc";
+
+  modal.style.boxShadow =
+    "0 18px 50px rgba(0, 0, 0, .4)";
+
+  modal.innerHTML = `
+    <h2 id="boardingPassCreationTitle" style="margin:0 0 8px;font-size:20px">
+      Choose your boarding pass
+    </h2>
+    <p style="margin:0 0 20px;color:#94a3b8;font-size:13px;line-height:1.5">
+      Choose Free or Clean before creating your pass.
+    </p>
+    <div style="display:grid;gap:12px">
+      <button type="button" id="createFreeBoardingPass" style="padding:13px 15px;border:1px solid #475569;border-radius:9px;background:#1f2937;color:#f8fafc;text-align:left;cursor:pointer">
+        <strong style="display:block;margin-bottom:4px">Free</strong>
+        <span style="font-size:12px;color:#cbd5e1">No initial charge. Includes a watermark; you can remove it later.</span>
+      </button>
+      <button type="button" id="createCleanBoardingPass" style="padding:13px 15px;border:1px solid #8b5cf6;border-radius:9px;background:#312e81;color:#fff;text-align:left;cursor:pointer">
+        <strong style="display:block;margin-bottom:4px">Clean — $5</strong>
+        <span style="font-size:12px;color:#e0e7ff">Creates the pass, then charges $5 through your wallet to remove the watermark.</span>
+      </button>
+    </div>
+    <button type="button" id="cancelBoardingPassCreation" style="width:100%;margin-top:12px;padding:10px;border:0;background:transparent;color:#94a3b8;cursor:pointer">
+      Cancel
+    </button>
+  `;
+
+  overlay.appendChild(modal);
+  document.body.appendChild(overlay);
+
+  let choiceMade = false;
+
+  function chooseCreationType(
+    createCleanPass
+  ) {
+
+    if (choiceMade) {
+      return;
+    }
+
+    choiceMade = true;
+    overlay.remove();
+
+    createBoardingPass(
+      null,
+      createCleanPass
+    );
+
+  }
+
+  document
+    .getElementById("createFreeBoardingPass")
+    ?.addEventListener(
+      "click",
+      function () {
+        chooseCreationType(false);
+      }
+    );
+
+  document
+    .getElementById("createCleanBoardingPass")
+    ?.addEventListener(
+      "click",
+      function () {
+        chooseCreationType(true);
+      }
+    );
+
+  document
+    .getElementById("cancelBoardingPassCreation")
+    ?.addEventListener(
+      "click",
+      function () {
+        overlay.remove();
+      }
+    );
+
+  overlay.addEventListener(
+    "click",
+    function (event) {
+      if (event.target === overlay) {
+        overlay.remove();
+      }
+    }
+  );
+
+}
+
+
 async function createBoardingPass(
-  event
+  event,
+  createCleanPass = false
 ) {
 
   if (event) {
     event.preventDefault();
+  }
+
+  if (boardingPassCreationInProgress) {
+    return;
   }
 
 
@@ -2228,7 +2529,7 @@ async function createBoardingPass(
       ?.trim() || "";
 
 
-  const boardingPassType =
+  const selectedClass =
     getClassValue();
 
   const from =
@@ -2268,7 +2569,7 @@ async function createBoardingPass(
 
   if (
     !name ||
-    !boardingPassType ||
+    !selectedClass ||
     !from ||
     !to ||
     !date ||
@@ -2283,6 +2584,9 @@ async function createBoardingPass(
     return;
 
   }
+
+  boardingPassCreationInProgress =
+    true;
 
 
   generatedGate =
@@ -2324,7 +2628,11 @@ async function createBoardingPass(
 
               name,
 
-              boardingPassType,
+              class: selectedClass,
+
+              airlineLogo:
+                document.querySelector("#logo-select")
+                  ?.dataset.logoFile || "",
 
               from,
 
@@ -2412,18 +2720,41 @@ async function createBoardingPass(
         }
       );
 
+    const passToSelect =
+      createdPass ||
+      data.boardingPass;
 
-    if (createdPass) {
+    if (passToSelect) {
 
       selectBoardingPass(
-        createdPass
+        passToSelect
       );
 
     }
 
-    showActionConfirmation(
-      "Boarding pass created successfully."
-    );
+    if (
+      createCleanPass &&
+      passToSelect
+    ) {
+
+      const upgraded =
+        await upgradeBoardingPass(
+          false
+        );
+
+      showActionConfirmation(
+        upgraded
+          ? "Clean boarding pass created successfully."
+          : "Boarding pass created as Free; the Clean upgrade did not complete."
+      );
+
+    } else {
+
+      showActionConfirmation(
+        "Free boarding pass created successfully."
+      );
+
+    }
 
     await loadWallet();
 
@@ -2448,6 +2779,11 @@ async function createBoardingPass(
       error.message ||
       "Unable to create boarding pass."
     );
+
+  } finally {
+
+    boardingPassCreationInProgress =
+      false;
 
   }
 
@@ -2522,231 +2858,55 @@ function renderBoardingPasses() {
     return;
   }
 
+  createdFlights.innerHTML = "";
 
-  createdFlights.innerHTML =
-    "";
+  if (savedBoardingPasses.length === 0) {
 
+    const empty = document.createElement("div");
 
-  if (
-    savedBoardingPasses.length ===
-    0
-  ) {
+    empty.textContent = "No boarding passes created yet.";
 
-    const empty =
-      document.createElement(
-        "div"
-      );
-
-
-    empty.textContent =
-      "No boarding passes created yet.";
-
-
-    createdFlights.appendChild(
-      empty
-    );
-
+    createdFlights.appendChild(empty);
 
     return;
-
   }
 
+  savedBoardingPasses.forEach(function (pass) {
 
-  savedBoardingPasses.forEach(
-    function (pass) {
+    const item = document.createElement("div");
 
-      const item =
-        document.createElement(
-          "div"
-        );
+    item.className = "created-flight-item";
 
+    const profileInfo = document.createElement("div");
 
-      item.className =
-        "created-flight-item";
+    profileInfo.className = "flight-profile-info";
 
+    const profileButton = document.createElement("button");
 
-      const profileButton =
-        document.createElement(
-          "button"
-        );
+    profileButton.type = "button";
 
+    profileButton.className = "created-flight-profile";
 
-      profileButton.type =
-        "button";
+    const name = pass.name || "Unnamed Passenger";
 
+    const isClean = pass.watermarkEnabled === false;
 
-      profileButton.className =
-        "created-flight-profile";
+    profileButton.innerHTML = `
+  <strong>${escapeHTML(name)}</strong>
+  <small>${isClean ? "Clean" : "Free"}</small>
+`;
 
+    profileButton.addEventListener("click", function () {
+      selectBoardingPass(pass);
+    });
 
-      const name =
-        pass.name ||
-        "Unnamed Passenger";
+    profileInfo.appendChild(profileButton);
 
+    item.appendChild(profileInfo);
 
-      const tracking =
-        pass.trackingNumber ||
-        "";
+    createdFlights.appendChild(item);
 
-
-      const status =
-        pass.currentStatus ||
-        "Processing";
-
-
-      profileButton.innerHTML = `
-
-        <div>
-
-          <strong>
-            ${escapeHTML(name)}
-          </strong>
-
-          <small>
-            ${escapeHTML(tracking)}
-          </small>
-
-        </div>
-
-        <span>
-          ${escapeHTML(status)}
-        </span>
-
-      `;
-
-
-      profileButton.addEventListener(
-        "click",
-        function () {
-
-          selectBoardingPass(
-            pass
-          );
-
-        }
-      );
-
-
-      const deleteButton =
-        document.createElement(
-          "button"
-        );
-
-
-      deleteButton.type =
-        "button";
-
-
-      deleteButton.className =
-        "delete-flight-btn";
-
-
-      deleteButton.textContent =
-        "Delete";
-
-
-      deleteButton.addEventListener(
-        "click",
-        async function (event) {
-
-          event.stopPropagation();
-
-
-          const confirmed =
-            confirm(
-              `Delete boarding pass for ${name}?`
-            );
-
-
-          if (!confirmed) {
-            return;
-          }
-
-
-          try {
-
-            const response =
-              await fetch(
-                `${API_URL}/boardingPass/${encodeURIComponent(
-                  tracking
-                )}`,
-                {
-                  method:
-                    "DELETE",
-
-                  headers:
-                    authHeaders()
-                }
-              );
-
-
-            const data =
-              await response.json();
-
-
-            if (!response.ok) {
-
-              throw new Error(
-                data.message ||
-                "Unable to delete boarding pass."
-              );
-
-            }
-
-
-            if (
-              selectedBoardingPass &&
-              selectedBoardingPass.trackingNumber ===
-              tracking
-            ) {
-
-              selectedBoardingPass =
-                null;
-
-
-              if (
-                generatedDocument
-              ) {
-
-                generatedDocument.style.display =
-                  "none";
-
-              }
-
-
-              showCreateBoardingPassView();
-
-            }
-
-
-            await loadBoardingPasses();
-
-          } catch (error) {
-
-            console.error(
-              "DELETE BOARDING PASS ERROR:",
-              error
-            );
-
-            alert(
-              error.message ||
-              "Unable to delete boarding pass."
-            );
-
-          }
-
-        }
-      );
-
-
-      profileButton.appendChild(deleteButton);
-
-      item.appendChild(profileButton);
-
-      createdFlights.appendChild(item);
-
-    }
-  );
+  });
 
 }
 
@@ -2772,8 +2932,88 @@ function selectBoardingPass(
     pass
   );
 
+  if (flightProfileActions) {
+
+    flightProfileActions.innerHTML = "";
+
+    const deleteButton =
+      document.createElement("button");
+
+    deleteButton.type = "button";
+    deleteButton.className = "delete-flight-btn";
+    deleteButton.textContent = "Delete";
+    deleteButton.addEventListener(
+      "click",
+      deleteSelectedBoardingPass
+    );
+
+    flightProfileActions.appendChild(
+      deleteButton
+    );
+
+  }
+
 
   showSelectedBoardingPassView();
+
+}
+
+
+async function deleteSelectedBoardingPass() {
+
+  const pass =
+    selectedBoardingPass;
+
+  if (!pass) {
+    return;
+  }
+
+  const name =
+    pass.name || "Unnamed Passenger";
+
+  const confirmed = confirm(
+    `Delete boarding pass for ${name}?`
+  );
+
+  if (!confirmed) {
+    return;
+  }
+
+  try {
+
+    const response = await fetch(
+      `${API_URL}/boardingPass/${encodeURIComponent(pass.trackingNumber)}`,
+      {
+        method: "DELETE",
+        headers: authHeaders()
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        data.message || "Unable to delete boarding pass."
+      );
+    }
+
+    selectedBoardingPass = null;
+
+    if (generatedDocument) {
+      generatedDocument.style.display = "none";
+    }
+
+    showCreateBoardingPassView();
+
+    await loadBoardingPasses();
+
+  } catch (error) {
+
+    console.error("DELETE BOARDING PASS ERROR:", error);
+
+    alert(error.message || "Unable to delete boarding pass.");
+
+  }
 
 }
 
@@ -2823,7 +3063,9 @@ function loadPassIntoGenerator(
   if (classInput) {
 
     classInput.value =
-      savedClass;
+      normalizeBoardingPassClass(
+        savedClass
+      );
 
   }
 
@@ -3045,9 +3287,11 @@ function updateSelectedProfile(
   ) {
 
     profileClass.textContent =
-      pass.boardingPassType ||
-      pass.class ||
-      "";
+      normalizeBoardingPassClass(
+        pass.class ||
+        pass.boardingPassType ||
+        ""
+      );
 
   }
 
@@ -3214,60 +3458,46 @@ function updateSelectedProfile(
 }
 
 
-/* =========================================================
-   CREATE VIEW
-========================================================= */
 
 function showCreateBoardingPassView() {
 
-  if (
-    createFlightView
-  ) {
-
-    createFlightView.style.display =
-      "block";
-
+  if (createFlightView) {
+    createFlightView.hidden = false;
+    createFlightView.style.display = "block";
   }
 
+  if (selectedFlightView) {
+    selectedFlightView.hidden = true;
+    selectedFlightView.style.display = "none";
+  }
 
-  if (
-    selectedFlightView
-  ) {
-
-    selectedFlightView.style.display =
-      "none";
-
+  if (scenePreviewView) {
+    scenePreviewView.hidden = true;
+    scenePreviewView.style.display = "none";
   }
 
 }
 
-
-/* =========================================================
-   SELECTED VIEW
-========================================================= */
 
 function showSelectedBoardingPassView() {
 
-  if (
-    createFlightView
-  ) {
-
-    createFlightView.style.display =
-      "none";
-
+  if (createFlightView) {
+    createFlightView.hidden = true;
+    createFlightView.style.display = "none";
   }
 
+  if (selectedFlightView) {
+    selectedFlightView.hidden = false;
+    selectedFlightView.style.display = "block";
+  }
 
-  if (
-    selectedFlightView
-  ) {
-
-    selectedFlightView.style.display =
-      "block";
-
+  if (scenePreviewView) {
+    scenePreviewView.hidden = true;
+    scenePreviewView.style.display = "none";
   }
 
 }
+
 
 
 /* =========================================================
@@ -3372,7 +3602,10 @@ function updateWatermarkAction(
 
   flightWatermarkAction.innerHTML = `
 
-    <div>
+    <button
+      type="button"
+      class="flight-action-btn"
+    >
       <strong>
         Remove Watermark
       </strong>
@@ -3380,7 +3613,7 @@ function updateWatermarkAction(
       <span>
         Upgrade for $5
       </span>
-    </div>
+    </button>
 
   `;
 
@@ -3390,7 +3623,9 @@ function updateWatermarkAction(
    UPGRADE BOARDING PASS
 ========================================================= */
 
-async function upgradeBoardingPass() {
+async function upgradeBoardingPass(
+  requireConfirmation = true
+) {
 
   if (!selectedBoardingPass) {
 
@@ -3398,7 +3633,7 @@ async function upgradeBoardingPass() {
       "Please select a boarding pass first."
     );
 
-    return;
+    return false;
 
   }
 
@@ -3412,19 +3647,22 @@ async function upgradeBoardingPass() {
       "This boarding pass is already clean."
     );
 
-    return;
+    return true;
 
   }
 
 
-  const confirmed =
-    confirm(
-      "Remove the TEST / FREE watermark for $5?"
-    );
+  if (requireConfirmation) {
 
+    const confirmed =
+      confirm(
+        "Remove the TEST / FREE watermark for $5?"
+      );
 
-  if (!confirmed) {
-    return;
+    if (!confirmed) {
+      return false;
+    }
+
   }
 
 
@@ -3528,9 +3766,9 @@ async function upgradeBoardingPass() {
             pass.trackingNumber ===
             selectedBoardingPass.trackingNumber
           );
-
         }
-      );
+      ) ||
+      data.boardingPass;
 
 
     if (updated) {
@@ -3548,6 +3786,8 @@ async function upgradeBoardingPass() {
 
     await loadWallet();
 
+    return true;
+
 
   }
 
@@ -3563,6 +3803,8 @@ async function upgradeBoardingPass() {
       error.message ||
       "Unable to upgrade boarding pass."
     );
+
+    return false;
 
   }
 
@@ -3833,7 +4075,7 @@ if (
 
   profileDownloadBtn.addEventListener(
     "click",
-    function () {
+    async function () {
 
       if (
         !selectedBoardingPass
@@ -3847,10 +4089,43 @@ if (
 
       }
 
+      try {
 
-      createFormatModal(
-        selectedBoardingPass.watermarkEnabled !== false
-      );
+        loadPassIntoGenerator(
+          selectedBoardingPass
+        );
+
+        if (
+          typeof window.downloadScenePNG !==
+          "function"
+        ) {
+          throw new Error(
+            "Scene Studio PNG download is not available."
+          );
+        }
+
+        const downloaded =
+          await window.downloadScenePNG();
+
+        if (!downloaded) {
+          throw new Error(
+            "Unable to prepare the Scene Studio image."
+          );
+        }
+
+      } catch (error) {
+
+        console.error(
+          "PROFILE SCENE DOWNLOAD ERROR:",
+          error
+        );
+
+        alert(
+          error.message ||
+          "Unable to download the Scene Studio image."
+        );
+
+      }
 
     }
   );
@@ -3950,9 +4225,9 @@ if (
     "submit",
     function (event) {
 
-      createBoardingPass(
-        event
-      );
+      event.preventDefault();
+
+      showBoardingPassCreationModal();
 
     }
   );
@@ -3986,6 +4261,13 @@ formInputs.forEach(
 
         updateDocumentValues();
 
+        if (
+          typeof window.renderBoardingPassScene ===
+          "function"
+        ) {
+          window.renderBoardingPassScene();
+        }
+
       }
     );
 
@@ -4008,6 +4290,13 @@ formInputs.forEach(
         calculateAmounts();
 
         updateDocumentValues();
+
+        if (
+          typeof window.renderBoardingPassScene ===
+          "function"
+        ) {
+          window.renderBoardingPassScene();
+        }
 
       }
     );
