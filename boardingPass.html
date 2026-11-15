@@ -1662,7 +1662,26 @@
          SAME CROP SETTINGS PRESERVED
       ========================================================= */
 
-      async function downloadScenePNG() {
+      function isIOSSafari() {
+
+        const userAgent = navigator.userAgent;
+        const isIOS =
+          /iPhone|iPad|iPod/.test(userAgent) ||
+          (
+            navigator.platform === "MacIntel" &&
+            navigator.maxTouchPoints > 1
+          );
+
+        return (
+          isIOS &&
+          /Safari/.test(userAgent) &&
+          !/CriOS|FxiOS|EdgiOS|OPiOS/.test(userAgent)
+        );
+
+      }
+
+
+      async function downloadScenePNG(safariPreview = null) {
 
         let rendered = false;
 
@@ -1725,6 +1744,60 @@
           height - cropTop
         );
 
+        if (safariPreview) {
+
+          const pngBlob =
+            await new Promise((resolve, reject) => {
+
+              exportCanvas.toBlob(
+                (blob) => {
+
+                  if (blob) {
+                    resolve(blob);
+                    return;
+                  }
+
+                  reject(
+                    new Error("Unable to create the PNG image.")
+                  );
+
+                },
+                "image/png"
+              );
+
+            });
+
+          const imageUrl =
+            URL.createObjectURL(pngBlob);
+
+          let cleanupTimer;
+
+          const releaseImageUrl = () => {
+            URL.revokeObjectURL(imageUrl);
+            clearTimeout(cleanupTimer);
+          };
+
+          cleanupTimer =
+            setTimeout(releaseImageUrl, 30 * 60 * 1000);
+
+          safariPreview.addEventListener(
+            "load",
+            () => {
+              safariPreview.addEventListener(
+                "pagehide",
+                releaseImageUrl,
+                { once: true }
+              );
+            },
+            { once: true }
+          );
+
+          safariPreview.location.href =
+            imageUrl;
+
+          return true;
+
+        }
 
         const link =
           document.createElement("a");
@@ -1747,18 +1820,86 @@
       }
 
 
+      async function startScenePNGDownload() {
+
+        const useSafariPreview =
+          isIOSSafari();
+
+        const safariPreview =
+          useSafariPreview
+            ? window.open("about:blank", "_blank")
+            : null;
+
+        try {
+
+          if (
+            useSafariPreview &&
+            !safariPreview
+          ) {
+            throw new Error(
+              "Safari blocked the image preview. Allow pop-ups and try again."
+            );
+          }
+
+          const downloaded =
+            await downloadScenePNG(safariPreview);
+
+          if (!downloaded) {
+            throw new Error(
+              "Unable to prepare the Scene Studio PNG."
+            );
+          }
+
+          return true;
+
+        } catch (error) {
+
+          if (safariPreview) {
+            safariPreview.close();
+          }
+
+          throw error;
+
+        }
+
+      }
+
+
+      function reportScenePNGDownloadError(error) {
+
+        console.error(
+          "SCENE PNG DOWNLOAD ERROR:",
+          error
+        );
+
+        alert(
+          error.message ||
+          "Unable to download the Scene Studio image."
+        );
+
+      }
+
+
       /* =========================================================
          DOWNLOAD BUTTONS
       ========================================================= */
 
       downloadButton?.addEventListener(
         "click",
-        downloadScenePNG
+        () => {
+          startScenePNGDownload().catch(
+            reportScenePNGDownloadError
+          );
+        }
       );
 
       previewDownloadButton?.addEventListener(
         "click",
-        downloadScenePNG
+        () => {
+          startScenePNGDownload().catch(
+            reportScenePNGDownloadError
+          );
+        }
       );
 
 
@@ -1768,7 +1909,7 @@
 
       window.renderBoardingPassScene = render;
 
-      window.downloadScenePNG = downloadScenePNG;
+      window.downloadScenePNG = startScenePNGDownload;
 
 
       /* =========================================================
