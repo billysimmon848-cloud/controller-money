@@ -1555,10 +1555,10 @@ router.get(
 
       if (!flight) {
 
-        return res.status(404).json({
+        return res.json({
 
-          message:
-            "Flight not found."
+          flight:
+            null
 
         });
 
