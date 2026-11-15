@@ -513,13 +513,7 @@ const textPositions = {
 
   trackingNumber1: {
     left: 40,
-    top: 78.5,
-    width: 14
-  },
-
-  trackingNumber2: {
-    left: 80.8,
-    top: 79.8,
+    top: 77.8,
     width: 14
   },
 
