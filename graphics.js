@@ -1478,12 +1478,7 @@ removeWatermarkPreviewButton.addEventListener(
   "click",
   () => {
 
-    console.log("REMOVE WATERMARK BUTTON CLICKED");
-
-    console.log("ACTIVE DOCUMENT ID:", activeDocumentId);
-
     if (!activeDocumentId) {
-      console.log("No active document selected.");
       return;
     }
 
@@ -1819,9 +1814,6 @@ cleanDownloadButton.addEventListener(
 // ======================================================
 
 async function removeDocumentWatermark(documentId) {
-
-  console.log("REMOVE WATERMARK FUNCTION STARTED:", documentId);
-
   if (
     isProcessingPayment ||
     isCreatingDocument

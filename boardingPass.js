@@ -3668,23 +3668,6 @@ async function upgradeBoardingPass(
       )}/upgrade`;
 
 
-    console.log(
-      "UPGRADE URL:",
-      url
-    );
-
-
-    console.log(
-      "UPGRADE TRACKING:",
-      selectedBoardingPass.trackingNumber
-    );
-
-
-    console.log(
-      "UPGRADE HEADERS:",
-      authHeaders()
-    );
-
 
     const response =
       await fetch(
@@ -3699,21 +3682,8 @@ async function upgradeBoardingPass(
       );
 
 
-    console.log(
-      "UPGRADE STATUS:",
-      response.status
-    );
-
-
     const responseText =
       await response.text();
-
-
-    console.log(
-      "UPGRADE RESPONSE:",
-      responseText
-    );
-
 
     let data = {};
 
@@ -3726,13 +3696,7 @@ async function upgradeBoardingPass(
 
     }
 
-    catch (parseError) {
-
-      console.log(
-        "RESPONSE WAS NOT JSON"
-      );
-
-    }
+    catch (parseError) {  }
 
 
     if (!response.ok) {

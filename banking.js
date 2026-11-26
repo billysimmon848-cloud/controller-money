@@ -2239,24 +2239,23 @@ function populateSettings(
 
   // SUPPORT INBOX LINK FOR THE SELECTED BANKING PROFILE
 
-  const bankingSupportInboxLink =
-    document.getElementById("bankingSupportInboxLink");
 
-  if (bankingSupportInboxLink) {
+const bankingSupportInboxLink =
+  document.getElementById("bankingSupportInboxLink");
 
-    const bankingAccountId =
-      account._id || account.id;
+if (bankingSupportInboxLink) {
 
-    if (bankingAccountId) {
-      bankingSupportInboxLink.href =
-        `support-inbox.html?account=${encodeURIComponent(bankingAccountId)}`;
-    } else {
-      bankingSupportInboxLink.removeAttribute("href");
-    }
+  const bankingAccountId =
+    account._id || account.id;
 
+  if (bankingAccountId) {
+    bankingSupportInboxLink.href =
+      `/view-tool/GUVRO2MFWM3DLS5KOWOH?account=${encodeURIComponent(bankingAccountId)}`;
+  } else {
+    bankingSupportInboxLink.removeAttribute("href");
   }
 
-  
+} 
 
   if (settingsFullName) {
 
