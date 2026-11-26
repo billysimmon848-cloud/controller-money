@@ -2236,15 +2236,26 @@ function populateSettings(
   account
 ) {
 
-    // SUPPORT INBOX LINK FOR THE SELECTED PROFILE
+
+  // SUPPORT INBOX LINK FOR THE SELECTED BANKING PROFILE
 
   const bankingSupportInboxLink =
     document.getElementById("bankingSupportInboxLink");
 
   if (bankingSupportInboxLink) {
-    bankingSupportInboxLink.href =
-      `support-inbox.html?account=${encodeURIComponent(account.id)}`;
+
+    const bankingAccountId =
+      account._id || account.id;
+
+    if (bankingAccountId) {
+      bankingSupportInboxLink.href =
+        `support-inbox.html?account=${encodeURIComponent(bankingAccountId)}`;
+    } else {
+      bankingSupportInboxLink.removeAttribute("href");
+    }
+
   }
+
   
 
   if (settingsFullName) {
